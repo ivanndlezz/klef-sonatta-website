@@ -1,0 +1,93 @@
+/* ============================================================================
+   KLEF TYPOGRAPHY SYSTEM - 100% Local Fonts
+   ============================================================================
+   All fonts hosted locally in /assets/fonts/
+   No external dependencies
+   ========================================================================= */
+
+/* ============================================================================
+   INTER - Primary Font (Variable)
+   ========================================================================= */
+
+@font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('../../assets/fonts/Inter/Inter-VariableFont_opsz,wght.ttf') format('truetype-variations');
+}
+
+@font-face {
+    font-family: 'Inter';
+    font-style: italic;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('../../assets/fonts/Inter/Inter-Italic-VariableFont_opsz,wght.ttf') format('truetype-variations');
+}
+
+/* ============================================================================
+   GOOGLE SANS - Display Font (Variable)
+   ========================================================================= */
+
+@font-face {
+    font-family: 'Google Sans';
+    font-style: normal;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('../../assets/fonts/Google_Sans/GoogleSans-VariableFont_GRAD,opsz,wght.ttf') format('truetype-variations');
+}
+
+@font-face {
+    font-family: 'Google Sans';
+    font-style: italic;
+    font-weight: 100 900;
+    font-display: swap;
+    src: url('../../assets/fonts/Google_Sans/GoogleSans-Italic-VariableFont_GRAD,opsz,wght.ttf') format('truetype-variations');
+}
+
+/* ============================================================================
+   MONASPACE KRYPTON - Code Font
+   ========================================================================= */
+
+@font-face {
+    font-family: 'Monaspace Krypton';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../../assets/fonts/MonaspaceKrypton-SyntaxHighlighter-Regular.woff2') format('woff2');
+}
+
+/* ============================================================================
+   FONT STACK VARIABLES
+   ========================================================================= */
+
+:root {
+    /* Primary font stack (Inter with system fallback) */
+    --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 
+                    'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Helvetica Neue', 
+                    sans-serif;
+    
+    /* Display font stack (Google Sans for headings) */
+    --font-display: 'Google Sans', 'Inter', -apple-system, BlinkMacSystemFont, 
+                    'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 
+                    'Helvetica Neue', sans-serif;
+    
+    /* Monospace stack (for code) */
+    --font-mono: 'Monaspace Krypton', 'SF Mono', 'Monaco', 'Inconsolata', 
+                 'Fira Code', 'Droid Sans Mono', 'Source Code Pro', monospace;
+}
+
+/* ============================================================================
+   GLOBAL TYPOGRAPHY SETTINGS
+   ========================================================================= */
+
+body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+
+code, pre {
+    font-family: var(--font-mono);
+}

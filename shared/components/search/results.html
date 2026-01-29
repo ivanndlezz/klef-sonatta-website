@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results For "A"</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 18px;
+        }
+
+        .grid {
+            column-count: 3;
+            column-gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .grid {
+                column-count: 2;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .grid {
+                column-count: 1;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 20px;
+            break-inside: avoid;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-image {
+            width: 100%;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .card-icon-only {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon {
+            width: 60px;
+            height: 60px;
+            stroke: white;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .card-icon-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            width: 36px;
+            height: 36px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-icon-badge svg {
+            width: 20px;
+            height: 20px;
+            stroke: #888;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .card-content {
+            padding: 24px;
+        }
+
+        .card-type {
+            color: #b8b8b8;
+            font-size: 13px;
+            margin-bottom: 12px;
+            font-weight: 400;
+        }
+
+        .card-title {
+            font-size: 19px;
+            font-weight: 700;
+            color: #1a1a1a;
+            line-height: 1.3;
+        }
+
+        .card-icon-only.blog {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .card-icon-only.portfolio {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .card-icon-only.page {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Results For "A"</h1>
+            <p>30 results found</p>
+        </div>
+
+        <div class="grid" id="resultsGrid"></div>
+    </div>
+
+    <script>
+        const resultsData = [
+            {
+                type: "blog",
+                title: "The Role of Social Media in Shaping Society",
+                hasImage: true,
+                imageColor: "#ff7f6f",
+                ratio: "2:1"
+            },
+            {
+                type: "portfolio",
+                title: "Lessons Learned from Professional Challenges",
+                hasImage: true,
+                imageColor: "#c9b8a0",
+                ratio: "1:1"
+            },
+            {
+                type: "page",
+                title: "Discovering Passion and Purpose in Work",
+                hasImage: true,
+                imageColor: "#95b5b0",
+                ratio: "2:1"
+            },
+            {
+                type: "blog",
+                title: "Emerging Trends and Technologies",
+                hasImage: true,
+                imageColor: "#ffbb00",
+                ratio: "1:1"
+            },
+            {
+                type: "blog",
+                title: "Understanding Modern Design Principles",
+                hasImage: false,
+                ratio: "1:1"
+            },
+            {
+                type: "portfolio",
+                title: "Revolutionizing the Way We Use Applications",
+                hasImage: false,
+                ratio: "1:1"
+            },
+            {
+                type: "page",
+                title: "Creative Expression Through Art",
+                hasImage: true,
+                imageColor: "#c8956f",
+                ratio: "1:1"
+            },
+            {
+                type: "blog",
+                title: "Empowering Individuals for Professional Growth",
+                hasImage: true,
+                imageColor: "#d4674a",
+                ratio: "2:1"
+            },
+            {
+                type: "page",
+                title: "Building Sustainable Communities",
+                hasImage: false,
+                ratio: "1:1"
+            },
+            {
+                type: "portfolio",
+                title: "Innovative Solutions for Tomorrow",
+                hasImage: true,
+                imageColor: "#5b8fa3",
+                ratio: "2:1"
+            },
+            {
+                type: "blog",
+                title: "The Future of Digital Communication",
+                hasImage: true,
+                imageColor: "#e8a87c",
+                ratio: "1:1"
+            },
+            {
+                type: "page",
+                title: "Exploring New Horizons in Education",
+                hasImage: true,
+                imageColor: "#c38d9e",
+                ratio: "2:1"
+            },
+            {
+                type: "portfolio",
+                title: "Crafting Beautiful User Experiences",
+                hasImage: false,
+                ratio: "1:1"
+            },
+            {
+                type: "blog",
+                title: "The Art of Storytelling in Modern Media",
+                hasImage: true,
+                imageColor: "#9db4c0",
+                ratio: "1:1"
+            },
+            {
+                type: "page",
+                title: "Mindfulness and Mental Wellness",
+                hasImage: true,
+                imageColor: "#b8a990",
+                ratio: "2:1"
+            },
+            {
+                type: "portfolio",
+                title: "Photography Journey Around the World",
+                hasImage: true,
+                imageColor: "#e0afa0",
+                ratio: "1:1"
+            },
+            {
+                type: "blog",
+                title: "Climate Action and Environmental Care",
+                hasImage: false,
+                ratio: "1:1"
+            },
+            {
+                type: "page",
+                title: "Food Culture and Culinary Adventures",
+                hasImage: true,
+                imageColor: "#e07a5f",
+                ratio: "2:1"
+            },
+            {
+                type: "blog",
+                title: "Wellness and Healthy Living",
+                hasImage: true,
+                imageColor: "#81b29a",
+                ratio: "1:1"
+            },
+            {
+                type: "portfolio",
+                title: "Architecture and Urban Design",
+                hasImage: true,
+                imageColor: "#f4a261",
+                ratio: "2:1"
+            },
+            {
+                type: "page",
+                title: "Music and Sound in Digital Age",
+                hasImage: false,
+                ratio: "1:1"
+            },
+            {
+                type: "blog",
+                title: "Fashion Trends and Personal Style",
+                hasImage: true,
+                imageColor: "#e63946",
+                ratio: "2:1"
+            },
+            {
+                type: "portfolio",
+                title: "Graphic Design Explorations",
+                hasImage: true,
+                imageColor: "#457b9d",
+                ratio: "1:1"
+            },
+            {
+                type: "page",
+                title: "Travel Stories and Adventures",
+                hasImage: true,
+                imageColor: "#a8dadc",
+                ratio: "2:1"
+            },
+            {
+                type: "blog",
+                title: "Technology and Human Connection",
+                hasImage: true,
+                imageColor: "#f1faee",
+                ratio: "1:1"
+            },
+            {
+                type: "portfolio",
+                title: "Brand Identity and Visual Language",
+                hasImage: false,
+                ratio: "1:1"
+            },
+            {
+                type: "page",
+                title: "Entrepreneurship and Innovation",
+                hasImage: true,
+                imageColor: "#f4978e",
+                ratio: "2:1"
+            },
+            {
+                type: "blog",
+                title: "Personal Development and Growth",
+                hasImage: true,
+                imageColor: "#fbc4ab",
+                ratio: "1:1"
+            },
+            {
+                type: "portfolio",
+                title: "Motion Graphics and Animation",
+                hasImage: true,
+                imageColor: "#8eecf5",
+                ratio: "2:1"
+            },
+            {
+                type: "page",
+                title: "Community Building and Social Impact",
+                hasImage: true,
+                imageColor: "#90dbf4",
+                ratio: "1:1"
+            }
+        ];
+
+        const icons = {
+            blog: `<svg viewBox="0 0 24 24">
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>`,
+            portfolio: `<svg viewBox="0 0 24 24">
+                <circle cx="13.5" cy="6.5" r=".5"></circle>
+                <circle cx="17.5" cy="10.5" r=".5"></circle>
+                <circle cx="8.5" cy="7.5" r=".5"></circle>
+                <circle cx="6.5" cy="12.5" r=".5"></circle>
+                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"></path>
+            </svg>`,
+            page: `<svg viewBox="0 0 24 24">
+                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+            </svg>`
+        };
+
+        const typeNames = {
+            blog: "Blog Post",
+            portfolio: "Portfolio",
+            page: "Page"
+        };
+
+        function createCard(item) {
+            const card = document.createElement('div');
+            card.className = 'card';
+
+            const imageHeight = item.ratio === "2:1" ? 300 : 200;
+            let imageSection = '';
+
+            if (item.hasImage) {
+                imageSection = `
+                    <div class="card-image" style="height: ${imageHeight}px; background-color: ${item.imageColor};">
+                        <div class="card-icon-badge">
+                            ${icons[item.type]}
+                        </div>
+                    </div>
+                `;
+            } else {
+                imageSection = `
+                    <div class="card-icon-only ${item.type}" style="height: ${imageHeight}px;">
+                        <div class="icon">${icons[item.type]}</div>
+                    </div>
+                `;
+            }
+
+            card.innerHTML = `
+                ${imageSection}
+                <div class="card-content">
+                    <div class="card-type">${typeNames[item.type]}</div>
+                    <h3 class="card-title">${item.title}</h3>
+                </div>
+            `;
+
+            return card;
+        }
+
+        const grid = document.getElementById('resultsGrid');
+        resultsData.forEach(item => {
+            grid.appendChild(createCard(item));
+        });
+    </script>
+</body>
+
+</html>

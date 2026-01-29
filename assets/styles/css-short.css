@@ -1,0 +1,258 @@
+/* ==========================================================================
+   KLEF DESIGN SYSTEM v3
+   Ergonomic Recursive Tokens + Limited Flags
+   FINAL ADDITION LAYER
+   ========================================================================== */
+
+/* ==========================================================================
+   TOKEN MAP (v3) — Official short vocabulary
+   --------------------------------------------------------------------------
+   Layout & Position
+   --d     display
+   --pos   position
+   --zi    z-index
+
+   Size
+   --w     width
+   --h     height
+   --wh    width & height
+   --mw    max-width
+   --mh    max-height
+   --minw  min-width
+   --minh  min-height
+
+   Spacing
+   --p     padding
+   --px    padding-inline
+   --py    padding-block
+   --m     margin
+   --mx    margin-inline
+   --my    margin-block
+   --g     gap
+
+   Visual
+   --bg    background
+   --c     color
+   --bd    border
+   --rad   border-radius
+   --sh    box-shadow
+   --op    opacity
+
+   Typography
+   --fs    font-size
+   --fw    font-weight
+   --lh    line-height
+   --ls    letter-spacing
+   --ta    text-align
+
+   Motion
+   --trs   transform
+   --trn   transition
+
+   Flex / Grid
+   --fd    flex-direction
+   --fw    flex-wrap
+   --ai    align-items
+   --jc    justify-content
+   --gtc   grid-template-columns
+   --gtr   grid-template-rows
+   --ga    grid-area
+   ========================================================================== */
+
+/* ================================
+   CORE RECURSIVE CALLBACKS
+   ================================ */
+
+/* Layout */
+[style*="--d:"] {
+  display: var(--d);
+}
+[style*="--pos:"] {
+  position: var(--pos);
+}
+[style*="--zi:"] {
+  z-index: var(--zi);
+}
+
+/* Size */
+[style*="--w:"] {
+  width: var(--w);
+}
+[style*="--h:"] {
+  height: var(--h);
+}
+[style*="--wh:"] {
+  width: var(--wh);
+  height: var(--wh);
+}
+[style*="--mw:"] {
+  max-width: var(--mw);
+}
+[style*="--mh:"] {
+  max-height: var(--mh);
+}
+[style*="--minw:"] {
+  min-width: var(--minw);
+}
+[style*="--minh:"] {
+  min-height: var(--minh);
+}
+
+/* Spacing */
+[style*="--p:"] {
+  padding: var(--p);
+}
+[style*="--px:"] {
+  padding-left: var(--px);
+  padding-right: var(--px);
+}
+[style*="--py:"] {
+  padding-top: var(--py);
+  padding-bottom: var(--py);
+}
+
+[style*="--m:"] {
+  margin: var(--m);
+}
+[style*="--mx:"] {
+  margin-left: var(--mx);
+  margin-right: var(--mx);
+}
+[style*="--my:"] {
+  margin-top: var(--my);
+  margin-bottom: var(--my);
+}
+
+[style*="--g:"] {
+  gap: var(--g, 0.5rem);
+}
+
+/* Visual */
+[style*="--bg:"] {
+  background: var(--bg);
+}
+[style*="--c:"] {
+  color: var(--c);
+}
+[style*="--bd:"] {
+  border: var(--bd);
+}
+[style*="--rad:"] {
+  border-radius: var(--rad);
+}
+[style*="--sh:"] {
+  box-shadow: var(--sh);
+}
+[style*="--op:"] {
+  opacity: var(--op);
+}
+
+/* Typography */
+[style*="--fs:"] {
+  font-size: var(--fs);
+}
+[style*="--fw:"] {
+  font-weight: var(--fw);
+}
+[style*="--lh:"] {
+  line-height: var(--lh);
+}
+[style*="--ls:"] {
+  letter-spacing: var(--ls);
+}
+[style*="--ta:"] {
+  text-align: var(--ta);
+}
+
+/* Motion */
+[style*="--trs:"] {
+  transform: var(--trs);
+}
+[style*="--trn:"] {
+  transition: var(--trn);
+}
+
+/* Flexbox */
+[style*="--fd:"] {
+  flex-direction: var(--fd);
+}
+[style*="--fw:"] {
+  flex-wrap: var(--fw);
+}
+[style*="--ai:"] {
+  align-items: var(--ai);
+}
+[style*="--jc:"] {
+  justify-content: var(--jc);
+}
+
+/* Grid */
+[style*="--gtc:"] {
+  grid-template-columns: var(--gtc);
+}
+[style*="--gtr:"] {
+  grid-template-rows: var(--gtr);
+}
+[style*="--ga:"] {
+  grid-area: var(--ga);
+}
+
+/* ================================
+   LIMITED FLAGS (INTENTION ONLY)
+   Keep intentionally SMALL
+   ================================ */
+
+[style*="--flex"] {
+  display: flex;
+}
+[style*="--grid"] {
+  display: grid;
+}
+[style*="--inline"] {
+  display: inline;
+}
+[style*="--center"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+[style*="--hidden"] {
+  display: none !important;
+}
+
+/* ================================
+   CONTAINER QUERY TOKEN PATTERN
+   ================================ */
+
+.klef-container {
+  container-type: inline-size;
+}
+
+@container (min-width: 480px) {
+  [style*="--cols"] {
+    --cols: 2;
+  }
+}
+@container (min-width: 900px) {
+  [style*="--cols"] {
+    --cols: 3;
+  }
+}
+
+[style*="--cols"] {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 1), 1fr);
+}
+
+/* ================================
+   DEBUG / SAFETY (OPTIONAL)
+   ================================ */
+/*
+[style] {
+  outline: 0 dashed rgba(0,0,0,0.04);
+}
+*/
+
+/* ==========================================================================
+   END — KLEF DESIGN SYSTEM v3
+   ========================================================================== */

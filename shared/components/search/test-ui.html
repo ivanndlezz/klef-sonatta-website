@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            font-family: sans-serif;
+        }
+
+        /* ============================================
+           SEARCH OVERLAY
+        ============================================ */
+        .search-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0);
+            backdrop-filter: blur(0px);
+            z-index: 10000;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.28, 0.11, 0.32, 1);
+        }
+
+        .search-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+            background: rgba(0, 0, 0, 0.48);
+            backdrop-filter: blur(20px);
+        }
+
+        .search-panel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            transform: translateY(-100%);
+            transition: transform 0.5s cubic-bezier(0.28, 0.11, 0.32, 1);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .search-overlay.active .search-panel {
+            transform: translateY(0);
+        }
+
+        .search-content {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 60px 40px 80px;
+        }
+
+        .search-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid #d2d2d7;
+            margin-bottom: 40px;
+        }
+
+        .search-icon {
+            width: 32px;
+            height: 32px;
+        }
+
+        .search-icon svg {
+            width: 100%;
+            height: 100%;
+            stroke: #86868b;
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 28px;
+            color: #1d1d1f;
+            background: transparent;
+            font-family: inherit;
+        }
+
+        .search-input::placeholder {
+            color: #6e6e73;
+        }
+
+        .close-search {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: rgba(0, 0, 0, 0.06);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            opacity: 0;
+        }
+
+        .search-overlay.active .close-search {
+            opacity: 1;
+            transition-delay: 0.3s;
+        }
+
+        .close-search:hover {
+            background: rgba(0, 0, 0, 0.12);
+        }
+
+        .close-search svg {
+            width: 16px;
+            height: 16px;
+            stroke: #1d1d1f;
+        }
+
+        .quick-links {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s cubic-bezier(0.28, 0.11, 0.32, 1);
+        }
+
+        .search-overlay.active .quick-links {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 0.2s;
+        }
+
+        .quick-links-title {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #86868b;
+            margin-bottom: 20px;
+        }
+
+        .links-list {
+            list-style: none;
+        }
+
+        .links-list li {
+            border-bottom: 1px solid #d2d2d7;
+        }
+
+        .links-list li:last-child {
+            border-bottom: none;
+        }
+
+        .links-list a {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 0;
+            text-decoration: none;
+            color: #1d1d1f;
+            font-size: 17px;
+            transition: opacity 0.2s ease;
+        }
+
+        .links-list a:hover {
+            opacity: 0.6;
+        }
+
+        .link-arrow {
+            width: 16px;
+            height: 16px;
+        }
+
+        .link-arrow svg {
+            width: 100%;
+            height: 100%;
+            stroke: #86868b;
+        }
+    </style>
+    <style>
+        .search-results {
+            margin-top: 40px;
+        }
+
+        .result-group {
+            margin-bottom: 30px;
+        }
+
+        .result-group h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 15px;
+        }
+
+        .result-group ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .result-group li {
+            margin-bottom: 10px;
+        }
+
+        .result-group a {
+            color: #1d1d1f;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background 0.2s ease;
+        }
+
+        .result-group a:hover {
+            background: #f5f5f5;
+        }
+
+        .no-results {
+            color: #86868b;
+            font-style: italic;
+            text-align: center;
+            padding: 40px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Search Overlay (Apple Style) -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-panel">
+            <button class="close-search" onclick="closeSearch()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+
+            <div class="search-content">
+                <div class="search-input-wrapper">
+                    <div class="search-icon">
+                        <svg>
+                            <use href="#icon-search"></use>
+                        </svg>
+                    </div>
+                    <input type="text" class="search-input" placeholder="Buscar en klef.agency" id="searchInput"
+                        autocomplete="off" spellcheck="false">
+                </div>
+
+                <div class="quick-links">
+                    <div class="quick-links-title">Enlaces Rápidos</div>
+                    <ul class="links-list">
+                        <li>
+                            <a href="#">
+                                <span>Servicios de Branding</span>
+                                <span class="link-arrow">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <span>Studio Multimedia</span>
+                                <span class="link-arrow">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <span>Desarrollo Web</span>
+                                <span class="link-arrow">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <span>Marketing Digital</span>
+                                <span class="link-arrow">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <span>Contacto</span>
+                                <span class="link-arrow">
+                                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="right-menu">
+        <button class="btn-icon" onclick="openSearch()" aria-label="Buscar">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                style="--wh:20px; width: var(--wh); height: var(--wh);">
+                <use href="#icon-search"></use>
+            </svg>
+        </button>
+    </div>
+    <script>
+        // Configuración de búsqueda
+        const CONFIG = {
+            GRAPHQL_ENDPOINT: "https://klef.newfacecards.com/graphql",
+            MIN_SEARCH_LENGTH: 2,
+            MAX_RESULTS: 50,
+        };
+
+        // Referencias para búsqueda (se obtienen cuando el DOM está listo)
+        let searchOverlay = null;
+        let searchInput = null;
+        let resultsContainer = null;
+
+        // ============================================
+        // BÚSQUEDA (ESTILO APPLE)
+        // ============================================
+        function openSearch() {
+            if (!searchOverlay || !searchInput) return;
+            searchOverlay.classList.add("active");
+            document.body.style.overflow = "hidden";
+
+            setTimeout(() => {
+                searchInput.focus();
+            }, 400);
+        }
+
+        function closeSearch() {
+            if (!searchOverlay || !searchInput) return;
+            searchOverlay.classList.remove("active");
+            document.body.style.overflow = "";
+            searchInput.value = "";
+            if (resultsContainer) resultsContainer.innerHTML = "";
+        }
+
+        // Cerrar con ESC
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "Escape" && searchOverlay && searchOverlay.classList.contains("active")) {
+                closeSearch();
+            }
+        });
+
+        // Función principal de búsqueda
+        async function performSearch(searchTerm) {
+            if (searchTerm.length < CONFIG.MIN_SEARCH_LENGTH) {
+                return;
+            }
+
+            const query = `
+                query FlexibleSearch($searchTerm: String!) {
+                    pages(first: 20, where: { search: $searchTerm }) {
+                        nodes {
+                            id
+                            title
+                            slug
+                            uri
+                            content
+                        }
+                    }
+                    posts(first: 20, where: { search: $searchTerm }) {
+                        nodes {
+                            id
+                            title
+                            slug
+                            uri
+                            excerpt
+                        }
+                    }
+                    portfolios(first: 20, where: { search: $searchTerm }) {
+                        nodes {
+                            id
+                            title
+                            slug
+                            uri
+                        }
+                    }
+                }
+            `;
+
+            try {
+                const response = await fetch(CONFIG.GRAPHQL_ENDPOINT, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        query: query,
+                        variables: { searchTerm },
+                    }),
+                });
+
+                const json = await response.json();
+
+                if (json.errors) {
+                    console.error("Error en la búsqueda:", json.errors[0].message);
+                    return;
+                }
+
+                displayResults(json.data);
+            } catch (error) {
+                console.error("Error en la búsqueda:", error.message);
+            }
+        }
+
+        // Mostrar resultados de búsqueda
+        function displayResults(data) {
+            if (!resultsContainer) return;
+
+            let html = "";
+            let total = 0;
+
+            Object.keys(data).forEach((key) => {
+                const nodes = data[key].nodes || [];
+                total += nodes.length;
+
+                if (nodes.length > 0) {
+                    html += `<div class="result-group">`;
+                    html += `<h3>${key.charAt(0).toUpperCase() + key.slice(1)} (${nodes.length})</h3>`;
+                    html += `<ul>`;
+
+                    nodes.forEach((node) => {
+                        const excerpt = node.excerpt || node.content || "";
+                        html += `<li><a href="${node.uri}">${node.title}</a></li>`;
+                    });
+
+                    html += `</ul>`;
+                    html += `</div>`;
+                }
+            });
+
+            if (total === 0) {
+                html = `<div class="no-results">No se encontraron resultados para "${searchInput.value}"</div>`;
+            }
+
+            resultsContainer.innerHTML = html;
+        }
+
+        // Inicializar referencias y listeners ligeros cuando el DOM esté listo
+        document.addEventListener("DOMContentLoaded", () => {
+            // Buscar elementos que el script global necesita
+            searchOverlay = document.getElementById("searchOverlay");
+            searchInput = document.getElementById("searchInput");
+            resultsContainer = document.createElement("div");
+            resultsContainer.className = "search-results";
+
+            const searchContent = document.querySelector(".search-content");
+            if (searchContent) {
+                searchContent.appendChild(resultsContainer);
+            }
+
+            if (searchOverlay) {
+                searchOverlay.addEventListener("click", (e) => {
+                    if (e.target === searchOverlay) closeSearch();
+                });
+            }
+
+            if (searchInput) {
+                searchInput.addEventListener("input", (e) => {
+                    const searchTerm = e.target.value.trim();
+                    if (searchTerm.length >= CONFIG.MIN_SEARCH_LENGTH) {
+                        performSearch(searchTerm);
+                    } else {
+                        if (resultsContainer) resultsContainer.innerHTML = "";
+                    }
+                });
+            }
+        });
+
+
+    </script>
+</body>
+
+</html>
