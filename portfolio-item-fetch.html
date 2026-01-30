@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../shared/styles/fonts.css">
+    <title>Sead Cabo - Brandbook and visual identity design</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Klef Core Variables (synced with Home) */
+            --k-max: 1000px;
+            --k-gap: 40px;
+            --k-radius: .375rem;
+            --k-gray: #6b7280;
+            --k-light: #e5e7eb;
+            --k-dark: #111;
+            --k-blue: #3b82f6;
+            --k-purple: #a855f7;
+
+            /* Component-specific */
+            --c-blue: #cbe6ff;
+            --bg-main: #f5f5f5;
+            --bg-sheet: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --border-color: #e0e0e0;
+            --shadow: rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+                Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #f5f5f5;
+            color: var(--k-black);
+        }
+
+        .breadcrumb {
+            padding: 20px;
+            color: #999;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+        }
+
+        .breadcrumb a {
+            color: #999;
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .header-left {
+            flex: 1;
+        }
+
+        .tag {
+            display: inline-block;
+            background-color: #e1e3ee;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: 400;
+            margin-bottom: 30px;
+            line-height: 1.2;
+        }
+
+        .project-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            overflow: hidden;
+        }
+
+        .project-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .project-name {
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .btn-view {
+            background-color: #000;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .btn-view:hover {
+            background-color: #333;
+        }
+
+        .sidebar {
+            background-color: #e8e8e8;
+            border-radius: 12px;
+            padding: 30px;
+            width: 450px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 30px;
+        }
+
+        .sidebar h3 {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .sidebar-section {
+            margin-bottom: 30px;
+        }
+
+        .history-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            width: fit-content;
+        }
+
+        .history-icon {
+            --wh: 45px;
+            width: var(--wh);
+            height: var(--wh);
+            background-color: var(--c-blue);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--k-blue);
+            flex-shrink: 0;
+        }
+
+        .history-text {
+            flex: 1;
+            font-size: 13px;
+            color: #666;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .history-text span {
+            max-width: 150px;
+        }
+
+        .btn-read {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn-read:hover {
+            background-color: #2563eb;
+        }
+
+        .team-avatars {
+            display: flex;
+        }
+
+        .team-avatars .team-avatar:not(:first-child) {
+            margin-left: -10px;
+        }
+
+        .team-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+
+        .team-names {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .tags-list {
+            font-size: 13px;
+            color: #666;
+            margin-top: 7px;
+        }
+
+        .tags-list span {
+            color: #3b82f6;
+            margin-right: 8px;
+        }
+
+        svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .team-section {
+            display: flex;
+            align-items: center;
+            height: fit-content;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .portfolio-images {
+            width: 100%;
+            margin: 50px 0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .portfolio-images img {
+            width: 100%;
+            display: block;
+        }
+
+        .team-section.mobile {
+            display: none;
+        }
+
+        /* === BACKDROP === */
+        #backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 998;
+        }
+
+        #backdrop.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* === BOTTOM SHEET / SIDE PANEL BASE === */
+        #bottomsheet {
+            position: fixed;
+            background: var(--bg-sheet);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+
+        /* === HEADER (Drag Handle) === */
+        .sheet-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 20px 8px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: grab;
+            user-select: none;
+            flex-shrink: 0;
+        }
+
+        .sheet-header:active {
+            cursor: grabbing;
+        }
+
+        .drag-handle {
+            width: 40px;
+            height: 4px;
+            background: #d0d0d0;
+            border-radius: 2px;
+            margin-bottom: 12px;
+        }
+
+        .sheet-title-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            color: #a9a9a9;
+        }
+
+        .sheet-title-bar h2 {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            font-size: 24px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.2s;
+            display: none;
+        }
+
+        .close-btn:hover {
+            background: var(--bg-main);
+        }
+
+        /* === CONTENIDO DEL SHEET === */
+        .sheet-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .sheet-content h3 {
+            margin-bottom: 16px;
+        }
+
+        .sheet-content p {
+            margin-bottom: 12px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        .info-item {
+            background: var(--bg-main);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .info-item label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-item .value {
+            font-size: 16px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        /* === CTA FOOTER === */
+        .sheet-cta {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-sheet);
+            flex-shrink: 0;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: var(--k-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: var(--black);
+        }
+
+        .btn-primary.black {
+            background: var(--black);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-secondary);
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border-color);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        .expand-btn {
+            background: var(--bg-main);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            color: var(--text-secondary);
+            transition: background 0.2s;
+            margin-top: 16px;
+        }
+
+        .expand-btn:hover {
+            background: var(--border-color);
+        }
+
+        .project-image {
+            width: 100%;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .project-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        /* === MOBILE (Bottom Sheet) === */
+        @media (max-width: 767px) {
+            #bottomsheet {
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 65vh;
+                max-height: 90vh;
+                transform: translateY(100%);
+                border-radius: 20px 20px 0 0;
+                box-shadow: 0 -4px 20px var(--shadow);
+            }
+
+            #bottomsheet.open {
+                transform: translateY(0);
+            }
+
+            #bottomsheet.full {
+                height: 95vh;
+            }
+
+            .sheet-header {
+                display: flex;
+            }
+
+            .drag-handle {
+                display: block;
+            }
+
+            .mobile-bottom-bar {
+                display: block;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background-color: #a5a5a54f;
+                border-top: 1px solid #e0e0e0;
+                padding: 15px 20px;
+                box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+                z-index: 100;
+                --blur: 30px;
+                backdrop-filter: blur(var(--blur));
+                -webkit-backdrop-filter: blur(var(--blur));
+            }
+
+            .mobile-card {
+                background-color: white;
+                border-radius: 8px;
+                padding: 15px;
+                display: flex;
+                align-items: center;
+                gap: 15px;
+            }
+
+            .mobile-icon {
+                width: 50px;
+                height: 50px;
+                background-color: #e3f2fd;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #3b82f6;
+                flex-shrink: 0;
+                font-size: 24px;
+            }
+
+            .mobile-text {
+                flex: 1;
+                font-size: 14px;
+                font-weight: 500;
+            }
+
+            .mobile-btn {
+                background-color: #3b82f6;
+                color: white;
+                border: none;
+                padding: 10px 24px;
+                border-radius: 10px;
+                font-size: 14px;
+                cursor: pointer;
+                white-space: nowrap;
+            }
+
+            .project-details {
+                grid-template-columns: 1fr;
+            }
+
+            .sheet-title-bar {
+                justify-content: center;
+            }
+        }
+
+        /* === DESKTOP (Side Panel) === */
+        @media (min-width: 768px) {
+            #bottomsheet {
+                top: 0;
+                right: 0;
+                bottom: 0;
+                width: 480px;
+                max-width: 90vw;
+                height: 100vh;
+                transform: translateX(100%);
+                border-left: 1px solid var(--border-color);
+                box-shadow: -4px 0 20px var(--shadow);
+            }
+
+            #bottomsheet.open {
+                transform: translateX(0);
+            }
+
+            #bottomsheet.full {
+                width: 680px;
+            }
+
+            .sheet-header {
+                cursor: default;
+                padding: 16px 20px;
+            }
+
+            .drag-handle {
+                display: none;
+            }
+
+            .close-btn {
+                display: block;
+            }
+
+            .sheet-content {
+                padding: 24px;
+            }
+
+            .mobile-bottom-bar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .header {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .team-section.mobile {
+                display: flex;
+                margin-top: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 28px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            .sidebar {
+                display: none;
+            }
+
+            .header {
+                margin-bottom: 30px;
+            }
+        }
+
+        /* === TABLET === */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            #bottomsheet {
+                width: 420px;
+            }
+
+            #bottomsheet.full {
+                width: 580px;
+            }
+        }
+
+        /* === SKELETON ANIMATIONS === */
+        @keyframes shimmer {
+            0% {
+                background-position: -200px 0;
+            }
+
+            100% {
+                background-position: calc(200px + 100%) 0;
+            }
+        }
+
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200px 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        .skeleton-title {
+            height: 42px;
+            width: 60%;
+            margin-bottom: 30px;
+        }
+
+        .skeleton-tag {
+            height: 24px;
+            width: 80px;
+            margin-bottom: 20px;
+        }
+
+        .skeleton-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+        }
+
+        .skeleton-text {
+            height: 16px;
+            margin-bottom: 8px;
+        }
+
+        .skeleton-text.short {
+            width: 40%;
+        }
+
+        .skeleton-text.medium {
+            width: 70%;
+        }
+
+        .skeleton-text.long {
+            width: 90%;
+        }
+
+        .skeleton-image {
+            height: 300px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .skeleton-team {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .skeleton-team-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        /* Initially hide skeletons */
+        .skeleton {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- SVG Symbols -->
+    <svg style="display: none">
+        <defs>
+            <symbol id="icon-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
+            </symbol>
+
+            <symbol id="icon-tag" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                    d="M4.5 2A2.5 2.5 0 0 0 2 4.5v3.879a2.5 2.5 0 0 0 .732 1.767l7.5 7.5a2.5 2.5 0 0 0 3.536 0l3.878-3.878a2.5 2.5 0 0 0 0-3.536l-7.5-7.5A2.5 2.5 0 0 0 8.38 2H4.5ZM5 6a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"
+                    clip-rule="evenodd" />
+            </symbol>
+
+            <symbol id="home" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                    d="m12 5.432 8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V21a.75.75 0 0 1-.75.75H5.625a1.875 1.875 0 0 1-1.875-1.875v-6.198a2.29 2.29 0 0 0 .091-.086L12 5.432Z" />
+            </symbol>
+            <symbol id="bag-mini" viewBox="0 0 20 20" fill="currentColor" class="size-5">
+                <path fill-rule="evenodd"
+                    d="M6 5v1H4.667a1.75 1.75 0 0 0-1.743 1.598l-.826 9.5A1.75 1.75 0 0 0 3.84 19H16.16a1.75 1.75 0 0 0 1.743-1.902l-.826-9.5A1.75 1.75 0 0 0 15.333 6H14V5a4 4 0 0 0-8 0Zm4-2.5A2.5 2.5 0 0 0 7.5 5v1h5V5A2.5 2.5 0 0 0 10 2.5ZM7.5 10a2.5 2.5 0 0 0 5 0V8.75a.75.75 0 0 1 1.5 0V10a4 4 0 0 1-8 0V8.75a.75.75 0 0 1 1.5 0V10Z"
+                    clip-rule="evenodd" />
+            </symbol>
+        </defs>
+    </svg>
+
+    <div class="breadcrumb">
+        <a href="#">
+            <svg>
+                <use href="#home"></use>
+            </svg>
+        </a>
+        / portfolio
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <div class="tag skeleton skeleton-tag">Branding</div>
+                <h1 class="skeleton skeleton-title">Sead Cabo – Brandbook and visual identity design</h1>
+
+                <div class="project-info">
+                    <div class="avatar skeleton skeleton-avatar">
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_oRDlewJZ-m240TKgXRtqjGw7QtzjpyfmqQ&s"
+                            alt="Avatar" style="width: 100%; height: 100%" />
+                    </div>
+                    <div>
+                        <div class="project-label">Proyecto</div>
+                        <div class="project-name">Sead Cabo - Brandbook</div>
+                    </div>
+                    <!-- 🎯 BOTÓN CON data-component -->
+                    <button class="btn-view" data-component="project-detail" data-project-name="Sead Cabo"
+                        data-project-type="Branding" data-project-year="2023">
+                        Ver el proyecto
+                    </button>
+                </div>
+
+                <div class="team-section mobile">
+                    <div class="team-avatars skeleton skeleton-team">
+                        <div class="skeleton skeleton-team-avatar"></div>
+                        <div class="skeleton skeleton-team-avatar"></div>
+                        <div class="skeleton skeleton-team-avatar"></div>
+                    </div>
+                    <div>
+                        <h3>🦄 Creativos en este proyecto</h3>
+                        <div class="team-names skeleton skeleton-text medium">
+                            Ivan gonzalez • Daniela Millán • Frank Tesisteco
+                        </div>
+                    </div>
+                </div>
+
+                <div class="portfolio-images">
+                    <div class="skeleton skeleton-image"></div>
+                    <div class="skeleton skeleton-image"></div>
+                    <div class="skeleton skeleton-image"></div>
+                    <div class="skeleton skeleton-image"></div>
+                    <div class="skeleton skeleton-image"></div>
+                    <div class="skeleton skeleton-image"></div>
+                    <div class="skeleton skeleton-image"></div>
+                </div>
+            </div>
+
+            <aside class="sidebar">
+                <div class="sidebar-section">
+                    <h3>Acerca de este proyecto</h3>
+                    <p style="font-size: 15px; margin-bottom: 20px">
+                        ¿Cómo resolvimos las necesidades de Sead?
+                    </p>
+
+                    <div class="history-card">
+                        <div class="history-icon">
+                            <svg>
+                                <use href="#icon-book"></use>
+                            </svg>
+                        </div>
+                        <div class="history-text">
+                            <span>Proyecto de branding desarrollado Sead Cabo ...</span>
+                            <!-- 🎯 BOTÓN CON data-component -->
+                            <button class="btn-read" data-component="project-story"
+                                data-story-title="Historia del Proyecto Sead">
+                                Leer historia
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="team-section">
+                        <div class="team-avatars skeleton skeleton-team">
+                            <div class="skeleton skeleton-team-avatar"></div>
+                            <div class="skeleton skeleton-team-avatar"></div>
+                            <div class="skeleton skeleton-team-avatar"></div>
+                        </div>
+                        <div>
+                            <h3>🦄 Creativos en este proyecto</h3>
+                            <div class="team-names skeleton skeleton-text medium">
+                                Ivan gonzalez • Daniela Millán • Frank Tesisteco
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <h3 style="display: flex; align-items: center; gap: 2px">
+                        <svg style="--wh: 14px; width: var(--wh); height: var(--wh)">
+                            <use href="#icon-tag"></use>
+                        </svg>
+                        Tags
+                    </h3>
+                    <div class="tags-list">
+                        <span class="skeleton skeleton-text short">#branding</span>
+                        <span class="skeleton skeleton-text short">#apps</span>
+                        <span class="skeleton skeleton-text short">#ux</span>
+                        <span class="skeleton skeleton-text short">#luibrands</span>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!-- Error Message -->
+    <div id="error-message" style="display: none; text-align: center; padding: 40px; color: red; font-size: 18px;">
+    </div>
+
+    <div style="
+        margin: 20px 0px;
+        margin-bottom: 0px;
+        padding: 40px;
+        padding-bottom: 135px;
+        background-color: #e8e8e8;
+      ">
+        <div class="sidebar-section">
+            <h3 style="display: flex; align-items: center; gap: 2px">
+                <svg style="--wh: 14px; width: var(--wh); height: var(--wh)">
+                    <use href="#icon-tag"></use>
+                </svg>
+                Tags
+            </h3>
+            <div class="tags-list">
+                <span class="skeleton skeleton-text short">#branding</span>
+                <span class="skeleton skeleton-text short">#apps</span>
+                <span class="skeleton skeleton-text short">#ux</span>
+                <span class="skeleton skeleton-text short">#luibrands</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Bar -->
+    <div class="mobile-bottom-bar">
+        <div class="mobile-card">
+            <div class="mobile-icon">
+                <svg>
+                    <use href="#icon-book"></use>
+                </svg>
+            </div>
+            <div class="mobile-text">
+                Proyecto de branding desarrollado Sead Cabo ...
+            </div>
+            <!-- 🎯 BOTÓN CON data-component -->
+            <button class="mobile-btn" data-component="project-story" data-story-title="Historia del Proyecto Sead">
+                Leer historia
+            </button>
+        </div>
+    </div>
+
+    <!-- Backdrop -->
+    <div id="backdrop"></div>
+
+    <!-- Bottom Sheet / Side Panel -->
+    <div id="bottomsheet">
+        <div class="sheet-header" id="header">
+            <div class="drag-handle"></div>
+            <div class="sheet-title-bar">
+                <h2 id="component-name">Título del Panel</h2>
+                <button class="close-btn" id="close-btn">×</button>
+            </div>
+        </div>
+
+        <div class="sheet-content" id="loadzone">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Cargando contenido...</p>
+            </div>
+        </div>
+
+        <div class="sheet-cta" id="load-cta" style="display: none">
+            <!-- CTA dinámico se inyecta aquí -->
+        </div>
+    </div>
+
+    <!-- Adaptive Sheet System -->
+    <script src="../shared/components/adaptive-sheet/adaptive-sheet.js"></script>
+
+    <script>
+        // ============================================
+        // COMPONENT LIBRARY - Portfolio Specific
+        // ============================================
+        const PortfolioComponents = {
+            // 📄 Ver proyecto completo
+            "project-detail": {
+                name: "Detalles del Proyecto",
+                render: (props = {}) => `
+          <h3>${props.projectName || "Proyecto"}</h3>
+          <p style="color: var(--text-secondary); margin-bottom: 24px;">
+            ${props.projectType || "Tipo de proyecto"} • ${props.projectYear || "2024"}
+          </p>
+
+          <img 
+            src="https://klef.agency/wp-content/uploads/2023/11/SEAD-Web_2.jpg" 
+            alt="Project preview"
+            class="project-image"
+          />
+
+          <div class="project-details">
+            <div class="info-item">
+              <label>Cliente</label>
+              <div class="value">Sead Cabo</div>
+            </div>
+            <div class="info-item">
+              <label>Categoría</label>
+              <div class="value">Branding</div>
+            </div>
+            <div class="info-item">
+              <label>Año</label>
+              <div class="value">2023</div>
+            </div>
+            <div class="info-item">
+              <label>Servicios</label>
+              <div class="value">Identidad Visual</div>
+            </div>
+          </div>
+
+          <h3 style="margin-top: 24px;">Descripción</h3>
+          <p>
+            Desarrollo integral de brandbook e identidad visual para Sead Cabo, 
+            incluyendo diseño de logotipo, paleta de colores, tipografías corporativas 
+            y aplicaciones en diferentes medios.
+          </p>
+
+          <p>
+            El proyecto abarcó desde la conceptualización hasta la implementación 
+            final, asegurando coherencia visual en todos los puntos de contacto 
+            con el cliente.
+          </p>
+
+          <button class="expand-btn" onclick="adaptiveSheet.toggleFull()">
+            ${window.adaptiveSheet?.state === "FULL" ? "↓ Reducir" : "↑ Expandir para ver más"}
+          </button>
+        `,
+                cta: () => `
+          <button class="btn-primary">Ver el proyecto completo</button>
+        `,
+            },
+
+            // 📖 Leer historia del proyecto
+            "project-story": {
+                name: "Historia del Proyecto",
+                render: (props = {}) => `
+          <h3>${props.storyTitle || "Historia del Proyecto"}</h3>
+          
+          <p style="color: var(--text-secondary); font-style: italic; margin-bottom: 24px;">
+            Cómo resolvimos las necesidades de Sead Cabo
+          </p>
+
+          <div class="info-item" style="background: #e3f2fd; border-left: 4px solid var(--k-blue);">
+            <label style="color: #1976d2;">EL DESAFÍO</label>
+            <div class="value" style="color: #0d47a1;">
+              Crear una identidad visual que reflejara la esencia de la marca 
+              mientras se destacaba en un mercado competitivo.
+            </div>
+          </div>
+
+          <h3 style="margin-top: 24px;">El Proceso</h3>
+          
+          <div class="info-item">
+            <label>1. Investigación</label>
+            <div class="value">
+              Análisis profundo del mercado, competencia y valores de la marca.
+            </div>
+          </div>
+
+          <div class="info-item">
+            <label>2. Conceptualización</label>
+            <div class="value">
+              Desarrollo de múltiples conceptos visuales alineados con la estrategia.
+            </div>
+          </div>
+
+          <div class="info-item">
+            <label>3. Diseño</label>
+            <div class="value">
+              Creación del brandbook completo con todas las aplicaciones necesarias.
+            </div>
+          </div>
+
+          <div class="info-item">
+            <label>4. Implementación</label>
+            <div class="value">
+              Aplicación de la identidad en todos los puntos de contacto.
+            </div>
+          </div>
+
+          <h3 style="margin-top: 24px;">El Resultado</h3>
+          <p>
+            Una identidad visual sólida y coherente que ha permitido a Sead Cabo 
+            destacarse en su industria y conectar emocionalmente con su audiencia.
+          </p>
+
+          <div class="info-item" style="background: #e8f5e9; border-left: 4px solid #4caf50; margin-top: 20px;">
+            <label style="color: #2e7d32;">IMPACTO</label>
+            <div class="value" style="color: #1b5e20;">
+              +150% de reconocimiento de marca en el primer año
+            </div>
+          </div>
+
+          <button class="expand-btn" onclick="adaptiveSheet.toggleFull()">
+            ${window.adaptiveSheet?.state === "FULL" ? "↓ Reducir" : "↑ Ver más detalles"}
+          </button>
+        `,
+                cta: () => `
+        <button class="btn-primary" style="background: var(--k-dark);">
+            <svg style="--wh: 16px; width: var(--wh); height: var(--wh); margin-right: 8px; vertical-align: middle;">
+              <use href="#bag-mini"></use>
+            </svg>
+            <span>Adquirir paquete de branding</span>
+        </button>
+        `,
+            },
+        };
+
+        // Inicializar Adaptive Sheet con la librería de componentes del portfolio
+        window.initAdaptiveSheet(PortfolioComponents);
+
+        console.log('✅ Portfolio components loaded:', Object.keys(PortfolioComponents));
+    </script>
+
+    <!-- Dynamic Portfolio Item Script -->
+    <script>
+        // ============================================
+        // DYNAMIC PORTFOLIO ITEM RENDERING
+        // ============================================
+
+        // Mock slug - TODO: Extract from window.location.pathname
+        const mock_slug = "/fish-grill-restaurant-diseno-de-marca";
+
+        // State management
+        const state = {
+            loading: true,
+            data: null,
+            error: null
+        };
+
+        // GraphQL endpoint
+        const GRAPHQL_ENDPOINT = "https://klef.newfacecards.com/graphql";
+
+        // GraphQL query for portfolio item
+        const GET_PORTFOLIO_ITEM_QUERY = `
+            query GetPortfolioItem($slug: ID!) {
+                post(id: $slug, idType: SLUG) {
+                    id
+                    title
+                    slug
+                    uri
+                    date
+                    content(format: RENDERED)
+                    featuredImage {
+                        node {
+                            sourceUrl(size: LARGE)
+                            altText
+                        }
+                    }
+                    portfolioImages {
+                        id
+                        sourceUrl(size: LARGE)
+                        altText
+                        mediaItemUrl
+                        filePath
+                    }
+                    categories {
+                        nodes {
+                            categoryId
+                            name
+                            slug
+                            uri
+                        }
+                    }
+                    tags {
+                        nodes {
+                            tagId
+                            name
+                            slug
+                        }
+                    }
+                    author {
+                        node {
+                            id
+                            name
+                            firstName
+                            lastName
+                            uri
+                            url
+                            userId
+                            avatar {
+                                url
+                            }
+                        }
+                    }
+                    coAuthors {
+                        __typename
+                        ... on User {
+                            id
+                            name
+                            firstName
+                            lastName
+                            uri
+                            url
+                            userId
+                            avatar {
+                                url
+                            }
+                            description
+                        }
+                        ... on GuestAuthor {
+                            id
+                            name
+                            firstName
+                            lastName
+                            email
+                            avatar {
+                                url
+                            }
+                            description
+                            website
+                        }
+                    }
+                }
+            }
+        `;
+
+        // Fetch portfolio item data
+        async function fetchPortfolioItem(slug) {
+            try {
+                const response = await fetch(GRAPHQL_ENDPOINT, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        query: GET_PORTFOLIO_ITEM_QUERY,
+                        variables: { slug }
+                    })
+                });
+
+                const json = await response.json();
+                if (json.errors) throw new Error(json.errors[0].message);
+
+                return json.data.post;
+            } catch (error) {
+                throw new Error(`Failed to fetch portfolio item: ${error.message}`);
+            }
+        }
+
+        // Render function
+        function renderPortfolioItem(data) {
+            // Update title
+            document.title = `${data.title} - Klef Agency`;
+
+            // Update h1
+            const h1 = document.querySelector('h1');
+            if (h1) {
+                h1.textContent = data.title;
+                h1.classList.remove('skeleton', 'skeleton-title');
+            }
+
+            // Update tag (first category)
+            const tag = document.querySelector('.tag');
+            if (tag && data.categories.nodes.length > 0) {
+                tag.textContent = data.categories.nodes[0].name;
+                tag.classList.remove('skeleton', 'skeleton-tag');
+            }
+
+            // Update project info
+            const projectName = document.querySelector('.project-name');
+            if (projectName) projectName.textContent = data.title;
+
+            // Update author avatar
+            const avatar = document.querySelector('.avatar');
+            if (avatar) {
+                avatar.classList.remove('skeleton', 'skeleton-avatar');
+                const img = avatar.querySelector('img');
+                if (img && data.author.node.avatar.url) {
+                    img.src = data.author.node.avatar.url;
+                }
+            }
+
+            // Update team section
+            const teamNames = document.querySelectorAll('.team-names');
+            if (teamNames.length > 0) {
+                const authors = [data.author.node, ...data.coAuthors].map(author => author.name).join(' • ');
+                teamNames.forEach(nameEl => {
+                    nameEl.textContent = authors;
+                    nameEl.classList.remove('skeleton', 'skeleton-text', 'medium');
+                });
+            }
+
+            // Update team avatars
+            const teamAvatars = document.querySelectorAll('.team-avatars');
+            if (teamAvatars.length > 0) {
+                teamAvatars.forEach(avatarsEl => {
+                    avatarsEl.classList.remove('skeleton', 'skeleton-team');
+                    avatarsEl.innerHTML = [data.author.node, ...data.coAuthors].map(author => `
+                        <img src="${author.avatar.url || 'data:image/svg+xml,%3Csvg width=\'32\' height=\'32\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Ccircle cx=\'16\' cy=\'16\' r=\'16\' fill=\'%23FF6B6B\'/%3E%3C/svg%3E'}" alt="Avatar" class="team-avatar" />
+                    `).join('');
+                });
+            }
+
+            // Update portfolio images
+            const portfolioImages = document.querySelector('.portfolio-images');
+            if (portfolioImages) {
+                const images = data.portfolioImages.map(img => `<img src="${img.sourceUrl}" alt="${img.altText}" />`).join('');
+                portfolioImages.innerHTML = images;
+            }
+
+            // Update tags
+            const tagsLists = document.querySelectorAll('.tags-list');
+            if (tagsLists.length > 0) {
+                const tags = data.tags.nodes.map(tag => `<span>#${tag.slug}</span>`).join(' ');
+                tagsLists.forEach(list => {
+                    list.innerHTML = tags;
+                    const spans = list.querySelectorAll('span');
+                    spans.forEach(span => span.classList.remove('skeleton', 'skeleton-text', 'short'));
+                });
+            }
+
+            // Update sidebar description
+            const sidebarDesc = document.querySelector('.sidebar p');
+            if (sidebarDesc && data.content) {
+                // Extract first paragraph or limit content
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = data.content;
+                const firstP = tempDiv.querySelector('p');
+                sidebarDesc.textContent = firstP ? firstP.textContent : 'Portfolio item description';
+            }
+        }
+
+        // State management
+        function updateState(newState) {
+            Object.assign(state, newState);
+
+            const skeletons = document.querySelectorAll('.skeleton');
+            const errorEl = document.getElementById('error-message');
+
+            if (state.loading) {
+                // Show skeletons
+                skeletons.forEach(skeleton => skeleton.style.display = 'block');
+                if (errorEl) errorEl.style.display = 'none';
+            } else if (state.error) {
+                // Hide skeletons and show error
+                skeletons.forEach(skeleton => skeleton.style.display = 'none');
+                if (errorEl) {
+                    errorEl.textContent = state.error;
+                    errorEl.style.display = 'block';
+                }
+            } else if (state.data) {
+                // Hide skeletons and render data
+                skeletons.forEach(skeleton => skeleton.style.display = 'none');
+                if (errorEl) errorEl.style.display = 'none';
+                renderPortfolioItem(state.data);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const data = await fetchPortfolioItem(mock_slug);
+                updateState({ loading: false, data, error: null });
+            } catch (error) {
+                updateState({ loading: false, data: null, error: error.message });
+            }
+        });
+    </script>
+</body>
+
+</html>

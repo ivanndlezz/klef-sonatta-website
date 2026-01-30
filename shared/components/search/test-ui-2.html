@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Klef Agency - Búsqueda</title>
+    <script src="./search-system.js" defer></script>
     <style>
         :root {
             --k-blue: #0066cc;
@@ -362,6 +363,10 @@
             stroke: var(--k-purple);
         }
 
+        .result-type-icon.sin-categoria svg {
+            stroke: var(--k-gray);
+        }
+
         .result-content {
             padding: 24px;
             flex: 1;
@@ -387,6 +392,10 @@
 
         .result-type-label.portfolio {
             color: var(--k-orange);
+        }
+
+        .result-type-label.sin-categoria {
+            color: var(--k-gray);
         }
 
         .result-title {
@@ -557,21 +566,21 @@
                         <div class="suggestion-section">
                             <div class="suggestion-title">Sugerencias</div>
                             <ul class="suggestion-list">
-                                <li><a href="#" onclick="searchFor('portfolio'); return false;">
+                                <li><a href="#" class="suggestion-link" data-search-term="portfolio">
                                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                                         </svg>
                                         Portfolio
                                     </a></li>
-                                <li><a href="#" onclick="searchFor('servicios'); return false;">
+                                <li><a href="#" class="suggestion-link" data-search-term="servicios">
                                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                                         </svg>
                                         Servicios
                                     </a></li>
-                                <li><a href="#" onclick="searchFor('contacto'); return false;">
+                                <li><a href="#" class="suggestion-link" data-search-term="contacto">
                                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M13 10V3L4 14h7v7l9-11h-7z"></path>
@@ -583,17 +592,12 @@
                         <div class="suggestion-section">
                             <div class="suggestion-title">Búsquedas recientes</div>
                             <ul class="suggestion-list" id="recentSearches">
-                                <li><a href="#" onclick="searchFor('diseño web'); return false;">
-                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                        diseño web
-                                    </a></li>
+                                <!-- Se llenará dinámicamente -->
                             </ul>
                         </div>
                     </div>
                 </div>
+
 
                 <div id="resultsContainer"></div>
             </div>
@@ -624,269 +628,609 @@
     </svg>
 
     <script>
+        // ============================================================================
+        // CONFIGURATION LAYER
+        // ============================================================================
+
         const CONFIG = {
             GRAPHQL_ENDPOINT: "https://klef.newfacecards.com/graphql",
             MIN_SEARCH_LENGTH: 2,
-            DEBOUNCE_DELAY: 300
+            DEBOUNCE_DELAY: 300,
+            MAX_RECENT_SEARCHES: 5,
+            RECENT_SEARCHES_DISPLAY: 3,
+            STORAGE_KEY: 'recentSearches'
         };
 
-        let searchTimeout;
-        let recentSearches = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+        const CONTENT_TYPES = {
+            PAGES: 'pages',
+            POSTS: 'posts'
+        };
 
-        const searchOverlay = document.getElementById('searchOverlay');
-        const searchInput = document.getElementById('searchInput');
-        const resultsContainer = document.getElementById('resultsContainer');
-        const quickSuggestions = document.getElementById('quickSuggestions');
-
-        function openSearch() {
-            searchOverlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            setTimeout(() => searchInput.focus(), 400);
-            updateRecentSearches();
-        }
-
-        function closeSearch() {
-            searchOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-            searchInput.value = '';
-            resultsContainer.innerHTML = '';
-            quickSuggestions.style.display = 'block';
-        }
-
-        function searchFor(term) {
-            searchInput.value = term;
-            performSearch(term);
-        }
-
-        function updateRecentSearches() {
-            const list = document.getElementById('recentSearches');
-            if (recentSearches.length === 0) {
-                list.innerHTML = '<li style="color: #86868b; font-size: 13px;">Sin búsquedas recientes</li>';
-            } else {
-                list.innerHTML = recentSearches.slice(0, 3).map(term => `
-                    <li><a href="#" onclick="searchFor('${term}'); return false;">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        ${term}
-                    </a></li>
-                `).join('');
+        const TYPE_CONFIG = {
+            [CONTENT_TYPES.PAGES]: {
+                label: 'Page',
+                icon: 'icon-page',
+                class: 'page'
+            },
+            [CONTENT_TYPES.POSTS]: {
+                label: 'Blog Post',
+                icon: 'icon-post',
+                class: 'blog'
             }
-        }
+        };
 
-        function saveToRecent(term) {
-            recentSearches = [term, ...recentSearches.filter(t => t !== term)].slice(0, 5);
-            localStorage.setItem('recentSearches', JSON.stringify(recentSearches));
-            updateRecentSearches();
-        }
+        const IMAGE_CONFIG = {
+            DEFAULT_HEIGHT: '200px',
+            ALT_FALLBACK: 'Imagen'
+        };
 
-        async function performSearch(searchTerm) {
-            if (searchTerm.length < CONFIG.MIN_SEARCH_LENGTH) {
-                resultsContainer.innerHTML = '';
-                quickSuggestions.style.display = 'block';
-                return;
+        const UI_MESSAGES = {
+            NO_RESULTS_TITLE: 'No se encontraron resultados',
+            NO_RESULTS_TEXT: 'Intenta con otros términos de búsqueda',
+            NO_RECENT_SEARCHES: 'Sin búsquedas recientes',
+            LOADING: 'Buscando...',
+            ERROR: 'Error',
+            RESULTS_FOR: 'Resultados para'
+        };
+
+
+        // ============================================================================
+        // STATE LAYER
+        // ============================================================================
+
+        const State = {
+            searchTimeout: null,
+            recentSearches: [],
+
+            init() {
+                this.loadRecentSearches();
+            },
+
+            loadRecentSearches() {
+                try {
+                    const stored = localStorage.getItem(CONFIG.STORAGE_KEY);
+                    this.recentSearches = stored ? JSON.parse(stored) : [];
+                } catch (error) {
+                    Logger.error('Error loading recent searches', error);
+                    this.recentSearches = [];
+                }
+            },
+
+            saveRecentSearch(term) {
+                this.recentSearches = [
+                    term,
+                    ...this.recentSearches.filter(t => t !== term)
+                ].slice(0, CONFIG.MAX_RECENT_SEARCHES);
+
+                try {
+                    localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(this.recentSearches));
+                } catch (error) {
+                    Logger.error('Error saving recent search', error);
+                }
+            },
+
+            getRecentSearches(limit = CONFIG.RECENT_SEARCHES_DISPLAY) {
+                return this.recentSearches.slice(0, limit);
+            },
+
+            setSearchTimeout(callback, delay) {
+                this.clearSearchTimeout();
+                this.searchTimeout = setTimeout(callback, delay);
+            },
+
+            clearSearchTimeout() {
+                if (this.searchTimeout) {
+                    clearTimeout(this.searchTimeout);
+                    this.searchTimeout = null;
+                }
             }
+        };
 
-            quickSuggestions.style.display = 'none';
-            resultsContainer.innerHTML = '<div class="loading"><div class="loading-spinner"></div><div>Buscando...</div></div>';
 
-            const query = `
-                query FlexibleSearch($searchTerm: String!) {
-                    pages(first: 20, where: { search: $searchTerm }) {
-                        nodes {
-                            id
-                            title
-                            slug
-                            uri
-                            date
-                            content(format: RENDERED)
-                            featuredImage {
-                                node {
-                                    sourceUrl(size: MEDIUM)
-                                    altText
-                                }
-                            }
-                        }
+        // ============================================================================
+        // LOGGER UTILITY
+        // ============================================================================
+
+        const Logger = {
+            query(query) {
+                //console.log('GraphQL Search Query:', query);
+            },
+
+            response(searchTerm, data) {
+                //console.log(`GraphQL Response for "${searchTerm}":`, data);
+            },
+
+            error(message, error) {
+                console.error(`${message}:`, error);
+            }
+        };
+
+
+        // ============================================================================
+        // DOM REFERENCES
+        // ============================================================================
+
+        const DOM = {
+            searchOverlay: null,
+            searchInput: null,
+            resultsContainer: null,
+            quickSuggestions: null,
+            recentSearches: null,
+
+            init() {
+                this.searchOverlay = document.getElementById('searchOverlay');
+                this.searchInput = document.getElementById('searchInput');
+                this.resultsContainer = document.getElementById('resultsContainer');
+                this.quickSuggestions = document.getElementById('quickSuggestions');
+                this.recentSearches = document.getElementById('recentSearches');
+            }
+        };
+
+
+        // ============================================================================
+        // UTILITY FUNCTIONS
+        // ============================================================================
+
+        const Utils = {
+            stripHtml(html) {
+                const tmp = document.createElement('div');
+                tmp.innerHTML = html;
+                return tmp.textContent || tmp.innerText || '';
+            },
+
+            formatDate(dateString) {
+                const date = new Date(dateString);
+                return date.toLocaleDateString('es-MX', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            },
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+        };
+
+
+        // ============================================================================
+        // GRAPHQL SERVICE
+        // ============================================================================
+
+        const GraphQLService = {
+            async search(searchTerm) {
+                const query = this.buildSearchQuery();
+
+                Logger.query(query);
+
+                try {
+                    const response = await fetch(CONFIG.GRAPHQL_ENDPOINT, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            query,
+                            variables: { searchTerm }
+                        })
+                    });
+
+                    const json = await response.json();
+
+                    Logger.response(searchTerm, json);
+
+                    if (json.errors) {
+                        throw new Error(json.errors[0].message);
                     }
-                    posts(first: 20, where: { search: $searchTerm }) {
-                        nodes {
-                            id
-                            title
-                            slug
-                            uri
-                            excerpt
-                            date
-                            featuredImage {
-                                node {
-                                    sourceUrl(size: MEDIUM)
-                                    altText
-                                }
-                            }
-                            categories {
-                                nodes {
-                                    name
-                                }
-                            }
-                        }
-                    }
-                    portfolios(first: 20, where: { search: $searchTerm }) {
-                        nodes {
-                            id
-                            title
-                            slug
-                            uri
-                            date
-                            content(format: RENDERED)
-                            featuredImage {
-                                node {
-                                    sourceUrl(size: MEDIUM)
-                                    altText
-                                }
-                            }
-                            portfolioImages {
-                                sourceUrl(size: THUMBNAIL)
+
+                    return json.data;
+                } catch (error) {
+                    Logger.error('GraphQL Error', error);
+                    throw error;
+                }
+            },
+
+            buildSearchQuery() {
+                return `
+            query FlexibleSearch($searchTerm: String!) {
+                pages(first: 20, where: { search: $searchTerm }) {
+                    nodes {
+                        id
+                        title
+                        slug
+                        uri
+                        date
+                        content(format: RENDERED)
+                        featuredImage {
+                            node {
+                                sourceUrl(size: MEDIUM)
+                                altText
                             }
                         }
                     }
                 }
-            `;
-
-            try {
-                const response = await fetch(CONFIG.GRAPHQL_ENDPOINT, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ query, variables: { searchTerm } })
-                });
-
-                const json = await response.json();
-                if (json.errors) throw new Error(json.errors[0].message);
-
-                displayResults(json.data, searchTerm);
-                saveToRecent(searchTerm);
-            } catch (error) {
-                resultsContainer.innerHTML = `<div class="no-results"><div class="no-results-title">Error</div><div class="no-results-text">${error.message}</div></div>`;
-            }
-        }
-
-        function displayResults(data, searchTerm) {
-            const typeConfig = {
-                pages: { label: 'Page', icon: 'icon-page', class: 'page' },
-                posts: { label: 'Blog Post', icon: 'icon-post', class: 'blog' },
-                portfolios: { label: 'Portfolio', icon: 'icon-portfolio', class: 'portfolio' }
-            };
-
-            let allResults = [];
-            let totalResults = 0;
-
-            // Combinar todos los resultados en un solo array
-            Object.entries(data).forEach(([type, { nodes }]) => {
-                nodes.forEach(node => {
-                    allResults.push({
-                        ...node,
-                        contentType: type,
-                        config: typeConfig[type]
-                    });
-                });
-                totalResults += nodes.length;
-            });
-
-            let html = '';
-
-            if (totalResults === 0) {
-                html = `
-                    <div class="no-results">
-                        <svg class="no-results-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                        <div class="no-results-title">No se encontraron resultados</div>
-                        <div class="no-results-text">Intenta con otros términos de búsqueda</div>
-                    </div>
-                `;
-            } else {
-                // Header con contador
-                html = `
-                    <div class="results-header">
-                        <h4 >Resultados para "${searchTerm}"</h4>
-                        <p>${totalResults} coincidencia${totalResults !== 1 ? 's' : ''} </p>
-                    </div>
-                    <!-- -->
-                    <div class="result-group">
-                        <ul class="result-items">
-                            ${allResults.map(node => {
-                    const config = node.config;
-                    const featuredImage = node.featuredImage?.node?.sourceUrl;
-                    const imageAlt = node.featuredImage?.node?.altText || node.title;
-
-                    // Altura variable (200px o 300px)
-                    //const imageHeight = Math.random() > 0.5 ? '300px' : '200px';
-                    const imageHeight = '200px';
-
-                    return `
-                                    <li class="result-item">
-                                        <a href="${node.uri}">
-                                            <div class="result-image" style="height: ${imageHeight};">
-                                                ${featuredImage
-                            ? `<img src="${featuredImage}" alt="${imageAlt}" loading="lazy">`
-                            : `<div class="result-image-placeholder" style="height: 100%;">
-                                                         <svg><use href="#${config.icon}"></use></svg>
-                                                       </div>`
+                posts(first: 20, where: { search: $searchTerm }) {
+                    nodes {
+                        id
+                        title
+                        slug
+                        uri
+                        excerpt
+                        date
+                        featuredImage {
+                            node {
+                                sourceUrl(size: MEDIUM)
+                                altText
+                            }
                         }
-                                                <div class="result-type-icon ${config.class}">
-                                                    <svg><use href="#${config.icon}"></use></svg>
-                                                </div>
-                                            </div>
-                                            <div class="result-content">
-                                                <div class="result-type-label ${config.class}">${config.label}</div>
-                                                <div class="result-title">${node.title}</div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                `;
-                }).join('')}
-                        </ul>
+                        categories {
+                            nodes {
+                                name
+                            }
+                        }
+                    }
+                }
+            }
+        `;
+            }
+        };
+
+
+        // ============================================================================
+        // DATA MAPPER
+        // ============================================================================
+
+        const DataMapper = {
+            mapSearchResults(data) {
+                const allResults = [];
+                let totalResults = 0;
+
+                Object.entries(data).forEach(([type, { nodes }]) => {
+                    nodes.forEach(node => {
+                        allResults.push({
+                            ...node,
+                            contentType: type,
+                            config: TYPE_CONFIG[type]
+                        });
+                    });
+                    totalResults += nodes.length;
+                });
+
+                return { allResults, totalResults };
+            }
+        };
+
+
+        // ============================================================================
+        // TEMPLATE BUILDER
+        // ============================================================================
+
+        const Templates = {
+            recentSearchItem(term) {
+                const escapedTerm = Utils.escapeHtml(term);
+                return `
+            <li>
+                <a href="#" class="recent-search-link" data-search-term="${escapedTerm}" onclick="//console.log('click')">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    ${escapedTerm}
+                </a>
+            </li>
+        `;
+            },
+
+            noRecentSearches() {
+                return `
+            <li style="color: #86868b; font-size: 13px;">
+                ${UI_MESSAGES.NO_RECENT_SEARCHES}
+            </li>
+        `;
+            },
+
+            loading() {
+                return `
+            <div class="loading">
+                <div class="loading-spinner"></div>
+                <div>${UI_MESSAGES.LOADING}</div>
+            </div>
+        `;
+            },
+
+            error(message) {
+                return `
+            <div class="no-results">
+                <div class="no-results-title">${UI_MESSAGES.ERROR}</div>
+                <div class="no-results-text">${Utils.escapeHtml(message)}</div>
+            </div>
+        `;
+            },
+
+            noResults() {
+                return `
+            <div class="no-results">
+                <svg class="no-results-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <div class="no-results-title">${UI_MESSAGES.NO_RESULTS_TITLE}</div>
+                <div class="no-results-text">${UI_MESSAGES.NO_RESULTS_TEXT}</div>
+            </div>
+        `;
+            },
+
+            resultsHeader(searchTerm, totalResults) {
+                const plural = totalResults !== 1 ? 's' : '';
+                return `
+            <div class="results-header">
+                <h4>${UI_MESSAGES.RESULTS_FOR} "${Utils.escapeHtml(searchTerm)}"</h4>
+                <p>${totalResults} coincidencia${plural}</p>
+            </div>
+        `;
+            },
+
+            resultItem(node) {
+                const config = node.config;
+                const featuredImage = node.featuredImage?.node?.sourceUrl;
+                const imageAlt = node.featuredImage?.node?.altText || node.title || IMAGE_CONFIG.ALT_FALLBACK;
+                const imageHeight = IMAGE_CONFIG.DEFAULT_HEIGHT;
+
+                const imageContent = featuredImage
+                    ? `<img src="${featuredImage}" alt="${Utils.escapeHtml(imageAlt)}" loading="lazy">`
+                    : `<div class="result-image-placeholder" style="height: 100%;">
+                    <svg>
+                        <use href="#${config.icon}"></use>
+                    </svg>
+                </div>`;
+
+                return `
+            <li class="result-item">
+                <a href="${node.uri}">
+                    <div class="result-image" style="height: ${imageHeight};">
+                        ${imageContent}
+                        <div class="result-type-icon ${config.class}">
+                            <svg>
+                                <use href="#${config.icon}"></use>
+                            </svg>
+                        </div>
                     </div>
-                `;
-            }
+                    <div class="result-content">
+                        <div class="result-type-label ${config.class}">${config.label}</div>
+                        <div class="result-title">${Utils.escapeHtml(node.title)}</div>
+                    </div>
+                </a>
+            </li>
+        `;
+            },
 
-            resultsContainer.innerHTML = html;
+            results(allResults) {
+                return `
+            <div class="result-group">
+                <ul class="result-items">
+                    ${allResults.map(node => this.resultItem(node)).join('')}
+                </ul>
+            </div>
+        `;
+            }
+        };
+
+
+        // ============================================================================
+        // UI CONTROLLER
+        // ============================================================================
+
+        const UIController = {
+            openSearch() {
+                DOM.searchOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                setTimeout(() => DOM.searchInput.focus(), 400);
+                this.updateRecentSearches();
+            },
+
+            closeSearch() {
+                DOM.searchOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+                DOM.searchInput.value = '';
+                DOM.resultsContainer.innerHTML = '';
+                DOM.quickSuggestions.style.display = 'block';
+            },
+
+            updateRecentSearches() {
+                const searches = State.getRecentSearches();
+
+                if (searches.length === 0) {
+                    DOM.recentSearches.innerHTML = Templates.noRecentSearches();
+                } else {
+                    DOM.recentSearches.innerHTML = searches
+                        .map(term => Templates.recentSearchItem(term))
+                        .join('');
+                }
+            },
+
+            showLoading() {
+                DOM.quickSuggestions.style.display = 'none';
+                DOM.resultsContainer.innerHTML = Templates.loading();
+            },
+
+            showError(error) {
+                DOM.resultsContainer.innerHTML = Templates.error(error.message);
+            },
+
+            showResults(data, searchTerm) {
+                const { allResults, totalResults } = DataMapper.mapSearchResults(data);
+
+                let html = '';
+
+                if (totalResults === 0) {
+                    html = Templates.noResults();
+                } else {
+                    html = Templates.resultsHeader(searchTerm, totalResults) +
+                        Templates.results(allResults);
+                }
+
+                DOM.resultsContainer.innerHTML = html;
+            },
+
+            clearResults() {
+                DOM.resultsContainer.innerHTML = '';
+                DOM.quickSuggestions.style.display = 'block';
+            }
+        };
+
+
+        // ============================================================================
+        // SEARCH CONTROLLER
+        // ============================================================================
+
+        const SearchController = {
+            async performSearch(searchTerm) {
+                const trimmedTerm = searchTerm.trim();
+
+                Logger.query(`Performing search for: "${trimmedTerm}"`);
+
+                if (trimmedTerm.length < CONFIG.MIN_SEARCH_LENGTH) {
+                    UIController.clearResults();
+                    return;
+                }
+
+                UIController.showLoading();
+
+                try {
+                    const data = await GraphQLService.search(trimmedTerm);
+                    UIController.showResults(data, trimmedTerm);
+                    State.saveRecentSearch(trimmedTerm);
+                    UIController.updateRecentSearches();
+                } catch (error) {
+                    UIController.showError(error);
+                }
+            },
+
+            searchFor(term) {
+                //console.log('SearchController.searchFor called with term:', term);
+                DOM.searchInput.value = term;
+                this.performSearch(term);
+            }
+        };
+
+
+        // ============================================================================
+        // EVENT HANDLERS
+        // ============================================================================
+
+        const EventHandlers = {
+            onSearchInput(event) {
+                State.clearSearchTimeout();
+                const term = event.target.value.trim();
+
+                if (term.length >= CONFIG.MIN_SEARCH_LENGTH) {
+                    State.setSearchTimeout(
+                        () => SearchController.performSearch(term),
+                        CONFIG.DEBOUNCE_DELAY
+                    );
+                } else {
+                    UIController.clearResults();
+                }
+            },
+
+            onOverlayClick(event) {
+                if (event.target === DOM.searchOverlay) {
+                    UIController.closeSearch();
+                }
+            },
+
+            onSuggestionClick(event) {
+                const link = event.target.closest('a[data-search-term]');
+                if (link) {
+                    event.preventDefault();
+                    const term = link.getAttribute('data-search-term');
+                    //console.log('Suggestion clicked:', term);
+                    SearchController.searchFor(term);
+                }
+            },
+
+            onKeyDown(event) {
+                // ESC para cerrar
+                if (event.key === 'Escape' && DOM.searchOverlay.classList.contains('active')) {
+                    UIController.closeSearch();
+                }
+
+                // Ctrl+K o Cmd+K para abrir
+                if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+                    event.preventDefault();
+                    UIController.openSearch();
+                }
+            }
+        };
+
+        // ============================================================================
+        // EVENT LISTENERS SETUP
+        // ============================================================================
+
+        const EventListeners = {
+            init() {
+                //console.log('🔧 Inicializando Event Listeners...');
+                //console.log('DOM.searchInput:', DOM.searchInput);
+                //console.log('DOM.searchOverlay:', DOM.searchOverlay);
+                //console.log('DOM.quickSuggestions:', DOM.quickSuggestions);
+
+                // Input de búsqueda
+                DOM.searchInput.addEventListener('input', EventHandlers.onSearchInput);
+                //console.log('✅ Listener de input agregado');
+
+                // Click en overlay
+                DOM.searchOverlay.addEventListener('click', EventHandlers.onOverlayClick);
+                //console.log('✅ Listener de overlay agregado');
+
+                // Teclado
+                document.addEventListener('keydown', EventHandlers.onKeyDown);
+                //console.log('✅ Listener de teclado agregado');
+
+                // Delegación de eventos para TODAS las sugerencias (estáticas y dinámicas)
+                if (DOM.quickSuggestions) {
+                    DOM.quickSuggestions.addEventListener('click', EventHandlers.onSuggestionClick);
+                    //console.log('✅ Listener de sugerencias agregado a:', DOM.quickSuggestions);
+                } else {
+                    console.error('❌ DOM.quickSuggestions es null!');
+                }
+            }
+        };
+
+
+        // ============================================================================
+        // APP INITIALIZATION
+        // ============================================================================
+
+        const App = {
+            init() {
+                DOM.init();
+                State.init();
+                EventListeners.init();
+                UIController.updateRecentSearches();
+            }
+        };
+
+        // Funciones globales para mantener compatibilidad con HTML
+        function openSearch() {
+            UIController.openSearch();
         }
 
-        function stripHtml(html) {
-            const tmp = document.createElement('div');
-            tmp.innerHTML = html;
-            return tmp.textContent || tmp.innerText || '';
+        function closeSearch() {
+            UIController.closeSearch();
         }
 
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('es-MX', { year: 'numeric', month: 'short', day: 'numeric' });
+        function searchFor(term) {
+            SearchController.searchFor(term);
         }
 
-        searchInput.addEventListener('input', (e) => {
-            clearTimeout(searchTimeout);
-            const term = e.target.value.trim();
-
-            if (term.length >= CONFIG.MIN_SEARCH_LENGTH) {
-                searchTimeout = setTimeout(() => performSearch(term), CONFIG.DEBOUNCE_DELAY);
-            } else {
-                resultsContainer.innerHTML = '';
-                quickSuggestions.style.display = 'block';
-            }
-        });
-
-        searchOverlay.addEventListener('click', (e) => {
-            if (e.target === searchOverlay) closeSearch();
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && searchOverlay.classList.contains('active')) {
-                closeSearch();
-            }
-            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-                e.preventDefault();
-                openSearch();
-            }
-        });
-
-        updateRecentSearches();
+        // Inicializar cuando el DOM esté listo
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => App.init());
+        } else {
+            App.init();
+        }
     </script>
 </body>
 
