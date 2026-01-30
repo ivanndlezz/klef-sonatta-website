@@ -137,7 +137,8 @@
   class ComponentLoader {
     constructor(targetId, componentLibrary = {}) {
       this.loadzone = document.getElementById(targetId);
-      this.ctaZone = document.getElementById("load-cta");
+      this.contentZone = document.getElementById("sheet-content");
+      this.ctaZone = document.getElementById("sheet-cta");
       this.nameZone = document.getElementById("component-name");
       this.componentLibrary = componentLibrary;
     }
@@ -155,36 +156,40 @@
       }
 
       // Mostrar loading
-      this.loadzone.innerHTML = `
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <p>Cargando ${component.name}...</p>
-                </div>
-            `;
+      if (this.contentZone) {
+        this.contentZone.innerHTML = `
+                  <div class="loading">
+                      <div class="spinner"></div>
+                      <p>Cargando ${component.name}...</p>
+                  </div>
+              `;
+      }
 
       // Simular delay de carga
       await new Promise((resolve) => setTimeout(resolve, 300));
 
       // Inyectar contenido
-      const html = component.render(props);
-      this.loadzone.innerHTML = html;
+      const result = component.render(props);
 
-      // Actualizar título
-      if (this.nameZone) {
-        this.nameZone.textContent = component.name || componentName;
-      }
-
-      // Inyectar CTA
-      if (component.cta && this.ctaZone) {
-        this.ctaZone.innerHTML = component.cta();
-        this.ctaZone.style.display = "block";
-      } else if (this.ctaZone) {
-        this.ctaZone.style.display = "none";
+      // El componente puede retornar { content: '...', cta: '...' } o solo HTML string
+      if (typeof result === "object" && result.content) {
+        if (this.contentZone) {
+          this.contentZone.innerHTML = result.content;
+        }
+        if (this.ctaZone) {
+          this.ctaZone.innerHTML = result.cta || "";
+          this.ctaZone.style.display = result.cta ? "block" : "none";
+        }
+      } else {
+        // Retrocompatibilidad: si solo retorna string, usar loadzone
+        if (this.loadzone) {
+          this.loadzone.innerHTML = result;
+        }
       }
 
       // Ejecutar inicializador si existe
       if (component.init && typeof component.init === "function") {
-        component.init(this.loadzone, props);
+        component.init(this.contentZone || this.loadzone, props);
       }
 
       // Abrir el sheet
@@ -194,6 +199,9 @@
     }
 
     clear() {
+      if (this.contentZone) {
+        this.contentZone.innerHTML = "";
+      }
       if (this.loadzone) {
         this.loadzone.innerHTML = "";
       }

@@ -960,6 +960,34 @@
       padding: 20px;
     }
 
+    /* CTA Footer */
+    #sheet-cta {
+      padding: 16px 20px;
+      border-top: 1px solid #e0e0e0;
+      background: white;
+      flex-shrink: 0;
+    }
+
+    #sheet-cta .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: #0066cc;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      text-align: center;
+      text-decoration: none;
+      display: block;
+    }
+
+    #sheet-cta .btn-primary:hover {
+      background: #000;
+    }
+
     /* Portfolio Detail Component */
     .portfolio-detail {
       padding: 0;
@@ -1037,29 +1065,6 @@
       margin-bottom: 20px;
     }
 
-    .portfolio-detail-actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 20px;
-    }
-
-    .portfolio-detail-actions .btn-primary {
-      flex: 1;
-      text-align: center;
-      padding: 12px 24px;
-      background: #1d1d1f;
-      color: white;
-      border-radius: 20px;
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 500;
-      transition: background 0.2s ease;
-    }
-
-    .portfolio-detail-actions .btn-primary:hover {
-      background: #000;
-    }
-
     /* === MOBILE (Bottom Sheet) === */
     @media (max-width: 767px) {
       #bottomsheet {
@@ -1087,7 +1092,7 @@
 
 
 
-      #loadzone {
+      #sheet-content {
         padding: 16px;
       }
 
@@ -1135,7 +1140,7 @@
         display: flex;
       }
 
-      #loadzone {
+      #sheet-content {
         padding: 24px;
       }
 
@@ -4576,7 +4581,8 @@
         </svg>
       </button>
     </div>
-    <div id="loadzone"></div>
+    <div id="sheet-content"></div>
+    <div id="sheet-cta"></div>
   </div>
 
   <!-- Initialize Adaptive Sheet System -->
@@ -4592,7 +4598,7 @@
           const portfolioItem = portfolioData.find(item => item.id === props.id);
 
           if (!portfolioItem) {
-            return '<div class="loading"><p>Proyecto no encontrado</p></div>';
+            return { content: '<div class="loading"><p>Proyecto no encontrado</p></div>', cta: '' };
           }
 
           const disciplineLabels = {
@@ -4602,7 +4608,7 @@
             'dev': 'Development'
           };
 
-          return `
+          const content = `
             <div class="portfolio-detail">
               <img 
                 src="${portfolioItem.cover_image}" 
@@ -4625,11 +4631,14 @@
                 ${portfolioItem.category.map(cat => `<span class="tag">${cat}</span>`).join('')}
               </div>
               <p class="portfolio-detail-description">${portfolioItem.extract}</p>
-              <div class="portfolio-detail-actions">
-                <a href="#" class="btn-primary">Ver Proyecto Completo</a>
-              </div>
             </div>
           `;
+
+          const cta = `
+            <a href="#" class="btn-primary">Ver Proyecto Completo</a>
+          `;
+
+          return { content, cta };
         },
 
         init: function (container, props) {
