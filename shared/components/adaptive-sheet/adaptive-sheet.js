@@ -12,8 +12,9 @@
     constructor() {
       this.sheet = document.getElementById("bottomsheet");
       this.backdrop = document.getElementById("backdrop");
-      this.header = document.getElementById("header");
       this.closeBtn = document.getElementById("close-btn");
+      this.topControls = document.querySelector(".sheet-top-controls");
+      this.content = document.getElementById("sheet-content");
       this.state = "CLOSED";
 
       this.startY = 0;
@@ -27,32 +28,199 @@
         return;
       }
 
-      this.header.addEventListener(
-        "touchstart",
-        this.handleTouchStart.bind(this),
-      );
-      this.header.addEventListener(
-        "touchmove",
-        this.handleTouchMove.bind(this),
-      );
-      this.header.addEventListener("touchend", this.handleTouchEnd.bind(this));
+      // Drag handle for mobile
+      const dragHandle = this.sheet.querySelector(".drag-handle");
+      if (dragHandle) {
+        dragHandle.addEventListener(
+          "touchstart",
+          this.handleTouchStart.bind(this),
+        );
+        dragHandle.addEventListener(
+          "touchmove",
+          this.handleTouchMove.bind(this),
+        );
+        dragHandle.addEventListener("touchend", this.handleTouchEnd.bind(this));
+        // Mouse support for drag
+        dragHandle.addEventListener(
+          "mousedown",
+          this.handleMouseDown.bind(this),
+        );
+      }
 
-      this.backdrop.addEventListener("click", () => this.close());
+      // Close button
       if (this.closeBtn) {
         this.closeBtn.addEventListener("click", () => this.close());
       }
 
+      // Backdrop click
+      this.backdrop.addEventListener("click", () => this.close());
+
+      // Escape key
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && this.state !== "CLOSED") {
           this.close();
         }
       });
 
+      // Window resize
       window.addEventListener("resize", () => {
         if (this.state !== "CLOSED") {
           this.adjustForViewport();
         }
       });
+
+      // Top controls buttons
+      this.initTopControls();
+
+      // Bottom controls buttons
+      this.initBottomControls();
+
+      console.log("✅ Adaptive Sheet initialized");
+    }
+
+    initTopControls() {
+      // Chevron for showing dropdown menu
+      const chevronBtn = this.sheet.querySelector(".top-chevron");
+      const dropdown = this.sheet.querySelector(".top-controls-dropdown");
+
+      if (chevronBtn && dropdown) {
+        chevronBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          chevronBtn.classList.toggle("expanded");
+          dropdown.classList.toggle("active");
+        });
+      }
+
+      // Close dropdown when clicking outside
+      document.addEventListener("click", (e) => {
+        if (dropdown && dropdown.classList.contains("active")) {
+          const isClickInside =
+            chevronBtn.contains(e.target) || dropdown.contains(e.target);
+          if (!isClickInside) {
+            chevronBtn.classList.remove("expanded");
+            dropdown.classList.remove("active");
+          }
+        }
+      });
+
+      // Handle dropdown menu item clicks
+      const dropdownItems = this.sheet.querySelectorAll(
+        ".top-controls-dropdown a, .top-controls-dropdown button",
+      );
+      dropdownItems.forEach((item) => {
+        item.addEventListener("click", (e) => {
+          e.preventDefault();
+          const action = item.dataset.action;
+          console.log(`🎯 Dropdown action clicked: ${action}`);
+          this.sheet.dispatchEvent(
+            new CustomEvent("sheet-dropdown-action", {
+              detail: { action, element: item },
+            }),
+          );
+          // Close dropdown after click
+          if (dropdown) {
+            chevronBtn.classList.remove("expanded");
+            dropdown.classList.remove("active");
+          }
+        });
+      });
+
+      // Top action buttons
+      const topBtns = this.sheet.querySelectorAll(".top-btn");
+      topBtns.forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          const action = btn.dataset.action;
+          console.log(`🎯 Top action clicked: ${action}`);
+          // Custom event for handling top actions
+          this.sheet.dispatchEvent(
+            new CustomEvent("sheet-top-action", {
+              detail: { action, element: btn },
+            }),
+          );
+        });
+      });
+    }
+
+    initBottomControls() {
+      // Primary action button
+      const primaryBtn = this.sheet.querySelector(".btn-primary");
+      if (primaryBtn) {
+        primaryBtn.addEventListener("click", (e) => {
+          const action = primaryBtn.dataset.action;
+          console.log(`🎯 Primary action clicked: ${action}`);
+          this.sheet.dispatchEvent(
+            new CustomEvent("sheet-primary-action", {
+              detail: { action, element: primaryBtn },
+            }),
+          );
+        });
+      }
+
+      // Secondary action button
+      const secondaryBtn = this.sheet.querySelector(".btn-secondary");
+      if (secondaryBtn) {
+        secondaryBtn.addEventListener("click", (e) => {
+          const action = secondaryBtn.dataset.action;
+          console.log(`🎯 Secondary action clicked: ${action}`);
+          this.sheet.dispatchEvent(
+            new CustomEvent("sheet-secondary-action", {
+              detail: { action, element: secondaryBtn },
+            }),
+          );
+        });
+      }
+
+      // More options button
+      const moreBtn = this.sheet.querySelector(".btn-more");
+      if (moreBtn) {
+        moreBtn.addEventListener("click", (e) => {
+          const action = moreBtn.dataset.action;
+          console.log(`🎯 More options clicked: ${action}`);
+          this.sheet.dispatchEvent(
+            new CustomEvent("sheet-more-options", {
+              detail: { action, element: moreBtn },
+            }),
+          );
+        });
+      }
+    }
+
+    handleMouseDown(e) {
+      if (!this.isMobile()) return;
+      this.startY = e.clientY;
+      this.isDragging = true;
+      document.addEventListener("mousemove", this.handleMouseMove.bind(this));
+      document.addEventListener("mouseup", this.handleMouseUp.bind(this));
+    }
+
+    handleMouseMove(e) {
+      if (!this.isDragging || !this.isMobile()) return;
+      this.currentY = e.clientY;
+      const deltaY = this.currentY - this.startY;
+
+      if (deltaY > 0 && this.state === "NORMAL") {
+        this.sheet.style.transform = `translateY(${deltaY}px)`;
+      } else if (deltaY < 0 && this.state === "NORMAL") {
+        this.sheet.style.transform = `translateY(${deltaY}px)`;
+      }
+    }
+
+    handleMouseUp(e) {
+      if (!this.isDragging || !this.isMobile()) return;
+      const deltaY = this.currentY - this.startY;
+      this.isDragging = false;
+      this.sheet.style.transform = "";
+      document.removeEventListener(
+        "mousemove",
+        this.handleMouseMove.bind(this),
+      );
+      document.removeEventListener("mouseup", this.handleMouseUp.bind(this));
+
+      if (deltaY > 100 && this.state === "NORMAL") {
+        this.close();
+      } else if (deltaY < -100 && this.state === "NORMAL") {
+        this.setState("FULL");
+      }
     }
 
     isMobile() {
@@ -138,7 +306,7 @@
     constructor(targetId, componentLibrary = {}) {
       this.loadzone = document.getElementById(targetId);
       this.contentZone = document.getElementById("sheet-content");
-      this.ctaZone = document.getElementById("sheet-cta");
+      this.bottomControls = document.querySelector(".sheet-bottom-controls");
       this.nameZone = document.getElementById("component-name");
       this.componentLibrary = componentLibrary;
     }
@@ -176,9 +344,10 @@
         if (this.contentZone) {
           this.contentZone.innerHTML = result.content;
         }
-        if (this.ctaZone) {
-          this.ctaZone.innerHTML = result.cta || "";
-          this.ctaZone.style.display = result.cta ? "block" : "none";
+        // Update bottom controls with component's CTA
+        if (result.cta && this.bottomControls) {
+          // Inject custom CTA HTML into bottom controls
+          this.bottomControls.innerHTML = result.cta;
         }
       } else {
         // Retrocompatibilidad: si solo retorna string, usar loadzone
