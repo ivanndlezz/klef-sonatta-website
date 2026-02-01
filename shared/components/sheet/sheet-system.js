@@ -115,7 +115,12 @@
       this.sheet.classList.add("open");
       this.backdrop.classList.add("visible");
       this.isOpen = true;
-      document.body.style.overflow = "hidden";
+      // Use iOS-compatible scroll lock
+      if (typeof ScrollLock !== 'undefined') {
+        ScrollLock.lock();
+      } else {
+        document.body.style.overflow = "hidden";
+      }
 
       return this;
     }
@@ -127,7 +132,12 @@
       this.sheet.classList.remove("open", "full");
       this.backdrop.classList.remove("visible");
       this.isOpen = false;
-      document.body.style.overflow = "";
+      // Use iOS-compatible scroll unlock
+      if (typeof ScrollLock !== 'undefined') {
+        ScrollLock.unlock();
+      } else {
+        document.body.style.overflow = "";
+      }
 
       return this;
     }

@@ -31,7 +31,12 @@
     if (!searchOverlay) return;
 
     searchOverlay.classList.add("active");
-    document.body.style.overflow = "hidden";
+    // Use iOS-compatible scroll lock
+    if (typeof ScrollLock !== 'undefined') {
+      ScrollLock.lock();
+    } else {
+      document.body.style.overflow = "hidden";
+    }
 
     // Remover estilo dinámico si existe
     if (typeof removeDynamicStyle === "function") {
@@ -69,7 +74,12 @@
     if (!searchOverlay) return;
 
     searchOverlay.classList.remove("active");
-    document.body.style.overflow = "";
+    // Use iOS-compatible scroll unlock
+    if (typeof ScrollLock !== 'undefined') {
+      ScrollLock.unlock();
+    } else {
+      document.body.style.overflow = "";
+    }
     if (searchInput) searchInput.value = "";
     if (resultsContainer) resultsContainer.innerHTML = "";
     if (quickSuggestions) quickSuggestions.style.display = "block";

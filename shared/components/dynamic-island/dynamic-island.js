@@ -12,7 +12,12 @@ function openSearch() {
   const searchOverlay = document.getElementById("searchOverlay");
   if (searchOverlay) {
     searchOverlay.classList.add("active");
-    document.body.style.overflow = "hidden";
+    // Use iOS-compatible scroll lock
+    if (typeof ScrollLock !== 'undefined') {
+      ScrollLock.lock();
+    } else {
+      document.body.style.overflow = "hidden";
+    }
 
     searchOverlay.addEventListener(
       "transitionend",
@@ -38,7 +43,16 @@ function toggleMenu() {
   const mainNav = document.getElementById("main-nav");
   if (mainNav) {
     const isOpen = mainNav.classList.toggle("mobile-open");
-    document.body.style.overflow = isOpen ? "hidden" : "";
+    // Use iOS-compatible scroll lock
+    if (typeof ScrollLock !== 'undefined') {
+      if (isOpen) {
+        ScrollLock.lock();
+      } else {
+        ScrollLock.unlock();
+      }
+    } else {
+      document.body.style.overflow = isOpen ? "hidden" : "";
+    }
     hideDynamicIsland();
   } else {
     console.log("Toggle menú");
@@ -632,6 +646,11 @@ class DynamicIsland {
     window.addEventListener("scroll", () => {
       if (!this.container || !this.island) return;
 
+      // Don't show dynamic island if body is scroll-locked (overlays are open)
+      if (typeof ScrollLock !== 'undefined' && ScrollLock.isLocked()) {
+        return;
+      }
+
       const currentScroll = window.pageYOffset;
       clearTimeout(this.scrollTimeout);
 
@@ -682,7 +701,12 @@ class DynamicIsland {
           this.island.classList.remove("fullscreen");
           this.island.classList.add("expanded");
         }
-        document.body.style.overflow = "";
+        // Use iOS-compatible scroll unlock
+        if (typeof ScrollLock !== 'undefined') {
+          ScrollLock.unlock();
+        } else {
+          document.body.style.overflow = "";
+        }
         this.isFullscreen = false;
       });
     }

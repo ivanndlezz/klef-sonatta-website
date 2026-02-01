@@ -78,7 +78,11 @@ function initMegaMenu() {
 // Función para toggle del menú móvil
 function toggleMenu() {
   const isOpen = navbar.classList.toggle("mobile-open");
-  document.body.style.overflow = isOpen ? "hidden" : "";
+  if (isOpen) {
+    ScrollLock.lock();
+  } else {
+    ScrollLock.unlock();
+  }
 }
 
 // Función para cerrar completamente el menú
@@ -86,7 +90,7 @@ function closeMenu() {
   if (navbar) navbar.classList.remove("mobile-open");
   if (megaTopbar) megaTopbar.classList.remove("active");
   if (backBtn) backBtn.classList.remove("visible");
-  document.body.style.overflow = "";
+  ScrollLock.unlock();
   megaMenus.forEach((menu) => menu.classList.remove("active"));
   currentMegaMenu = null;
   navigationStack = [];

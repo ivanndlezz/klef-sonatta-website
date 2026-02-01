@@ -35,7 +35,12 @@
     if (!searchOverlay) return;
 
     searchOverlay.classList.add("active");
-    document.body.style.overflow = "hidden";
+    // Use iOS-compatible scroll lock
+    if (typeof ScrollLock !== 'undefined') {
+      ScrollLock.lock();
+    } else {
+      document.body.style.overflow = "hidden";
+    }
 
     // Remover estilo dinámico si existe
     if (typeof removeDynamicStyle === "function") {
@@ -76,7 +81,12 @@
     if (!searchOverlay) return;
 
     searchOverlay.classList.remove("active");
-    document.body.style.overflow = "";
+    // Use iOS-compatible scroll unlock
+    if (typeof ScrollLock !== 'undefined') {
+      ScrollLock.unlock();
+    } else {
+      document.body.style.overflow = "";
+    }
     if (searchInput) searchInput.value = "";
     if (clearInput) clearInput.classList.remove("visible");
     if (resultsContainer) resultsContainer.innerHTML = "";
@@ -145,8 +155,20 @@
 
     if (quickSuggestions) quickSuggestions.style.display = "none";
     if (resultsContainer) {
-      resultsContainer.innerHTML =
-        '<div class="loading"><div class="loading-spinner"></div><div>Buscando...</div></div>';
+      // Show skeleton loading cards instead of spinner
+      var skelCards = '';
+      for (var i = 0; i < 4; i++) {
+        skelCards += '<li class="result-item skel-card">' +
+          '<div class="skel-image"></div>' +
+          '<div class="skel-content">' +
+          '<div class="skel-label"></div>' +
+          '<div class="skel-title"></div>' +
+          '<div class="skel-title short"></div>' +
+          '<div class="skel-meta"></div>' +
+          '</div>' +
+          '</li>';
+      }
+      resultsContainer.innerHTML = '<div class="result-group"><ul class="result-items">' + skelCards + '</ul></div>';
     }
 
     const query = `
