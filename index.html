@@ -543,6 +543,9 @@
         max-width: 980px;
         margin: 0 auto;
         padding: 60px 40px 80px;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        max-height: calc(100vh - 100px);
       }
 
       .search-input-wrapper {
@@ -621,6 +624,12 @@
         justify-content: center;
         transition: all 0.2s ease;
         opacity: 0;
+        z-index: 999;
+        --blur: 10px;
+        backdrop-filter: blur(var(--blur));
+        -webkit-backdrop-filter: blur(var(--blur));
+        border: solid 1px #bdbdbd;
+        border-style: ridge;
       }
 
       .search-overlay.active .close-search {
@@ -1742,6 +1751,9 @@
 
         .search-content {
           padding: 40px 20px 60px;
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          max-height: 100vh;
         }
 
         .search-input {

@@ -3,8 +3,8 @@
  * Prevents body scroll when overlays are open (mega menu, search, bottom sheet)
  */
 
-(function() {
-  'use strict';
+(function () {
+  "use strict";
 
   const ScrollLock = {
     locked: false,
@@ -21,28 +21,50 @@
       this.scrollY = window.pageYOffset;
 
       // Add class for CSS-based styling
-      document.body.classList.add('scroll-locked');
+      document.body.classList.add("scroll-locked");
 
       // Apply iOS-compatible scroll locking
-      document.body.style.position = 'fixed';
+      document.body.style.position = "fixed";
       document.body.style.top = `-${this.scrollY}px`;
-      document.body.style.left = '0';
-      document.body.style.right = '0';
-      document.body.style.width = '100%';
-      document.body.style.height = '100%';
-      document.body.style.overflow = 'hidden';
-      document.body.style.overscrollBehavior = 'none';
+      document.body.style.left = "0";
+      document.body.style.right = "0";
+      document.body.style.width = "100%";
+      document.body.style.height = "100%";
+      document.body.style.overflow = "hidden";
+      document.body.style.overscrollBehavior = "none";
 
       // Prevent touch move events on iOS to stop elastic scrolling
+      // But allow scrolling within scrollable overlay content
       this.touchMoveHandler = (e) => {
-        // Allow touch events only within the locked overlay container
-        const overlay = document.querySelector('.search-overlay.active, .mega-topbar.active, #backdrop.visible, #bottomsheet.open');
-        if (overlay && !overlay.contains(e.target)) {
-          e.preventDefault();
+        // Allow touch events within scrollable containers
+        const scrollableContainer = e.target.closest(
+          ".search-content, #sheet-content, .mega-menu, .scrollable",
+        );
+        if (scrollableContainer) {
+          // Check if the container can actually scroll
+          const canScroll =
+            scrollableContainer.scrollHeight > scrollableContainer.clientHeight;
+          if (canScroll) {
+            return; // Allow native scrolling
+          }
         }
+
+        // Check if the target is within an active overlay
+        const overlay = document.querySelector(
+          ".search-overlay.active, .mega-topbar.active, #backdrop.visible, #bottomsheet.open",
+        );
+        if (overlay && overlay.contains(e.target)) {
+          // Allow scrolling within overlay if it's scrollable
+          return;
+        }
+
+        // Otherwise prevent body scroll
+        e.preventDefault();
       };
 
-      document.addEventListener('touchmove', this.touchMoveHandler, { passive: false });
+      document.addEventListener("touchmove", this.touchMoveHandler, {
+        passive: false,
+      });
 
       this.locked = true;
     },
@@ -54,21 +76,21 @@
       if (!this.locked) return;
 
       // Remove class
-      document.body.classList.remove('scroll-locked');
+      document.body.classList.remove("scroll-locked");
 
       // Reset styles
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.left = '';
-      document.body.style.right = '';
-      document.body.style.width = '';
-      document.body.style.height = '';
-      document.body.style.overflow = '';
-      document.body.style.overscrollBehavior = '';
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.width = "";
+      document.body.style.height = "";
+      document.body.style.overflow = "";
+      document.body.style.overscrollBehavior = "";
 
       // Remove touch move listener
       if (this.touchMoveHandler) {
-        document.removeEventListener('touchmove', this.touchMoveHandler);
+        document.removeEventListener("touchmove", this.touchMoveHandler);
         this.touchMoveHandler = null;
       }
 
@@ -94,15 +116,14 @@
       } else {
         this.lock();
       }
-    }
+    },
   };
 
   // Expose globally
   window.ScrollLock = ScrollLock;
 
   // Auto-initialize when DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => ScrollLock);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => ScrollLock);
   }
-
 })();
