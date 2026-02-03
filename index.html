@@ -354,6 +354,7 @@
         justify-content: center;
         border-radius: 50%;
         transition: background 0.2s ease;
+        color: var(--text-primary, #1d1d1f);
       }
 
       .btn-icon:hover {
@@ -2371,6 +2372,7 @@
         .hero-container {
           height: auto;
           margin-top: 4rem;
+          margin-bottom: 0px;
         }
 
         .masonry-block {
@@ -3096,6 +3098,32 @@
           max-width: fit-content;
         }
       }
+
+      .btn-icon:has([href="#phone"]) {
+        width: fit-content;
+        height: fit-content;
+        border-radius: 35px;
+        padding: 10px;
+        background-color: #efefef;
+        color: #474747;
+        gap: 2px;
+      }
+
+      .vertical-line {
+        width: 1.7px;
+        height: 20px;
+        background-color: #888888;
+        display: block;
+        margin: 0 5px;
+      }
+
+      [style*="--mt"] {
+        margin-top: var(--mt);
+      }
+
+      [style*="--mb"] {
+        margin-bottom: var(--mb);
+      }
     </style>
   </head>
 
@@ -3347,6 +3375,37 @@
             d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
           />
         </symbol>
+        <!--  id="phone" -->
+        <symbol
+          id="phone"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.7"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-phone-icon lucide-phone"
+        >
+          <path
+            d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"
+          />
+        </symbol>
+        <symbol
+          id="squircle-message"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="size-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M8.625 9.75a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375m-13.5 3.01c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.184-4.183a1.14 1.14 0 0 1 .778-.332 48.294 48.294 0 0 0 5.83-.498c1.585-.233 2.708-1.626 2.708-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z"
+          />
+        </symbol>
       </svg>
     </div>
     <!-- Mobile Topbar -->
@@ -3373,8 +3432,20 @@
 
     <!-- Mega Topbar -->
     <div class="mega-topbar">
-      <button class="back-btn" data-action="go-back">Volver</button>
-      <button class="close-btn" data-action="close-menu">Cerrar</button>
+      <button
+        class="back-btn"
+        data-action="go-back"
+        aria-label="Volver al menú anterior"
+      >
+        Volver
+      </button>
+      <button
+        class="close-btn"
+        data-action="close-menu"
+        aria-label="Cerrar menú de navegación"
+      >
+        Cerrar
+      </button>
     </div>
 
     <!-- Main Navigation -->
@@ -3394,7 +3465,12 @@
       <div class="menu-links">
         <div class="section-label">MENÚ</div>
 
-        <a href="#" data-mega="#Diseno" data-name="#Diseno">
+        <a
+          href="#"
+          data-mega="#Diseno"
+          data-name="#Diseno"
+          aria-label="Sección Diseño y Media"
+        >
           <span class="icon">
             <svg
               viewBox="0 0 24 24"
@@ -3408,7 +3484,12 @@
           <span class="label">Diseño y Media</span>
         </a>
 
-        <a href="#" data-mega="#Tecnologia" data-name="#Tecnologia">
+        <a
+          href="#"
+          data-mega="#Tecnologia"
+          data-name="#Tecnologia"
+          aria-label="Sección Tecnología"
+        >
           <span class="icon">
             <svg
               viewBox="0 0 24 24"
@@ -3422,7 +3503,12 @@
           <span class="label">Tecnología</span>
         </a>
 
-        <a href="#" data-mega="#Marketing" data-name="#Marketing">
+        <a
+          href="#"
+          data-mega="#Marketing"
+          data-name="#Marketing"
+          aria-label="Sección Marketing"
+        >
           <span class="icon">
             <svg
               viewBox="0 0 24 24"
@@ -3448,9 +3534,14 @@
             <use href="#icon-search"></use>
           </svg>
         </button>
-        <button class="btn-icon" aria-label="Tienda">
+        <button class="btn-icon" aria-label="Phone">
           <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <use href="#shop-bag"></use>
+            <use href="#phone"></use>
+          </svg>
+          <div class="vertical-line"></div>
+          <!-- squircle-message   -->
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <use href="#squircle-message"></use>
           </svg>
         </button>
       </div>
@@ -3463,7 +3554,7 @@
         <div class="mega-content">
           <div class="mega-sidebar">
             <div class="mega-sidebar-title">Diseño y Media</div>
-            <a href="#">
+            <a href="#" aria-label="Ver proyectos de Branding">
               <span>Branding</span>
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -3474,7 +3565,7 @@
                 />
               </svg>
             </a>
-            <a href="#">
+            <a href="#" aria-label="Ver proyectos de Studio Multimedia">
               <span>Studio Multimedia</span>
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -3485,7 +3576,7 @@
                 />
               </svg>
             </a>
-            <a href="#">
+            <a href="#" aria-label="Ver proyectos de Publicidad">
               <span>Publicidad</span>
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -3519,7 +3610,7 @@
         <div class="mega-content">
           <div class="mega-sidebar">
             <div class="mega-sidebar-title">Tecnología</div>
-            <a href="#">
+            <a href="#" aria-label="Ver proyectos de Desarrollo Web">
               <span>Desarrollo Web</span>
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -3530,7 +3621,7 @@
                 />
               </svg>
             </a>
-            <a href="#">
+            <a href="#" aria-label="Ver proyectos de Apps Móviles">
               <span>Apps Móviles</span>
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -3541,7 +3632,7 @@
                 />
               </svg>
             </a>
-            <a href="#">
+            <a href="#" aria-label="Ver proyectos de E-commerce">
               <span>E-commerce</span>
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -3579,7 +3670,7 @@
         <div class="mega-content">
           <div class="mega-sidebar">
             <div class="mega-sidebar-title">Marketing</div>
-            <a href="#">
+            <a href="#" aria-label="Ver proyectos de Social Media">
               <span>Social Media</span>
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -3590,7 +3681,7 @@
                 />
               </svg>
             </a>
-            <a href="#">
+            <a href="#" aria-label="Ver estrategias SEO/SEM">
               <span>SEO/SEM</span>
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -3601,7 +3692,7 @@
                 />
               </svg>
             </a>
-            <a href="#">
+            <a href="#" aria-label="Ver estrategias de Content Strategy">
               <span>Content Strategy</span>
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -3942,6 +4033,7 @@
                           placeholder="Search: Mockups, Logos, Design..."
                           autocomplete="off"
                           style="--w-fill: 1"
+                          aria-label="Buscar en el sitio"
                         />
                       </label>
                     </div>
@@ -3949,7 +4041,12 @@
                 </div>
 
                 <div id="search-tags">
-                  <span class="border-emerald-500">
+                  <span
+                    class="border-emerald-500"
+                    role="button"
+                    tabindex="0"
+                    aria-label="Filtrar proyectos por Desarrollo"
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -3965,7 +4062,12 @@
                     </svg>
                     Desarrollo
                   </span>
-                  <span class="border-amber-500">
+                  <span
+                    class="border-amber-500"
+                    role="button"
+                    tabindex="0"
+                    aria-label="Filtrar proyectos por Diseño"
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -3981,7 +4083,12 @@
                     </svg>
                     Diseño
                   </span>
-                  <span class="border-blue-500">
+                  <span
+                    class="border-blue-500"
+                    role="button"
+                    tabindex="0"
+                    aria-label="Filtrar proyectos por Marketing"
+                  >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -4256,12 +4363,7 @@
       <!-- Value Proposition Section -->
       <section
         class="value-prop-section"
-        style="
-          margin: 0 auto;
-          padding: 0 20px;
-          --mt: 4rem;
-          margin-top: var(--mt);
-        "
+        style="margin: 0 auto; padding: 0 20px; --mt: 4rem"
       >
         <div class="value-prop-statement-2">
           <!-- Main Container -->
@@ -4779,13 +4881,13 @@
           gap: var(--gap);
         "
       >
-        <div>
+        <div class="footer-col" data-column="1">
           <div
             style="
               font-weight: 700;
               font-size: 1.5rem;
               --mb: 1.5rem;
-              margin-bottom: var(--mb);
+
               display: flex;
               align-items: center;
               --gap: 0.5rem;
@@ -4806,7 +4908,7 @@
           </p>
         </div>
 
-        <div>
+        <div class="footer-col" data-column="2">
           <h4 style="font-weight: 600; --mb: 1rem; margin-bottom: var(--mb)">
             Compañía
           </h4>
@@ -4851,7 +4953,7 @@
             </li>
           </ul>
         </div>
-        <div>
+        <div class="footer-col" data-column="3">
           <h4 style="font-weight: 600; --mb: 1rem; margin-bottom: var(--mb)">
             Explora
           </h4>
@@ -4928,6 +5030,189 @@
                 ></span>
                 Strategy
               </a>
+            </li>
+          </ul>
+        </div>
+        <div class="footer-col" data-column="4">
+          <h4 style="font-weight: 600; --mb: 1rem; margin-bottom: var(--mb)">
+            Síguenos
+          </h4>
+          <ul
+            style="
+              list-style: none;
+              padding: 0;
+              margin: 0;
+              color: var(--k-light-gray);
+              display: flex;
+              flex-direction: column;
+              --gap: 0.75rem;
+              gap: var(--gap);
+            "
+          >
+            <li>
+              <a
+                href="https://www.instagram.com/klef.agency/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Síguenos en Instagram"
+                style="
+                  color: inherit;
+                  text-decoration: none;
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                "
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"
+                  />
+                </svg>
+                Instagram
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.facebook.com/klef.agency/"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Síguenos en Facebook"
+                style="
+                  color: inherit;
+                  text-decoration: none;
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                "
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
+                  />
+                </svg>
+                Facebook
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.youtube.com/channel/UCYFT6kwbsDzbiK6OjuKWM5w"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Síguenos en YouTube"
+                style="
+                  color: inherit;
+                  text-decoration: none;
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                "
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"
+                  />
+                </svg>
+                YouTube
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://wa.me/526245161037"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Contactarnos por WhatsApp"
+                style="
+                  color: inherit;
+                  text-decoration: none;
+                  display: flex;
+                  align-items: center;
+                  gap: 8px;
+                "
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
+                  />
+                </svg>
+                WhatsApp
+              </a>
+            </li>
+          </ul>
+        </div>
+        <div class="footer-col" data-column="5">
+          <h4
+            style="
+              font-weight: 600;
+              --mb: 0.75rem;
+              margin-top: 2rem;
+              margin-bottom: var(--mb);
+            "
+          >
+            Contacto
+          </h4>
+          <ul
+            style="
+              list-style: none;
+              padding: 0;
+              margin: 0;
+              color: var(--k-light-gray);
+              display: flex;
+              flex-direction: column;
+              --gap: 0.5rem;
+              gap: var(--gap);
+            "
+          >
+            <li>
+              <a
+                href="mailto:info@klef.agency"
+                style="color: inherit; text-decoration: none"
+              >
+                info@klef.agency
+              </a>
+            </li>
+            <li style="--mt: 1rem">
+              <a
+                href="tel:+526245161037"
+                target="_blank"
+                rel="noopener noreferrer"
+                style="color: inherit; text-decoration: none"
+              >
+                Atencion al cliente:
+                <div style="--mt: 0.5rem"></div>
+                +52 (624) 516 1037
+              </a>
+            </li>
+
+            <li style="--mt: 1rem">
+              <span style="color: inherit">
+                Soporte técnico:
+                <div style="--mt: 0.5rem"></div>
+                +52 (624) 168 2048
+              </span>
             </li>
           </ul>
         </div>
@@ -5320,10 +5605,10 @@
               ${card.extract}
             </p>
             <div class="project-actions">
-              <div class="tag-portfolio" aria-label="Leer historia">
+              <div class="tag-portfolio" role="button" tabindex="0" aria-label="Leer historia de ${card.title[0]}">
                 <i class="fa-solid fa-user"></i> Leer historia
               </div>
-              <button class="see-more" data-component="portfolioDetail" data-id="${card.id}">Más</button>
+              <button class="see-more" data-component="portfolioDetail" data-id="${card.id}" aria-label="Ver detalles de ${card.title[0]}">Más</button>
             </div>
           </section>
         </article>
@@ -5380,7 +5665,7 @@
           .map(
             (cat) => `
         <li data-name="${cat.label}">
-          <button class="tab-button ${cat.id === activeId ? "active" : ""}" data-id="${cat.id}">
+          <button class="tab-button ${cat.id === activeId ? "active" : ""}" data-id="${cat.id}" aria-label="Filtrar por ${cat.label}" aria-pressed="${cat.id === activeId}">
             ${cat.label}
             ${cat.subs.length > 0 ? '<span class="has-sub-indicator"></span>' : ""}
           </button>
@@ -5406,7 +5691,7 @@
         const chipsHTML = category.subs
           .map(
             (sub) => `
-        <div class="${isMobile ? "sub-chip-mobile" : "sub-chip"}" onclick="selectSub(this)">
+        <div class="${isMobile ? "sub-chip-mobile" : "sub-chip"}" onclick="selectSub(this)" role="button" tabindex="0" aria-label="Filtrar por ${sub}">
             ${sub}
         </div>
     `,
@@ -5559,8 +5844,20 @@
       <div class="sheet-top-controls">
         <div class="top-controls-wrapper">
           <div class="top-controls-left">
-            <button class="top-btn" data-action="top-action-1">Acción 1</button>
-            <button class="top-btn" data-action="top-action-2">Acción 2</button>
+            <button
+              class="top-btn"
+              data-action="top-action-1"
+              aria-label="Acción primaria del proyecto"
+            >
+              Acción 1
+            </button>
+            <button
+              class="top-btn"
+              data-action="top-action-2"
+              aria-label="Acción secundaria del proyecto"
+            >
+              Acción 2
+            </button>
             <button
               class="top-chevron"
               data-action="show-more"
@@ -5583,7 +5880,7 @@
           <div class="top-controls-dropdown">
             <ul>
               <li>
-                <a href="#" data-action="share"
+                <a href="#" data-action="share" aria-label="Compartir proyecto"
                   ><svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -5601,7 +5898,10 @@
                 </a>
               </li>
               <li>
-                <a href="#" data-action="favorite"
+                <a
+                  href="#"
+                  data-action="favorite"
+                  aria-label="Agregar a favoritos"
                   ><svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -5617,7 +5917,10 @@
                 </a>
               </li>
               <li>
-                <a href="#" data-action="copy-link"
+                <a
+                  href="#"
+                  data-action="copy-link"
+                  aria-label="Copiar enlace del proyecto"
                   ><svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -5636,7 +5939,7 @@
                 </a>
               </li>
               <li>
-                <a href="#" data-action="report"
+                <a href="#" data-action="report" aria-label="Reportar contenido"
                   ><svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
@@ -5675,10 +5978,18 @@
 
       <!-- Bottom Controls (Footer) -->
       <div class="sheet-bottom-controls">
-        <button class="btn-secondary" data-action="secondary-action">
+        <button
+          class="btn-secondary"
+          data-action="secondary-action"
+          aria-label="Ver opciones secundarias"
+        >
           Secundario
         </button>
-        <button class="btn-primary" data-action="primary-action">
+        <button
+          class="btn-primary"
+          data-action="primary-action"
+          aria-label="Abrir proyecto completo"
+        >
           Acción Principal
         </button>
         <button
