@@ -145,10 +145,10 @@ const SheetTemplates = {
   // Renderizar estructura completa del sheet
   renderSheet(config) {
     return `
-      ${this.renderTopControls(config.topControls || {})}
-      ${this.renderDragHandle()}
-      ${this.renderContent(config.content || {})}
-      ${this.renderBottomControls(config.bottomControls || {})}
+    ${this.renderDragHandle()}
+    ${this.renderTopControls(config.topControls || {})}     
+    ${this.renderContent(config.content || {})}
+    ${this.renderBottomControls(config.bottomControls || {})}
     `;
   },
 };
