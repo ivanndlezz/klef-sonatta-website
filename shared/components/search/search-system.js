@@ -1,5 +1,5 @@
 // ============================================================================
-// SEARCH SYSTEM - GraphQL Search with Recent Searches
+// SEARCH SYSTEM - GraphQL Search with key:value Filter Support
 // ============================================================================
 
 (function () {
@@ -10,20 +10,395 @@
     searchInput,
     resultsContainer,
     quickSuggestions,
-    clearInput;
+    clearInput,
+    filterChipsContainer;
   let searchTimeout;
+  let filterTimeout;
   let recentSearches = JSON.parse(
     localStorage.getItem("recentSearches") || "[]",
   );
 
-  // Configuración de búsqueda
+  // Estado de filtros activo
+  let activeFilters = {
+    text: "",
+    filters: {},
+    exclude: [],
+  };
+
+  // Configuracion de busqueda
   const CONFIG = {
     GRAPHQL_ENDPOINT: "https://klef.newfacecards.com/graphql",
     MIN_SEARCH_LENGTH: 2,
     DEBOUNCE_DELAY: 300,
+    FILTER_DEBOUNCE_DELAY: 150,
   };
 
-  // Funciones de búsqueda
+  // ============================================
+  // FILTER SYSTEM INTEGRATION
+  // ============================================
+
+  /**
+   * Procesa el query y extrae filtros
+   */
+  function processFilters(query) {
+    if (typeof QueryParser === "undefined") {
+      return { text: query, filters: {}, exclude: [] };
+    }
+    return QueryParser.parse(query);
+  }
+
+  /**
+   * Filtra resultados localmente (fallback cuando GraphQL no soporta filtros)
+   */
+  function filterResultsLocally(results, filters) {
+    if (
+      !filters ||
+      (Object.keys(filters.filters).length === 0 &&
+        filters.exclude.length === 0)
+    ) {
+      return results;
+    }
+
+    const filterConfig = filters.filters;
+    const exclude = filters.exclude;
+
+    return results.filter(function (item) {
+      // Filtrar por tipo
+      if (filterConfig.type) {
+        var itemType = getItemType(item);
+        if (itemType !== filterConfig.type.value) {
+          return false;
+        }
+      }
+
+      // Filtrar por categoria
+      if (filterConfig.category) {
+        var itemCategories = getItemCategories(item).map(function (c) {
+          return c.toLowerCase();
+        });
+        if (
+          itemCategories.indexOf(filterConfig.category.value.toLowerCase()) ===
+          -1
+        ) {
+          return false;
+        }
+      }
+
+      // Filtrar por tag
+      if (filterConfig.tag) {
+        var itemTags = getItemTags(item).map(function (t) {
+          return t.toLowerCase();
+        });
+        if (itemTags.indexOf(filterConfig.tag.value.toLowerCase()) === -1) {
+          return false;
+        }
+      }
+
+      // Filtrar por autor
+      if (filterConfig.author) {
+        var authorName = getItemAuthor(item).toLowerCase();
+        if (
+          authorName.indexOf(filterConfig.author.value.toLowerCase()) === -1
+        ) {
+          return false;
+        }
+      }
+
+      // Filtrar por fecha (after)
+      if (filterConfig.after) {
+        var itemDate = new Date(getItemDate(item));
+        var afterDate = new Date(filterConfig.after.value);
+        if (itemDate < afterDate) {
+          return false;
+        }
+      }
+
+      // Filtrar por fecha (before)
+      if (filterConfig.before) {
+        var itemDate2 = new Date(getItemDate(item));
+        var beforeDate = new Date(filterConfig.before.value);
+        if (itemDate2 > beforeDate) {
+          return false;
+        }
+      }
+
+      // Verificar exclusiones
+      var searchText = getItemSearchText(item).toLowerCase();
+      for (var i = 0; i < exclude.length; i++) {
+        if (searchText.indexOf(exclude[i].toLowerCase()) !== -1) {
+          return false;
+        }
+      }
+
+      return true;
+    });
+  }
+
+  /**
+   * Obtiene el tipo de un item
+   */
+  function getItemType(item) {
+    if (item.contentType === "pages") return "page";
+    if (item.contentType === "posts") {
+      var cat =
+        item.categories && item.categories.nodes && item.categories.nodes[0];
+      return cat && cat.name ? cat.name.toLowerCase() : "blog";
+    }
+    return "unknown";
+  }
+
+  /**
+   * Obtiene categorias de un item
+   */
+  function getItemCategories(item) {
+    if (!item.categories || !item.categories.nodes) return [];
+    return item.categories.nodes.map(function (c) {
+      return c.name;
+    });
+  }
+
+  /**
+   * Obtiene tags de un item
+   */
+  function getItemTags(item) {
+    if (!item.tags || !item.tags.nodes) return [];
+    return item.tags.nodes.map(function (t) {
+      return t.name;
+    });
+  }
+
+  /**
+   * Obtiene autor de un item
+   */
+  function getItemAuthor(item) {
+    return item.author && item.author.node && item.author.node.name
+      ? item.author.node.name
+      : "";
+  }
+
+  /**
+   * Obtiene fecha de un item
+   */
+  function getItemDate(item) {
+    return item.date || "";
+  }
+
+  /**
+   * Obtiene texto para busqueda
+   */
+  function getItemSearchText(item) {
+    return (item.title + " " + (item.content || "")).toLowerCase();
+  }
+
+  /**
+   * Renderiza los chips de filtros activos
+   */
+  function renderFilterChips(filters) {
+    if (!filterChipsContainer) {
+      filterChipsContainer = document.getElementById("filterChipsContainer");
+    }
+    if (!filterChipsContainer) return;
+
+    var chips = [];
+
+    // Chips de filtros
+    Object.keys(filters.filters).forEach(function (key) {
+      var filter = filters.filters[key];
+      var label = (filter.negated ? "-" : "") + key + ":" + filter.value;
+      chips.push({
+        key: key,
+        value: filter.value,
+        negated: filter.negated,
+        label: label,
+        type: "filter",
+      });
+    });
+
+    // Chips de exclusion
+    filters.exclude.forEach(function (word) {
+      chips.push({
+        key: "exclude",
+        value: word,
+        negated: true,
+        label: "-" + word,
+        type: "exclude",
+      });
+    });
+
+    if (chips.length === 0) {
+      filterChipsContainer.innerHTML = "";
+      filterChipsContainer.style.display = "none";
+      return;
+    }
+
+    var html = "";
+    chips.forEach(function (chip) {
+      html +=
+        '<button class="filter-chip' +
+        (chip.negated ? " negated" : "") +
+        '" ' +
+        'data-key="' +
+        chip.key +
+        '" ' +
+        'data-value="' +
+        chip.value +
+        '" ' +
+        'data-negated="' +
+        chip.negated +
+        '" ' +
+        'data-type="' +
+        chip.type +
+        '" ' +
+        'title="Click para remover">' +
+        chip.label +
+        '<svg class="chip-remove" viewBox="0 0 24 24" fill="none" stroke="currentColor">' +
+        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>' +
+        "</svg></button>";
+    });
+
+    html +=
+      '<button class="filter-chip-clear" data-action="clear-filters">Limpiar todo</button>';
+
+    filterChipsContainer.style.display = "flex";
+    filterChipsContainer.innerHTML = html;
+
+    // Event listeners para remover chips
+    var chipButtons = filterChipsContainer.querySelectorAll(".filter-chip");
+    for (var i = 0; i < chipButtons.length; i++) {
+      chipButtons[i].addEventListener(
+        "click",
+        (function (btn) {
+          return function (e) {
+            if (
+              e.target.classList.contains("chip-remove") ||
+              e.target.closest(".chip-remove")
+            ) {
+              removeFilter(
+                btn.getAttribute("data-key"),
+                btn.getAttribute("data-value"),
+                btn.getAttribute("data-negated") === "true",
+              );
+            }
+          };
+        })(chipButtons[i]),
+      );
+    }
+
+    var clearBtn = filterChipsContainer.querySelector(
+      '[data-action="clear-filters"]',
+    );
+    if (clearBtn) {
+      clearBtn.addEventListener("click", function () {
+        clearAllFilters();
+      });
+    }
+  }
+
+  /**
+   * Remueve un filtro especifico
+   */
+  function removeFilter(key, value, negated) {
+    if (
+      activeFilters.filters[key] &&
+      activeFilters.filters[key].value === value
+    ) {
+      delete activeFilters.filters[key];
+    }
+    activeFilters.exclude = activeFilters.exclude.filter(function (v) {
+      return v !== value;
+    });
+    rebuildQueryAndSearch();
+  }
+
+  /**
+   * Limpia todos los filtros
+   */
+  function clearAllFilters() {
+    activeFilters.filters = {};
+    activeFilters.exclude = [];
+    rebuildQueryAndSearch();
+  }
+
+  /**
+   * reconstruye el query y ejecuta busqueda
+   */
+  function rebuildQueryAndSearch() {
+    if (typeof QueryParser !== "undefined") {
+      var query = QueryParser.build(
+        activeFilters.filters,
+        activeFilters.text,
+        activeFilters.exclude,
+      );
+      if (searchInput) {
+        searchInput.value = query;
+      }
+      performSearch(query);
+    }
+  }
+
+  /**
+   * Sincroniza filtros con URL
+   */
+  function syncFiltersToURL() {
+    var params = new URLSearchParams();
+    if (activeFilters.text) {
+      params.set("q", activeFilters.text);
+    }
+    Object.keys(activeFilters.filters).forEach(function (key) {
+      params.set("f_" + key, activeFilters.filters[key].value);
+    });
+    if (activeFilters.exclude.length > 0) {
+      params.set("f_exclude", activeFilters.exclude.join(","));
+    }
+
+    var newURL =
+      window.location.pathname +
+      (params.toString() ? "?" + params.toString() : "");
+    history.replaceState({}, "", newURL);
+  }
+
+  /**
+   * Carga filtros desde URL
+   */
+  function loadFiltersFromURL() {
+    var params = new URLSearchParams(window.location.search);
+    var q = params.get("q");
+    var exclude = params.get("f_exclude");
+
+    if (
+      q ||
+      exclude ||
+      Array.from(params.keys()).some(function (k) {
+        return k.indexOf("f_") === 0;
+      })
+    ) {
+      var filters = { filters: {}, exclude: [] };
+
+      if (q) {
+        filters.text = q;
+      }
+
+      params.forEach(function (value, key) {
+        if (key.indexOf("f_") === 0 && key !== "f_exclude") {
+          var filterKey = key.substring(2);
+          filters.filters[filterKey] = { value: value, negated: false };
+        }
+      });
+
+      if (exclude) {
+        filters.exclude = exclude.split(",");
+      }
+
+      return filters;
+    }
+
+    return null;
+  }
+
+  // ============================================
+  // SEARCH FUNCTIONS
+  // ============================================
+
   function openSearch() {
     if (!searchOverlay) {
       searchOverlay = document.getElementById("searchOverlay");
@@ -31,26 +406,40 @@
     if (!searchInput) {
       searchInput = document.getElementById("searchInput");
     }
+    if (!filterChipsContainer) {
+      filterChipsContainer = document.getElementById("filterChipsContainer");
+    }
 
     if (!searchOverlay) return;
 
+    // Cargar filtros desde URL si existen
+    var urlFilters = loadFiltersFromURL();
+    if (urlFilters) {
+      activeFilters = urlFilters;
+      if (typeof QueryParser !== "undefined") {
+        searchInput.value = QueryParser.build(
+          activeFilters.filters,
+          activeFilters.text,
+          activeFilters.exclude,
+        );
+      }
+    }
+
     searchOverlay.classList.add("active");
-    // Use iOS-compatible scroll lock
-    if (typeof ScrollLock !== 'undefined') {
+
+    if (typeof ScrollLock !== "undefined") {
       ScrollLock.lock();
     } else {
       document.body.style.overflow = "hidden";
     }
 
-    // Remover estilo dinámico si existe
     if (typeof removeDynamicStyle === "function") {
       removeDynamicStyle();
     }
 
-    // Enfocar el input después de que la transición termine
     searchOverlay.addEventListener(
       "transitionend",
-      () => {
+      function () {
         if (searchInput) {
           searchInput.focus();
         }
@@ -59,6 +448,9 @@
     );
 
     updateRecentSearches();
+
+    // Render chips si hay filtros activos
+    renderFilterChips(activeFilters);
   }
 
   function closeSearch() {
@@ -81,20 +473,25 @@
     if (!searchOverlay) return;
 
     searchOverlay.classList.remove("active");
-    // Use iOS-compatible scroll unlock
-    if (typeof ScrollLock !== 'undefined') {
+
+    if (typeof ScrollLock !== "undefined") {
       ScrollLock.unlock();
     } else {
       document.body.style.overflow = "";
     }
+
     if (searchInput) searchInput.value = "";
     if (clearInput) clearInput.classList.remove("visible");
     if (resultsContainer) resultsContainer.innerHTML = "";
     if (quickSuggestions) quickSuggestions.style.display = "block";
+
+    // Limpiar filtros
+    activeFilters = { text: "", filters: {}, exclude: [] };
+    renderFilterChips(activeFilters);
+    syncFiltersToURL();
   }
 
   function searchFor(term) {
-    //console.log("🔍 searchFor llamado con:", term);
     if (!searchInput) {
       searchInput = document.getElementById("searchInput");
     }
@@ -105,40 +502,50 @@
   }
 
   function updateRecentSearches() {
-    const list = document.getElementById("recentSearches");
+    var list = document.getElementById("recentSearches");
     if (!list) return;
 
     if (recentSearches.length === 0) {
       list.innerHTML =
-        '<li style="color: #86868b; font-size: 13px;">Sin búsquedas recientes</li>';
+        '<li style="color: #86868b; font-size: 13px;">Sin busquedas recientes</li>';
     } else {
-      list.innerHTML = recentSearches
-        .slice(0, 3)
-        .map(
-          (term) => `
-                <li><a href="#" data-action="search-term" data-term="${term.replace(/"/g, "&quot;")}">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    ${term}
-                </a></li>
-            `,
-        )
-        .join("");
-
-      // ✅ NO AGREGAR LISTENERS AQUÍ - se manejan por delegación
+      var items = [];
+      for (var i = 0; i < Math.min(recentSearches.length, 3); i++) {
+        var term = recentSearches[i];
+        var safeTerm = term.replace(/"/g, '"');
+        items.push(
+          '<li><a href="#" data-action="search-term" data-term="' +
+            safeTerm +
+            '">' +
+            '<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>' +
+            term +
+            "</a></li>",
+        );
+      }
+      list.innerHTML = items.join("");
     }
   }
 
   function saveToRecent(term) {
-    recentSearches = [term, ...recentSearches.filter((t) => t !== term)].slice(
-      0,
-      5,
-    );
+    recentSearches = [term]
+      .concat(
+        recentSearches.filter(function (t) {
+          return t !== term;
+        }),
+      )
+      .slice(0, 5);
     localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
     updateRecentSearches();
   }
 
   async function performSearch(searchTerm) {
-    //console.log("🔎 performSearch llamado con:", searchTerm);
+    // Parsear filtros
+    var parsed = processFilters(searchTerm);
+    activeFilters = parsed;
+
+    // Actualizar UI de chips
+    renderFilterChips(parsed);
+    syncFiltersToURL();
 
     if (!resultsContainer) {
       resultsContainer = document.getElementById("resultsContainer");
@@ -147,326 +554,287 @@
       quickSuggestions = document.getElementById("quickSuggestions");
     }
 
-    if (searchTerm.length < CONFIG.MIN_SEARCH_LENGTH) {
+    // Si solo hay filtros sin texto, esperar mas input
+    var searchText = parsed.text || "";
+    if (
+      searchText.length < CONFIG.MIN_SEARCH_LENGTH &&
+      Object.keys(parsed.filters).length === 0
+    ) {
       if (resultsContainer) resultsContainer.innerHTML = "";
       if (quickSuggestions) quickSuggestions.style.display = "block";
       return;
     }
 
     if (quickSuggestions) quickSuggestions.style.display = "none";
+
     if (resultsContainer) {
-      // Show skeleton loading cards instead of spinner
-      var skelCards = '';
+      // Show skeleton loading cards
+      var skelCards = "";
       for (var i = 0; i < 4; i++) {
-        skelCards += '<li class="result-item skel-card">' +
+        skelCards +=
+          '<li class="result-item skel-card">' +
           '<div class="skel-image"></div>' +
           '<div class="skel-content">' +
           '<div class="skel-label"></div>' +
           '<div class="skel-title"></div>' +
           '<div class="skel-title short"></div>' +
           '<div class="skel-meta"></div>' +
-          '</div>' +
-          '</li>';
+          "</div>" +
+          "</li>";
       }
-      resultsContainer.innerHTML = '<div class="result-group"><ul class="result-items">' + skelCards + '</ul></div>';
+      resultsContainer.innerHTML =
+        '<div class="result-group"><ul class="result-items">' +
+        skelCards +
+        "</ul></div>";
     }
 
-    const query = `
-            query FlexibleSearch($searchTerm: String!) {
-                pages(first: 20, where: { search: $searchTerm }) {
-                    nodes {
-                        id
-                        title
-                        slug
-                        uri
-                        date
-                        content(format: RENDERED)
-                        featuredImage {
-                            node {
-                                sourceUrl(size: LARGE)
-                                altText
-                            }
-                        }
-                    }
-                }
-                posts(first: 20, where: { search: $searchTerm }) {
-                    nodes {
-                        id
-                        title
-                        slug
-                        uri
-                        date
-                        content(format: RENDERED)
-                        featuredImage {
-                            node {
-                                sourceUrl(size: LARGE)
-                                altText
-                            }
-                        }
-                        portfolioImages {
-                            id
-                            sourceUrl(size: LARGE)
-                            altText
-                            mediaItemUrl
-                            filePath
-                        }
-                        categories {
-                            nodes {
-                                categoryId
-                                name
-                                slug
-                                uri
-                            }
-                        }
-                        tags {
-                            nodes {
-                                tagId
-                                name
-                                slug
-                            }
-                        }
-                        author {
-                            node {
-                                id
-                                name
-                                firstName
-                                lastName
-                                uri
-                                url
-                                userId
-                                avatar {
-                                    url
-                                }
-                            }
-                        }
-                        coAuthors {
-                            __typename
-                            ... on User {
-                                id
-                                name
-                                firstName
-                                lastName
-                                uri
-                                url
-                                userId
-                                avatar {
-                                    url
-                                }
-                                description
-                            }
-                            ... on GuestAuthor {
-                                id
-                                name
-                                firstName
-                                lastName
-                                email
-                                avatar {
-                                    url
-                                }
-                                description
-                                website
-                            }
-                        }
-                    }
-                }
-            }
-        `;
-
-    // DEBUG: Log query structure
-    console.log("📡 GraphQL Query built with extended fields:", {
-      pagesFields: [
-        "id",
-        "title",
-        "slug",
-        "uri",
-        "date",
-        "content",
-        "featuredImage",
-      ],
-      postsFields: [
-        "id",
-        "title",
-        "slug",
-        "uri",
-        "date",
-        "content",
-        "featuredImage",
-        "portfolioImages",
-        "categories",
-        "tags",
-        "author",
-        "coAuthors",
-      ],
-    });
+    // GraphQL query
+    var queryStr =
+      "query FlexibleSearch($searchTerm: String!) {" +
+      "pages(first: 20, where: { search: $searchTerm }) {" +
+      "nodes { id title slug uri date content featuredImage { node { sourceUrl altText } } }" +
+      "}" +
+      "posts(first: 20, where: { search: $searchTerm }) {" +
+      "nodes { id title slug uri date content featuredImage { node { sourceUrl altText } } " +
+      "categories { nodes { name slug uri } } tags { nodes { name slug } } " +
+      "author { node { name uri } } }" +
+      "}" +
+      "}";
 
     try {
-      const response = await fetch(CONFIG.GRAPHQL_ENDPOINT, {
+      var response = await fetch(CONFIG.GRAPHQL_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query, variables: { searchTerm } }),
+        body: JSON.stringify({
+          query: queryStr,
+          variables: { searchTerm: searchText },
+        }),
       });
 
-      const json = await response.json();
-      console.log("📦 GraphQL Response:", json);
+      var json = await response.json();
 
       if (json.errors) throw new Error(json.errors[0].message);
 
-      displayResults(json.data, searchTerm);
+      // Aplicar filtros localmente si es necesario
+      var data = json.data;
+
+      // Si hay filtros, aplicar filtrado client-side
+      if (Object.keys(parsed.filters).length > 0 || parsed.exclude.length > 0) {
+        var allResults = [];
+        Object.keys(data).forEach(function (type) {
+          var nodes = data[type].nodes;
+          nodes.forEach(function (node) {
+            allResults.push(
+              Object.assign({}, node, {
+                contentType: type,
+              }),
+            );
+          });
+        });
+
+        var filteredResults = filterResultsLocally(allResults, parsed);
+
+        // Reconstruir data para displayResults
+        data = {
+          pages: {
+            nodes: filteredResults.filter(function (n) {
+              return n.contentType === "pages";
+            }),
+          },
+          posts: {
+            nodes: filteredResults.filter(function (n) {
+              return n.contentType === "posts";
+            }),
+          },
+        };
+      }
+
+      displayResults(data, searchTerm, parsed);
       saveToRecent(searchTerm);
     } catch (error) {
-      console.error("❌ Error en búsqueda:", error);
+      console.error("Error en busqueda:", error);
       if (resultsContainer) {
-        resultsContainer.innerHTML = `<div class="no-results"><div class="no-results-title">Error</div><div class="no-results-text">${error.message}</div></div>`;
+        resultsContainer.innerHTML =
+          '<div class="no-results"><div class="no-results-title">Error</div><div class="no-results-text">' +
+          error.message +
+          "</div></div>";
       }
     }
   }
 
-  function displayResults(data, searchTerm) {
+  function displayResults(data, searchTerm, parsed) {
     if (!resultsContainer) {
       resultsContainer = document.getElementById("resultsContainer");
     }
     if (!resultsContainer) return;
 
-    const typeConfig = {
+    var typeConfig = {
       pages: { label: "Page", icon: "icon-page", class: "page" },
       posts: { label: "Blog Post", icon: "icon-post", class: "blog" },
     };
 
-    let allResults = [];
-    let totalResults = 0;
+    var allResults = [];
+    var totalResults = 0;
 
-    // Combinar todos los resultados en un solo array
-    Object.entries(data).forEach(([type, { nodes }]) => {
-      nodes.forEach((node) => {
-        allResults.push({
-          ...node,
-          contentType: type,
-          config: typeConfig[type],
-        });
+    Object.keys(data).forEach(function (type) {
+      var nodes = data[type].nodes;
+      nodes.forEach(function (node) {
+        allResults.push(
+          Object.assign({}, node, {
+            contentType: type,
+            config: typeConfig[type],
+          }),
+        );
       });
       totalResults += nodes.length;
     });
 
-    let html = "";
+    var html = "";
 
     if (totalResults === 0) {
-      html = `
-                <div class="no-results">
-                    <svg class="no-results-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                    <div class="no-results-title">No se encontraron resultados</div>
-                    <div class="no-results-text">Intenta con otros términos de búsqueda</div>
-                </div>
-            `;
+      var hintHtml =
+        Object.keys(parsed.filters).length > 0
+          ? '<div class="no-results-hint">Los filtros activos pueden estar limitando los resultados</div>'
+          : "";
+      html =
+        '<div class="no-results">' +
+        '<svg class="no-results-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">' +
+        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>' +
+        "</svg>" +
+        '<div class="no-results-title">No se encontraron resultados</div>' +
+        '<div class="no-results-text">Intenta con otros terminos de busqueda</div>' +
+        hintHtml +
+        "</div>";
     } else {
-      // Header con contador
-      html = `
-                <div class="results-header">
-                    <h4>Resultados para "${searchTerm}"</h4>
-                    <p>${totalResults} coincidencia${totalResults !== 1 ? "s" : ""}</p>
-                </div>
-                <div class="result-group">
-                    <ul class="result-items">
-                        ${allResults
-                          .map((node) => {
-                            const config = node.config;
+      // Construir mensaje de resultados con filtros
+      var filterInfo = Object.keys(parsed.filters)
+        .map(function (key) {
+          return key + ":" + parsed.filters[key].value;
+        })
+        .join(" ");
 
-                            // Get dynamic category class for posts based on categories data
-                            const categoryClass =
-                              node.contentType === "posts"
-                                ? getCategoryFromPostNode(node)
-                                : config.class;
+      var filterLabel = filterInfo ? " (filtros: " + filterInfo + ")" : "";
 
-                            // Get label class based on content type
-                            const labelClass =
-                              node.contentType === "posts"
-                                ? getCategoryFromPostNode(node)
-                                : config.class;
+      html =
+        '<div class="results-header">' +
+        '<h4>Resultados para "' +
+        searchTerm +
+        '"' +
+        filterLabel +
+        "</h4>" +
+        "<p>" +
+        totalResults +
+        " coincidencia" +
+        (totalResults !== 1 ? "s" : "") +
+        "</p>" +
+        "</div>" +
+        '<div class="result-group"><ul class="result-items">';
 
-                            // Get display label text
-                            const labelText =
-                              node.contentType === "posts"
-                                ? getCategoryFromPostNode(node)
-                                    .replace(/-/g, " ")
-                                    .replace(/\b\w/g, (l) => l.toUpperCase())
-                                : config.label;
+      allResults.forEach(function (node) {
+        var config = node.config;
+        var categoryClass =
+          node.contentType === "posts"
+            ? getCategoryFromPostNode(node)
+            : config.class;
+        var labelClass =
+          node.contentType === "posts"
+            ? getCategoryFromPostNode(node)
+            : config.class;
+        var labelText =
+          node.contentType === "posts"
+            ? getCategoryFromPostNode(node)
+                .replace(/-/g, " ")
+                .replace(/\b\w/g, function (l) {
+                  return l.toUpperCase();
+                })
+            : config.label;
+        var iconName =
+          node.contentType === "posts"
+            ? getIconForCategory(categoryClass)
+            : config.icon;
 
-                            // Get icon name based on category
-                            const iconName =
-                              node.contentType === "posts"
-                                ? getIconForCategory(categoryClass)
-                                : config.icon;
+        var imageUrl =
+          node.featuredImage && node.featuredImage.node
+            ? node.featuredImage.node.sourceUrl
+            : null;
+        var imageAlt =
+          (node.featuredImage &&
+            node.featuredImage.node &&
+            node.featuredImage.node.altText) ||
+          node.title ||
+          "";
 
-                            // Get featured image (or first portfolio image for posts)
-                            let imageUrl = node.featuredImage?.node?.sourceUrl;
-                            let imageAlt =
-                              node.featuredImage?.node?.altText || node.title;
+        var imageHeight = "200px";
+        var categories =
+          node.categories && node.categories.nodes
+            ? node.categories.nodes
+                .map(function (c) {
+                  return c.name;
+                })
+                .join(", ")
+            : "";
+        var authorName =
+          (node.author && node.author.node && node.author.node.name) || "";
 
-                            // Use first portfolio image if available (for posts)
-                            if (
-                              node.contentType === "posts" &&
-                              node.portfolioImages &&
-                              node.portfolioImages.length > 0
-                            ) {
-                              const firstPortfolio = node.portfolioImages[0];
-                              imageUrl = firstPortfolio.sourceUrl;
-                              imageAlt = firstPortfolio.altText || node.title;
-                            }
+        var imageHtml = imageUrl
+          ? '<img src="' + imageUrl + '" alt="' + imageAlt + '" loading="lazy">'
+          : '<div class="result-image-placeholder" style="height: 100%;"><svg><use href="#' +
+            iconName +
+            '"></use></svg></div>';
 
-                            const imageHeight = "200px";
+        var categoriesHtml = categories
+          ? '<div class="result-meta">' + categories + "</div>"
+          : "";
+        var authorHtml = authorName
+          ? '<div class="result-author">Por ' + authorName + "</div>"
+          : "";
 
-                            // Get categories for display
-                            const categories =
-                              node.categories?.nodes
-                                ?.map((c) => c.name)
-                                .join(", ") || "";
+        html +=
+          '<li class="result-item">' +
+          '<a href="' +
+          (node.uri || "#") +
+          '">' +
+          '<div class="result-image" style="height: ' +
+          imageHeight +
+          ';">' +
+          imageHtml +
+          '<div class="result-type-icon ' +
+          categoryClass +
+          '">' +
+          '<svg><use href="#' +
+          iconName +
+          '"></use></svg>' +
+          "</div>" +
+          "</div>" +
+          '<div class="result-content">' +
+          '<div class="result-type-label ' +
+          labelClass +
+          '">' +
+          labelText +
+          "</div>" +
+          '<div class="result-title">' +
+          (node.title || "") +
+          "</div>" +
+          categoriesHtml +
+          authorHtml +
+          "</div>" +
+          "</a></li>";
+      });
 
-                            // Get author name
-                            const authorName = node.author?.node?.name || "";
-
-                            return `
-                                <li class="result-item">
-                                    <a href="${node.uri}">
-                                        <div class="result-image" style="height: ${imageHeight};">
-                                            ${
-                                              imageUrl
-                                                ? `<img src="${imageUrl}" alt="${imageAlt}" loading="lazy">`
-                                                : `<div class="result-image-placeholder" style="height: 100%;">
-                                                            <svg><use href="#${iconName}"></use></svg>
-                                                        </div>`
-                                            }
-                                            <div class="result-type-icon ${categoryClass}">
-                                                <svg><use href="#${iconName}"></use></svg>
-                                            </div>
-                                        </div>
-                                        <div class="result-content">
-                                            <div class="result-type-label ${labelClass}">${labelText}</div>
-                                            <div class="result-title">${node.title}</div>
-                                            ${categories ? `<div class="result-meta">${categories}</div>` : ""}
-                                            ${authorName ? `<div class="result-author">Por ${authorName}</div>` : ""}
-                                        </div>
-                                    </a>
-                                </li>
-                            `;
-                          })
-                          .join("")}
-                    </ul>
-                </div>
-            `;
+      html += "</ul></div>";
     }
 
     resultsContainer.innerHTML = html;
   }
 
   function stripHtml(html) {
-    const tmp = document.createElement("div");
+    var tmp = document.createElement("div");
     tmp.innerHTML = html;
     return tmp.textContent || tmp.innerText || "";
   }
 
   function formatDate(dateString) {
-    const date = new Date(dateString);
+    var date = new Date(dateString);
     return date.toLocaleDateString("es-MX", {
       year: "numeric",
       month: "short",
@@ -474,207 +842,153 @@
     });
   }
 
-  /**
-   * Get icon name based on category
-   * Maps categories to their corresponding icon names
-   */
   function getIconForCategory(categoryClass) {
-    const iconMap = {
+    var iconMap = {
       blog: "icon-post",
       portfolio: "icon-portfolio",
       "sin-categoria": "icon-post",
     };
-
     return iconMap[categoryClass] || "icon-post";
   }
 
-  /**
-   * Extract category from GraphQL post node
-   * Uses categories data from node.categories.nodes[].uri
-   * Examples:
-   * - categories.uri = /blog/category/blog/ → returns "blog"
-   * - categories.uri = /blog/category/sin-categoria/ → returns "sin-categoria"
-   * - categories.uri = /blog/category/portfolio/branding/ → returns "portfolio"
-   */
   function getCategoryFromPostNode(node) {
-    // Get categories array from node
-    const categories = node.categories?.nodes;
+    var categories = node.categories && node.categories.nodes;
 
     if (!categories || categories.length === 0) {
-      console.log(
-        "🔍 getCategoryFromPostNode: No categories found, returning 'blog'",
-      );
       return "blog";
     }
 
-    console.log("🔍 getCategoryFromPostNode: Categories:", categories);
+    var firstCategory = categories[0];
+    var categoryName = firstCategory && firstCategory.name;
 
-    // Get first category URI
-    const firstCategory = categories[0];
-    const categoryUri = firstCategory?.uri;
-
-    console.log("🔍 getCategoryFromPostNode: First category URI:", categoryUri);
-
-    if (!categoryUri) {
+    if (!categoryName) {
       return "blog";
     }
 
-    // Parse URI structure: /blog/category/{category-name}/...
-    const match = categoryUri.match(/\/blog\/category\/([^/]+)/);
-    console.log("🔍 getCategoryFromPostNode: Regex match:", match);
-
-    if (match && match[1]) {
-      const category = match[1];
-      console.log("🔍 getCategoryFromPostNode: Extracted category:", category);
-
-      // Map known categories to CSS class names
-      const categoryMap = {
-        blog: "blog",
-        portfolio: "portfolio",
-        "sin-categoria": "sin-categoria",
-      };
-
-      const result = categoryMap[category] || "blog";
-      console.log("🔍 getCategoryFromPostNode: Final result:", result);
-      return result;
-    }
-
-    console.log(
-      "🔍 getCategoryFromPostNode: No pattern matched, returning 'blog'",
-    );
-    return "blog"; // Default fallback
+    var categoryMap = {
+      blog: "blog",
+      portfolio: "portfolio",
+      "sin-categoria": "sin-categoria",
+    };
+    return categoryMap[categoryName.toLowerCase()] || "blog";
   }
 
   // Inicializar event listeners
   function initSearchListeners() {
-    //console.log("🚀 Inicializando Search System...");
-
     searchOverlay = document.getElementById("searchOverlay");
     searchInput = document.getElementById("searchInput");
     resultsContainer = document.getElementById("resultsContainer");
     quickSuggestions = document.getElementById("quickSuggestions");
+    filterChipsContainer = document.getElementById("filterChipsContainer");
 
-    /*console.log("📋 Elementos DOM encontrados:", {
-      searchOverlay: !!searchOverlay,
-      searchInput: !!searchInput,
-      resultsContainer: !!resultsContainer,
-      quickSuggestions: !!quickSuggestions,
-    });*/
-
-    // Reemplazar onclick inline con event listeners
-    document.querySelectorAll('[data-action="open-search"]').forEach((btn) => {
-      btn.addEventListener("click", (e) => {
+    // Botones para abrir busqueda
+    var openButtons = document.querySelectorAll('[data-action="open-search"]');
+    for (var i = 0; i < openButtons.length; i++) {
+      openButtons[i].addEventListener("click", function (e) {
         e.preventDefault();
         openSearch();
       });
-    });
+    }
 
-    document.querySelectorAll('[data-action="close-search"]').forEach((btn) => {
-      btn.addEventListener("click", (e) => {
+    // Botones para cerrar busqueda
+    var closeButtons = document.querySelectorAll(
+      '[data-action="close-search"]',
+    );
+    for (var i = 0; i < closeButtons.length; i++) {
+      closeButtons[i].addEventListener("click", function (e) {
         e.preventDefault();
         closeSearch();
       });
-    });
+    }
 
-    // ✅ DELEGACIÓN DE EVENTOS para búsquedas recientes
-    // Escuchar clicks en el contenedor de sugerencias
+    // Delegacion de eventos para busquedas recientes
     if (quickSuggestions) {
-      quickSuggestions.addEventListener("click", (e) => {
-        // Buscar el link más cercano con data-action="search-term"
-        const searchLink = e.target.closest('[data-action="search-term"]');
+      quickSuggestions.addEventListener("click", function (e) {
+        var searchLink = e.target.closest('[data-action="search-term"]');
         if (searchLink) {
           e.preventDefault();
-          const term = searchLink.getAttribute("data-term");
-          //console.log("🎯 Click en búsqueda reciente:", term);
+          var term = searchLink.getAttribute("data-term");
           if (term) {
             searchFor(term);
           }
         }
 
-        // También manejar sugerencias estáticas
-        const suggestionLink = e.target.closest(
+        var suggestionLink = e.target.closest(
           '[data-action="search-suggestion"]',
         );
         if (suggestionLink) {
           e.preventDefault();
-          const term = suggestionLink.getAttribute("data-term");
-          //console.log("🎯 Click en sugerencia:", term);
+          var term = suggestionLink.getAttribute("data-term");
           if (term) {
             searchFor(term);
           }
         }
       });
-      //console.log("✅ Delegación de eventos configurada en quickSuggestions");
     }
 
-    // Cerrar al hacer clic en overlay de búsqueda
+    // Cerrar al hacer clic en overlay
     if (searchOverlay) {
-      searchOverlay.addEventListener("click", (e) => {
+      searchOverlay.addEventListener("click", function (e) {
         if (e.target === searchOverlay) {
           closeSearch();
         }
       });
     }
 
-    // Inicializar búsquedas recientes
     updateRecentSearches();
 
-    // Event listener para input de búsqueda
+    // Event listener para input de busqueda
     if (searchInput) {
-      searchInput.addEventListener("input", (e) => {
-        console.log("Input event triggered, value:", e.target.value);
+      searchInput.addEventListener("input", function (e) {
         clearTimeout(searchTimeout);
-        const term = e.target.value.trim();
-        console.log("Term length:", term.length);
+        var term = e.target.value.trim();
 
-        // Show/hide clear button based on input content
+        // Show/hide clear button
         if (!clearInput) {
           clearInput = document.getElementById("clearInput");
         }
         if (clearInput) {
-          console.log("Clear button found, adding/removing .visible");
           if (term.length > 0) {
             clearInput.classList.add("visible");
-            console.log("Added .visible class");
           } else {
             clearInput.classList.remove("visible");
-            console.log("Removed .visible class");
           }
         }
 
         if (term.length >= CONFIG.MIN_SEARCH_LENGTH) {
-          searchTimeout = setTimeout(
-            () => performSearch(term),
-            CONFIG.DEBOUNCE_DELAY,
-          );
-        } else {
+          searchTimeout = setTimeout(function () {
+            performSearch(term);
+          }, CONFIG.DEBOUNCE_DELAY);
+        } else if (term.length === 0) {
+          // Limpiar cuando el input esta vacio
           if (resultsContainer) resultsContainer.innerHTML = "";
           if (quickSuggestions) quickSuggestions.style.display = "block";
+          renderFilterChips({ filters: {}, exclude: [] });
         }
       });
-      //console.log("✅ Listener de input configurado");
     }
 
-    // Event listener para botón de limpiar
+    // Event listener para boton de limpiar
     if (!clearInput) {
       clearInput = document.getElementById("clearInput");
     }
     if (clearInput) {
-      clearInput.addEventListener("click", () => {
+      clearInput.addEventListener("click", function () {
         if (searchInput) {
           searchInput.value = "";
           searchInput.focus();
-          // Hide clear button
           clearInput.classList.remove("visible");
-          // Clear results and show suggestions
           if (resultsContainer) resultsContainer.innerHTML = "";
           if (quickSuggestions) quickSuggestions.style.display = "block";
+          activeFilters = { text: "", filters: {}, exclude: [] };
+          renderFilterChips(activeFilters);
+          syncFiltersToURL();
         }
       });
     }
 
-    // Atajo de teclado Ctrl+K para abrir búsqueda
-    document.addEventListener("keydown", (e) => {
+    // Atajo de teclado Ctrl+K para abrir busqueda
+    document.addEventListener("keydown", function (e) {
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
         e.preventDefault();
         openSearch();
@@ -682,7 +996,7 @@
     });
 
     // Cerrar con ESC
-    document.addEventListener("keydown", (e) => {
+    document.addEventListener("keydown", function (e) {
       if (
         e.key === "Escape" &&
         searchOverlay &&
@@ -691,16 +1005,17 @@
         closeSearch();
       }
     });
-
-    //console.log("✅ Search System inicializado correctamente");
   }
 
-  // Exportar funciones al scope global para compatibilidad
+  // Exportar funciones al scope global
   window.openSearch = openSearch;
   window.closeSearch = closeSearch;
   window.searchFor = searchFor;
+  window.getActiveFilters = function () {
+    return activeFilters;
+  };
 
-  // Inicializar cuando el DOM esté listo
+  // Inicializar cuando el DOM este listo
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", initSearchListeners);
   } else {

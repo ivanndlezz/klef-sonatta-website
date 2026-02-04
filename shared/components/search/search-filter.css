@@ -1,0 +1,275 @@
+/**
+ * Search Filter System CSS
+ * Filter chips, autocomplete, and filter-related UI
+ */
+
+/* Filter Chips Container */
+.filter-chips-container {
+  display: none;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 16px 0;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.filter-chips-container.active {
+  display: flex;
+}
+
+/* Filter Chip */
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: #f0f0f5;
+  border: 1px solid #d2d2d7;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #1d1d1f;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-chip:hover {
+  background: #e5e5ea;
+  border-color: #0066cc;
+}
+
+.filter-chip.negated {
+  background: #fff0f0;
+  border-color: #ff6b6b;
+  color: #cc0000;
+}
+
+.filter-chip .chip-remove {
+  width: 14px;
+  height: 14px;
+  stroke: #6e6e73;
+  transition: stroke 0.2s ease;
+}
+
+.filter-chip:hover .chip-remove {
+  stroke: #1d1d1f;
+}
+
+.filter-chip.negated .chip-remove {
+  stroke: #cc0000;
+}
+
+.filter-chip.negated:hover .chip-remove {
+  stroke: #ff0000;
+}
+
+/* Clear All Button */
+.filter-chip-clear {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px dashed #d2d2d7;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #86868b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-chip-clear:hover {
+  background: #f5f5f7;
+  border-color: #86868b;
+  color: #1d1d1f;
+}
+
+/* Filter Autocomplete Dropdown */
+.filter-autocomplete {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  display: none;
+}
+
+.filter-autocomplete.active {
+  display: block;
+}
+
+.filter-autocomplete-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.filter-autocomplete-item:hover,
+.filter-autocomplete-item.selected {
+  background: #f5f5f7;
+}
+
+.filter-autocomplete-item .item-key {
+  font-weight: 500;
+  color: #0066cc;
+}
+
+.filter-autocomplete-item .item-description {
+  font-size: 12px;
+  color: #86868b;
+  margin-left: 12px;
+}
+
+.filter-autocomplete-item .item-arrow {
+  width: 16px;
+  height: 16px;
+  stroke: #86868b;
+}
+
+/* Search Input Highlighting */
+.search-input-wrapper {
+  position: relative;
+}
+
+.search-input {
+  position: relative;
+  z-index: 1;
+}
+
+/* Highlight filter tokens in input */
+.search-input::placeholder {
+  color: #86868b;
+}
+
+/* Results with Filters Applied */
+.results-header .filter-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #6e6e73;
+  margin-left: 8px;
+}
+
+.results-header .filter-badge .filter-badge-remove {
+  width: 12px;
+  height: 12px;
+  stroke: #6e6e73;
+  cursor: pointer;
+  margin-left: 4px;
+}
+
+.results-header .filter-badge .filter-badge-remove:hover {
+  stroke: #cc0000;
+}
+
+/* No Results Hint */
+.no-results-hint {
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: #fff8e5;
+  border: 1px solid #ffd666;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #856404;
+}
+
+/* Filter Help Panel */
+.filter-help-panel {
+  margin-top: 24px;
+  padding: 20px;
+  background: #f9f9f9;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+.filter-help-panel .help-title {
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #1d1d1f;
+}
+
+.filter-help-panel .help-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.filter-help-panel .help-item:last-child {
+  border-bottom: none;
+}
+
+.filter-help-panel .help-key {
+  font-family: "MonaspaceKrypton", monospace;
+  background: #e5e5ea;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #0066cc;
+}
+
+.filter-help-panel .help-desc {
+  color: #6e6e73;
+}
+
+/* Quick Filter Buttons */
+.quick-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.quick-filter-btn {
+  padding: 6px 12px;
+  background: white;
+  border: 1px solid #d2d2d7;
+  border-radius: 16px;
+  font-size: 13px;
+  color: #1d1d1f;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.quick-filter-btn:hover {
+  background: #f5f5f7;
+  border-color: #0066cc;
+  color: #0066cc;
+}
+
+.quick-filter-btn.active {
+  background: #0066cc;
+  border-color: #0066cc;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .filter-chips-container {
+    padding: 12px 0;
+  }
+
+  .filter-chip {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .quick-filters {
+    gap: 6px;
+  }
+
+  .quick-filter-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+}

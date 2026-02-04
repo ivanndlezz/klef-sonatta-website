@@ -30,10 +30,16 @@
       content="Klef Agency: Laboratorio de negocios que transforma marcas con estrategia, identidad y tecnología."
     />
 
+    <!-- Search Filter System CSS -->
+    <link
+      rel="stylesheet"
+      href="./shared/components/search/search-filter.css"
+    />
+
     <!-- Fonts -->
     <style data-css>
       html {
-        scroll-behavior: smooth;
+        /* scroll-behavior: smooth; */
       }
 
       body {
@@ -2010,6 +2016,13 @@
     <link rel="stylesheet" href="./shared/styles/glass-card.css" />
     <!-- Scripts -->
     <script src="./assets/scripts/scroll-lock.js"></script>
+    <script src="./assets/scripts/clean-urls.js"></script>
+
+    <!-- Search Filter System -->
+    <script src="./shared/components/search/query-parser.js"></script>
+    <script src="./shared/components/search/filter-config.js"></script>
+    <script src="./shared/components/search/search-system.js"></script>
+
     <script src="./assets/scripts/mega-menu-spa.js"></script>
     <script
       src="./shared/components/navigation/navigation-system.js"
@@ -3742,6 +3755,8 @@
           </svg>
         </button>
         <div class="search-content">
+          <!-- Filter Chips Container -->
+          <div id="filterChipsContainer" class="filter-chips-container"></div>
           <div class="search-input-wrapper">
             <div class="search-icon">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -4804,7 +4819,7 @@
     <!-- Dynamic Island lazy load on scroll with shared cookie utilities -->
     <script>
       (function () {
-        // Load shared cookie utilities
+        // Load shared cookie utilities sequentially with onload callbacks
         const cookiesScript = document.createElement("script");
         cookiesScript.src = "./shared/utilities/cookies/cookies.js";
         document.head.appendChild(cookiesScript);
@@ -4813,8 +4828,40 @@
         consentScript.src = "./shared/utilities/cookies/cookie-consent.js";
         document.head.appendChild(consentScript);
 
+        // Flag to track when cookie scripts are loaded
+        let cookieScriptsLoaded = false;
         let dynamicIslandLoaded = false;
-        let scrollListenerAdded = false;
+
+        // Hybrid approach: Check if functions exist, retry if not
+        function ensureCookieFunctionsAvailable(
+          maxRetries = 10,
+          delayMs = 100,
+        ) {
+          let attempts = 0;
+
+          function checkAndProceed() {
+            attempts++;
+            if (
+              typeof getCookieConsent === "function" &&
+              typeof loadScriptsForConsentedCategories === "function"
+            ) {
+              cookieScriptsLoaded = true;
+              // Now safe to add scroll listener
+              window.addEventListener("scroll", onScroll);
+            } else if (attempts < maxRetries) {
+              setTimeout(checkAndProceed, delayMs);
+            } else {
+              console.warn(
+                "Cookie consent scripts did not load, proceeding anyway",
+              );
+              cookieScriptsLoaded = true;
+              window.addEventListener("scroll", onScroll);
+            }
+          }
+
+          // Start checking after a brief delay to allow scripts to start loading
+          setTimeout(checkAndProceed, 50);
+        }
 
         function loadDynamicIslandResources() {
           if (dynamicIslandLoaded) return;
@@ -4845,10 +4892,20 @@
         }
 
         function checkAndRequestCookies() {
-          const consent = getCookieConsent();
-          loadScriptsForConsentedCategories(consent);
+          // Hybrid guard: Check if function exists before calling
+          if (typeof getCookieConsent === "function") {
+            const consent = getCookieConsent();
+            loadScriptsForConsentedCategories(consent);
+          } else {
+            console.warn("getCookieConsent not available yet, retrying...");
+            // Retry after short delay
+            setTimeout(checkAndRequestCookies, 100);
+            return;
+          }
           loadDynamicIslandResources();
         }
+
+        let scrollListenerAdded = false;
 
         function onScroll() {
           if (window.scrollY > 200 && !scrollListenerAdded) {
@@ -4858,7 +4915,8 @@
           }
         }
 
-        window.addEventListener("scroll", onScroll);
+        // Start checking for cookie functions, add scroll listener when ready
+        ensureCookieFunctionsAvailable();
       })();
     </script>
 
