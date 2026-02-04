@@ -126,6 +126,11 @@ const SheetTemplates = {
 
   // Renderizar contenido
   renderContent(config) {
+    // Si ContentRenderer está disponible, usarlo
+    if (typeof ContentRenderer !== "undefined" && config.type) {
+      return `<div id="sheet-content">${ContentRenderer.render(config)}</div>`;
+    }
+    // Fallback para HTML directo
     return `<div id="sheet-content">${config.html || ""}</div>`;
   },
 
