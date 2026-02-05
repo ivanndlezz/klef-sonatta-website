@@ -790,7 +790,7 @@
                     <div>
                         <h3>🦄 Creativos en este proyecto</h3>
                         <div class="team-names skeleton skeleton-text medium">
-                            Ivan gonzalez • Daniela Millán • Frank Tesisteco
+                            <!-- --->
                         </div>
                     </div>
                 </div>
@@ -810,7 +810,7 @@
                 <div class="sidebar-section">
                     <h3>Acerca de este proyecto</h3>
                     <p style="font-size: 15px; margin-bottom: 20px">
-                        ¿Cómo resolvimos las necesidades de Sead?
+                        <!-- -->
                     </p>
 
                     <div class="history-card">
@@ -1086,9 +1086,6 @@
         // DYNAMIC PORTFOLIO ITEM RENDERING
         // ============================================
 
-        // Mock slug - TODO: Extract from window.location.pathname
-        const mock_slug = "/fish-grill-restaurant-diseno-de-marca";
-
         // State management
         const state = {
             loading: true,
@@ -1120,7 +1117,6 @@
                         sourceUrl(size: LARGE)
                         altText
                         mediaItemUrl
-                        filePath
                     }
                     categories {
                         nodes {
@@ -1146,6 +1142,7 @@
                             uri
                             url
                             userId
+                            rolesList
                             avatar {
                                 url
                             }
@@ -1161,6 +1158,7 @@
                             uri
                             url
                             userId
+                            rolesList
                             avatar {
                                 url
                             }
@@ -1183,9 +1181,37 @@
             }
         `;
 
-        // Fetch portfolio item data
+        /**
+         * Extract slug from URL
+         * Supports multiple URL patterns:
+         * - ?slug=project-name
+         * - /portfolio/project-name
+         * - /project-name
+         */
+        function getSlugFromURL() {
+            // Try URL params first
+            const urlParams = new URLSearchParams(window.location.search);
+            const slugParam = urlParams.get('slug');
+            if (slugParam) return slugParam;
+
+            // Try pathname
+            const pathParts = window.location.pathname.split('/').filter(Boolean);
+            if (pathParts.length > 0) {
+                // Return last part of path
+                return pathParts[pathParts.length - 1];
+            }
+
+            // Fallback to mock for development
+            return "fish-grill-restaurant-diseno-de-marca";
+        }
+
+        /**
+         * Fetch portfolio item data from WordPress GraphQL
+         */
         async function fetchPortfolioItem(slug) {
             try {
+                console.log(`🔍 Fetching portfolio item: ${slug}`);
+
                 const response = await fetch(GRAPHQL_ENDPOINT, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -1196,17 +1222,50 @@
                 });
 
                 const json = await response.json();
-                if (json.errors) throw new Error(json.errors[0].message);
 
+                if (json.errors) {
+                    console.error('❌ GraphQL errors:', json.errors);
+                    throw new Error(json.errors[0].message);
+                }
+
+                if (!json.data.post) {
+                    throw new Error('Portfolio item not found');
+                }
+
+                console.log('✅ Portfolio item fetched:', json.data.post);
                 return json.data.post;
             } catch (error) {
+                console.error('❌ Fetch error:', error);
                 throw new Error(`Failed to fetch portfolio item: ${error.message}`);
             }
         }
 
-        // Render function
-        function renderPortfolioItem(data) {
-            // Update title
+        /**
+         * Process coAuthors to separate client from team
+         */
+        function processCoAuthors(data) {
+            const allAuthors = data.coAuthors || [];
+
+            // Find client (um_client role)
+            const client = allAuthors.find(author =>
+                author.rolesList && author.rolesList.includes('um_client')
+            );
+
+            // Get team members (exclude um_client)
+            const team = allAuthors.filter(author =>
+                !author.rolesList || !author.rolesList.includes('um_client')
+            );
+
+            return { client, team };
+        }
+
+        /**
+         * Render header section
+         */
+        function renderHeader(data) {
+            const { client, team } = processCoAuthors(data);
+
+            // Update page title
             document.title = `${data.title} - Klef Agency`;
 
             // Update h1
@@ -1214,80 +1273,198 @@
             if (h1) {
                 h1.textContent = data.title;
                 h1.classList.remove('skeleton', 'skeleton-title');
+                h1.style.display = 'block';
             }
 
-            // Update tag (first category)
+            // Update category tag
             const tag = document.querySelector('.tag');
             if (tag && data.categories.nodes.length > 0) {
                 tag.textContent = data.categories.nodes[0].name;
                 tag.classList.remove('skeleton', 'skeleton-tag');
+                tag.style.display = 'inline-block';
             }
 
-            // Update project info
+            // Update project name
             const projectName = document.querySelector('.project-name');
-            if (projectName) projectName.textContent = data.title;
+            if (projectName) {
+                projectName.textContent = data.title;
+            }
 
-            // Update author avatar
+            // Update client avatar (if exists)
             const avatar = document.querySelector('.avatar');
-            if (avatar) {
+            if (avatar && client) {
                 avatar.classList.remove('skeleton', 'skeleton-avatar');
+                avatar.style.display = 'block';
                 const img = avatar.querySelector('img');
-                if (img && data.author.node.avatar.url) {
-                    img.src = data.author.node.avatar.url;
+                if (img && client.avatar && client.avatar.url) {
+                    img.src = client.avatar.url;
+                    img.alt = client.name || 'Client avatar';
                 }
+            } else if (avatar && !client) {
+                // Hide avatar if no client
+                avatar.style.display = 'none';
             }
 
-            // Update team section
-            const teamNames = document.querySelectorAll('.team-names');
-            if (teamNames.length > 0) {
-                const authors = [data.author.node, ...data.coAuthors].map(author => author.name).join(' • ');
-                teamNames.forEach(nameEl => {
-                    nameEl.textContent = authors;
-                    nameEl.classList.remove('skeleton', 'skeleton-text', 'medium');
-                });
-            }
+            // Update "Ver el proyecto" button data attributes
+            const btnView = document.querySelector('.btn-view');
+            if (btnView) {
+                btnView.setAttribute('data-project-name', data.title);
+                btnView.setAttribute('data-project-type', data.categories.nodes[0]?.name || 'Portfolio');
 
-            // Update team avatars
-            const teamAvatars = document.querySelectorAll('.team-avatars');
-            if (teamAvatars.length > 0) {
-                teamAvatars.forEach(avatarsEl => {
-                    avatarsEl.classList.remove('skeleton', 'skeleton-team');
-                    avatarsEl.innerHTML = [data.author.node, ...data.coAuthors].map(author => `
-                        <img src="${author.avatar.url || 'data:image/svg+xml,%3Csvg width=\'32\' height=\'32\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Ccircle cx=\'16\' cy=\'16\' r=\'16\' fill=\'%23FF6B6B\'/%3E%3C/svg%3E'}" alt="Avatar" class="team-avatar" />
-                    `).join('');
-                });
-            }
-
-            // Update portfolio images
-            const portfolioImages = document.querySelector('.portfolio-images');
-            if (portfolioImages) {
-                const images = data.portfolioImages.map(img => `<img src="${img.sourceUrl}" alt="${img.altText}" />`).join('');
-                portfolioImages.innerHTML = images;
-            }
-
-            // Update tags
-            const tagsLists = document.querySelectorAll('.tags-list');
-            if (tagsLists.length > 0) {
-                const tags = data.tags.nodes.map(tag => `<span>#${tag.slug}</span>`).join(' ');
-                tagsLists.forEach(list => {
-                    list.innerHTML = tags;
-                    const spans = list.querySelectorAll('span');
-                    spans.forEach(span => span.classList.remove('skeleton', 'skeleton-text', 'short'));
-                });
-            }
-
-            // Update sidebar description
-            const sidebarDesc = document.querySelector('.sidebar p');
-            if (sidebarDesc && data.content) {
-                // Extract first paragraph or limit content
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = data.content;
-                const firstP = tempDiv.querySelector('p');
-                sidebarDesc.textContent = firstP ? firstP.textContent : 'Portfolio item description';
+                // Extract year from date
+                const year = new Date(data.date).getFullYear();
+                btnView.setAttribute('data-project-year', year);
             }
         }
 
-        // State management
+        /**
+         * Render portfolio images
+         */
+        function renderImages(data) {
+            const portfolioImages = document.querySelector('.portfolio-images');
+            if (!portfolioImages) return;
+
+            // Start with featured image if exists
+            let imagesHTML = '';
+
+            if (data.featuredImage && data.featuredImage.node) {
+                imagesHTML += `<img src="${data.featuredImage.node.sourceUrl}" alt="${data.featuredImage.node.altText || data.title}" />`;
+            }
+
+            // Add portfolio images
+            if (data.portfolioImages && data.portfolioImages.length > 0) {
+                imagesHTML += data.portfolioImages.map(img =>
+                    `<img src="${img.sourceUrl}" alt="${img.altText || 'Portfolio image'}" />`
+                ).join('');
+            }
+
+            portfolioImages.innerHTML = imagesHTML;
+        }
+
+        /**
+         * Render sidebar section
+         */
+        function renderSidebar(data) {
+            const { client, team } = processCoAuthors(data);
+
+            // Update description (if content exists)
+            const sidebarDesc = document.querySelector('.sidebar-section p');
+            if (sidebarDesc && data.content) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = data.content;
+                const firstP = tempDiv.querySelector('p');
+
+                if (firstP && firstP.textContent.trim()) {
+                    const description = firstP.textContent.trim();
+                    sidebarDesc.textContent = description.length > 100
+                        ? description.substring(0, 100) + '...'
+                        : description;
+
+                    // Update history card text
+                    const historyText = document.querySelector('.history-text span');
+                    if (historyText) {
+                        historyText.textContent = description.substring(0, 60) + '...';
+                    }
+
+                    // Update "Leer historia" button
+                    const btnRead = document.querySelector('.btn-read');
+                    if (btnRead) {
+                        btnRead.setAttribute('data-story-title', `Historia del Proyecto ${data.title}`);
+                    }
+                } else {
+                    // Hide description section if no content
+                    const descSection = document.querySelector('.sidebar-section');
+                    if (descSection) descSection.style.display = 'none';
+                }
+            }
+
+            // Render team section (only if team members exist)
+            if (team.length > 0) {
+                renderTeamSection(team);
+            } else {
+                // Hide team section if no team members
+                const teamSections = document.querySelectorAll('.sidebar-section .team-section');
+                teamSections.forEach(section => {
+                    const parent = section.closest('.sidebar-section');
+                    if (parent) parent.style.display = 'none';
+                });
+            }
+
+            // Render tags (if exist)
+            if (data.tags && data.tags.nodes.length > 0) {
+                renderTags(data.tags.nodes);
+            } else {
+                // Hide tags section
+                const tagsSections = document.querySelectorAll('.sidebar-section');
+                tagsSections.forEach(section => {
+                    if (section.querySelector('.tags-list')) {
+                        section.style.display = 'none';
+                    }
+                });
+            }
+        }
+
+        /**
+         * Render team section
+         */
+        function renderTeamSection(team) {
+            // Update team avatars
+            const teamAvatars = document.querySelectorAll('.team-avatars');
+            teamAvatars.forEach(avatarsEl => {
+                avatarsEl.classList.remove('skeleton', 'skeleton-team');
+                avatarsEl.style.display = 'flex';
+                avatarsEl.innerHTML = team.map(author => {
+                    const avatarUrl = author.avatar?.url ||
+                        `data:image/svg+xml,%3Csvg width='32' height='32' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23${Math.floor(Math.random() * 16777215).toString(16)}'/%3E%3C/svg%3E`;
+
+                    return `<img src="${avatarUrl}" alt="${author.name}" class="team-avatar" />`;
+                }).join('');
+            });
+
+            // Update team names
+            const teamNames = document.querySelectorAll('.team-names');
+            const namesText = team.map(author => {
+                if (author.firstName && author.lastName) {
+                    return `${author.firstName} ${author.lastName}`;
+                }
+                return author.name;
+            }).join(' • ');
+
+            teamNames.forEach(nameEl => {
+                nameEl.textContent = namesText;
+                nameEl.classList.remove('skeleton', 'skeleton-text', 'medium');
+                nameEl.style.display = 'block';
+            });
+        }
+
+        /**
+         * Render tags section
+         */
+        function renderTags(tags) {
+            const tagsLists = document.querySelectorAll('.tags-list');
+            const tagsHTML = tags.map(tag => `<span>#${tag.slug}</span>`).join(' ');
+
+            tagsLists.forEach(list => {
+                list.innerHTML = tagsHTML;
+            });
+        }
+
+        /**
+         * Main render function
+         */
+        function renderPortfolioItem(data) {
+            console.log('🎨 Rendering portfolio item:', data.title);
+
+            renderHeader(data);
+            renderImages(data);
+            renderSidebar(data);
+
+            console.log('✅ Portfolio item rendered successfully');
+        }
+
+        /**
+         * Update UI state
+         */
         function updateState(newState) {
             Object.assign(state, newState);
 
@@ -1302,9 +1479,10 @@
                 // Hide skeletons and show error
                 skeletons.forEach(skeleton => skeleton.style.display = 'none');
                 if (errorEl) {
-                    errorEl.textContent = state.error;
+                    errorEl.textContent = `⚠️ ${state.error}`;
                     errorEl.style.display = 'block';
                 }
+                console.error('❌ Error state:', state.error);
             } else if (state.data) {
                 // Hide skeletons and render data
                 skeletons.forEach(skeleton => skeleton.style.display = 'none');
@@ -1313,10 +1491,15 @@
             }
         }
 
-        // Initialize
+        /**
+         * Initialize on page load
+         */
         document.addEventListener('DOMContentLoaded', async () => {
             try {
-                const data = await fetchPortfolioItem(mock_slug);
+                const slug = getSlugFromURL();
+                console.log('🚀 Initializing portfolio item page with slug:', slug);
+
+                const data = await fetchPortfolioItem(slug);
                 updateState({ loading: false, data, error: null });
             } catch (error) {
                 updateState({ loading: false, data: null, error: error.message });

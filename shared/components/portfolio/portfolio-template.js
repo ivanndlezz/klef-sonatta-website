@@ -1,0 +1,109 @@
+const portfolioTemplate = `
+    <link rel="stylesheet" href=".porftolio.css">
+    <!-- SVG Icons -->
+    <svg style="display: none">
+        <defs>
+            <symbol id="icon-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25">
+                </path>
+            </symbol>
+
+            <symbol id="home" viewBox="0 0 24 24" fill="currentColor">
+                <path
+                    d="m12 5.432 8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V21a.75.75 0 0 1-.75.75H5.625a1.875 1.875 0 0 1-1.875-1.875v-6.198a2.29 2.29 0 0 0 .091-.086L12 5.432Z">
+                </path>
+            </symbol>
+        </defs>
+    </svg>
+
+    <!--Breadcrumb -->
+    <div class="breadcrumb">
+        <a href="#">
+            <svg>
+                <use href="#home"></use>
+            </svg>
+        </a>
+        / portfolio
+    </div>
+
+    <!--Main Container-- >
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <!-- Tag Skeleton -->
+                <div class="tag skeleton skeleton-tag"></div>
+
+                <!-- Title Skeleton -->
+                <h1 id="title" data-fetch="data.title" class="skeleton skeleton-title"></h1>
+
+                <!-- Project Info -->
+                <div class="project-info">
+                    <!-- Avatar Skeleton -->
+                    <div class="avatar skeleton skeleton-avatar"></div>
+
+                    <div class="project-info-text">
+                        <div class="project-label skeleton skeleton-text short"></div>
+                        <div class="project-name skeleton skeleton-text medium"></div>
+                    </div>
+
+                    <!-- Button Skeleton -->
+                    <button class="btn-view skeleton skeleton-button"></button>
+                </div>
+
+                <!-- Mobile Team Section -->
+                <div class="team-section mobile">
+                    <div class="team-avatars">
+                        <div class="team-avatar skeleton skeleton-team-avatar"></div>
+                        <div class="team-avatar skeleton skeleton-team-avatar"></div>
+                    </div>
+                    <div>
+                        <h3 class="skeleton skeleton-text medium"><!-- 🦄 Creativos en este proyecto --></h3>
+                        <div class="team-names skeleton skeleton-text medium"></div>
+                    </div>
+                </div>
+
+                <!-- Portfolio Images Skeleton -->
+                <div class="portfolio-images">
+                    <div class="skeleton skeleton-image"></div>
+                    <div class="skeleton skeleton-image" style="height: 300px;"></div>
+                    <div class="skeleton skeleton-image" style="height: 300px;"></div>
+                    <div class="skeleton skeleton-image" style="height: 350px;"></div>
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <!-- About Section -->
+                <div class="sidebar-section">
+                    <h3 class="skeleton skeleton-text medium"><!-- Acerca de este proyecto --></h3>
+                    <p class="skeleton skeleton-text long"></p>
+                    <p class="skeleton skeleton-text medium"></p>
+
+                    <div class="history-card skeleton skeleton-card"></div>
+                </div>
+
+                <!-- Team Section -->
+                <div class="sidebar-section">
+                    <div class="team-section">
+                        <div class="team-avatars">
+                            <div class="team-avatar skeleton skeleton-team-avatar"></div>
+                            <div class="team-avatar skeleton skeleton-team-avatar"></div>
+                        </div>
+                        <div class="creatives-in-project">
+                            <h3 class="skeleton skeleton-text medium"><!-- 🦄 Creativos en este proyecto --></h3>
+                            <div class="team-names skeleton skeleton-text medium"></div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <!--Footer Spacer-- >
+    <div class="footer-spacer"></div>
+
+    <!--Mobile Bottom Bar-- >
+        <div class="mobile-bottom-bar">
+            <div class="mobile-card skeleton skeleton-card"></div>
+        </div>``; `;

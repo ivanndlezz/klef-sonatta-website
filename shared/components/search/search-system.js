@@ -789,10 +789,17 @@
           ? '<div class="result-author">Por ' + authorName + "</div>"
           : "";
 
+        // Generate correct URL based on content type
+        var itemUrl = node.uri || "#";
+        if (node.contentType === "posts" && categoryClass === "portfolio") {
+          // Portfolio posts should use portfolio-item-fetch.html with slug parameter
+          itemUrl = "/portfolio/" + node.slug;
+        }
+
         html +=
           '<li class="result-item">' +
           '<a href="' +
-          (node.uri || "#") +
+          itemUrl +
           '">' +
           '<div class="result-image" style="height: ' +
           imageHeight +
@@ -858,19 +865,35 @@
       return "blog";
     }
 
-    var firstCategory = categories[0];
-    var categoryName = firstCategory && firstCategory.name;
+    // Check if ANY category is "Portfolio"
+    var hasPortfolio = categories.some(function (cat) {
+      return cat.name && cat.name.toLowerCase() === "portfolio";
+    });
 
-    if (!categoryName) {
+    if (hasPortfolio) {
+      return "portfolio";
+    }
+
+    // Check if ANY category is "Blog"
+    var hasBlog = categories.some(function (cat) {
+      return cat.name && cat.name.toLowerCase() === "blog";
+    });
+
+    if (hasBlog) {
       return "blog";
     }
 
-    var categoryMap = {
-      blog: "blog",
-      portfolio: "portfolio",
-      "sin-categoria": "sin-categoria",
-    };
-    return categoryMap[categoryName.toLowerCase()] || "blog";
+    // Check for "Sin categoría"
+    var hasSinCategoria = categories.some(function (cat) {
+      return cat.slug && cat.slug === "sin-categoria";
+    });
+
+    if (hasSinCategoria) {
+      return "sin-categoria";
+    }
+
+    // Default fallback
+    return "blog";
   }
 
   // Inicializar event listeners
