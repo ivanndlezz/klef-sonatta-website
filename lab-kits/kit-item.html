@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=0" />
+    <title>Kit SODA — Final Premium</title>
+    <style>
+        :root {
+            --bg: #f5f5f7;
+            --canvas: #ffffff;
+            --text: #1d1d1f;
+            --text-muted: #86868b;
+            --accent: #0071e3;
+            --border: rgba(0, 0, 0, 0.1);
+            --radius-apple: 22px;
+            --radius-sheet: 28px;
+            --ease: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        /* Trigger Principal */
+        .hero-view {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .btn-hero {
+            background: var(--text);
+            color: white;
+            border: none;
+            padding: 18px 42px;
+            border-radius: 99px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s var(--ease);
+        }
+
+        .btn-hero:active {
+            transform: scale(0.96);
+        }
+
+        /* Drawer System */
+        .drawer {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            visibility: hidden;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .drawer[data-open="true"] {
+            visibility: visible;
+        }
+
+        .drawer-backdrop {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            opacity: 0;
+            transition: opacity 0.5s var(--ease);
+        }
+
+        .drawer[data-open="true"] .drawer-backdrop {
+            opacity: 1;
+        }
+
+        .drawer-panel {
+            position: relative;
+            width: min(600px, 100vw);
+            height: 100%;
+            background: var(--bg);
+            transform: translateX(100%);
+            transition: transform 0.6s cubic-bezier(0.32, 0.72, 0, 1);
+            display: flex;
+            flex-direction: column;
+            box-shadow: -15px 0 50px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+        }
+
+        .drawer[data-open="true"] .drawer-panel {
+            transform: translateX(0);
+        }
+
+        .scroll-area {
+            flex: 1;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+
+        }
+
+        /* Portada y Avatar - Z-INDEX BAJO */
+        .profile-header {
+            background: white;
+            padding-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cover-gradient {
+            --w: 50vw;
+            height: calc(var(--w) / 1.1);
+            width: var(--w);
+            max-height: 400px;
+            min-width: -webkit-fill-available;
+            background: linear-gradient(135deg, #f0f0f5 0%, #e2e2e8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            aspect-ratio: 3/1;
+        }
+
+        .cover-gradient::after {
+            content: "KLEF";
+            font-size: 100px;
+            font-weight: 900;
+            color: rgba(0, 0, 0, 0.03);
+        }
+
+        .profile-details {
+            padding: 0 30px;
+            margin-top: -60px;
+        }
+
+        .kit-box {
+            width: 110px;
+            height: 110px;
+            background: white;
+            border-radius: 24px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 8px;
+            padding: 10px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.15);
+            cursor: pointer;
+            position: relative;
+            z-index: 10;
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .kit-box .c {
+            background: #f5f5f7;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 20px;
+        }
+
+        .main-text {
+            margin-top: 20px;
+        }
+
+        .main-text h1 {
+            font-size: 34px;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: -0.05em;
+        }
+
+        .main-text p {
+            font-size: 18px;
+            color: var(--text-muted);
+            margin: 6px 0 0 0;
+        }
+
+        /* Nav Sticky - Z-INDEX ALTO */
+        .sticky-nav {
+            position: sticky;
+            top: 0;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            display: flex;
+            padding: 0 30px;
+            gap: 25px;
+            border-bottom: 1px solid var(--border);
+            z-index: 500;
+            /* Asegura que pase sobre el avatar al scrollear */
+        }
+
+        .nav-link {
+            padding: 18px 0;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: color 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-link[data-active="true"] {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        /* Secciones */
+        .sections-wrapper {
+            padding: 30px;
+        }
+
+        .sec {
+            margin-bottom: 60px;
+            scroll-margin-top: 80px;
+        }
+
+        .sec h2 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            letter-spacing: -0.03em;
+        }
+
+        .card-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .premium-card {
+            background: white;
+            padding: 24px;
+            border-radius: var(--radius-apple);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border);
+        }
+
+        .premium-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .premium-card p {
+            margin: 0;
+            font-size: 16px;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Venta Final */
+        .conversion-zone {
+            background: var(--text);
+            color: white;
+            border-radius: 28px;
+            padding: 40px 30px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .conversion-zone h2 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .conversion-zone p {
+            color: #86868b;
+            margin-bottom: 30px;
+        }
+
+        .btn-cta {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 16px 40px;
+            border-radius: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            font-size: 17px;
+            transition: background 0.2s;
+        }
+
+        .btn-cta:hover {
+            background: #0077ed;
+        }
+
+        /* Sheet / Modal */
+        .sheet {
+            position: absolute;
+            inset: 0;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .sheet[data-open="true"] {
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .sheet-box {
+            background: white;
+            border-radius: var(--radius-sheet) var(--radius-sheet) 0 0;
+            padding: 20px 30px 50px;
+            transform: translateY(100%);
+            transition: transform 0.5s cubic-bezier(0.32, 0.72, 0, 1);
+            box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .sheet[data-open="true"] .sheet-box {
+            transform: translateY(0);
+        }
+
+        .handle {
+            width: 40px;
+            height: 5px;
+            background: #e8e8ed;
+            border-radius: 10px;
+            margin: 0 auto 20px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            width: 35px;
+            height: 35px;
+            background: #f5f5f7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+        }
+
+        /* Toggle for kit-box expansion */
+        #kit-toggle {
+            display: none;
+        }
+
+        /* Overlay when expanded */
+        .kit-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s var(--ease);
+            z-index: 501;
+        }
+
+        #kit-toggle:checked~.scroll-area .kit-overlay {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #kit-toggle:checked~.scroll-area .sticky-nav {
+            z-index: 0;
+        }
+
+        /* Kit-box expanded state */
+        #kit-toggle:checked~.scroll-area .profile-header .profile-details .kit-box {
+            width: 240px;
+            height: 240px;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 12px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(30px) saturate(180%);
+            -webkit-backdrop-filter: blur(30px) saturate(180%);
+            border-radius: 32px;
+            transform: translateY(10px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+            z-index: 502;
+        }
+
+        /* Kit-box letter styling */
+        #kit-toggle:checked~.scroll-area .profile-header .profile-details .kit-box .c {
+            font-size: 28px;
+            border-radius: 12px;
+        }
+
+        /* FIX: Aspect Ratio for letters and Flex Layout */
+        .c {
+            aspect-ratio: 1/1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Kit names - hidden by default */
+        .kit-name {
+            display: none;
+            opacity: 0;
+            transform: translateY(8px);
+            transition: all 0.3s ease;
+            font-size: 10px;
+            font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
+            color: var(--text);
+            margin-top: 4px;
+            /* Space between letter and name */
+        }
+
+        #kit-toggle:checked~.scroll-area .profile-header .profile-details .kit-box .kit-name {
+            display: block;
+            /* Visible in flow */
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Staggered delays for names */
+        #kit-toggle:checked~.scroll-area .profile-header .profile-details .kit-box .c:nth-child(1) .kit-name {
+            transition-delay: 0.05s;
+        }
+
+        #kit-toggle:checked~.scroll-area .profile-header .profile-details .kit-box .c:nth-child(2) .kit-name {
+            transition-delay: 0.10s;
+        }
+
+        #kit-toggle:checked~.scroll-area .profile-header .profile-details .kit-box .c:nth-child(3) .kit-name {
+            transition-delay: 0.15s;
+        }
+
+        #kit-toggle:checked~.scroll-area .profile-header .profile-details .kit-box .c:nth-child(4) .kit-name {
+            transition-delay: 0.20s;
+        }
+
+        ::-webkit-scrollbar {
+            width: 0;
+        }
+
+        .first-click {
+            cursor: pointer;
+            pointer-events: none;
+        }
+
+        #kit-toggle:not(:checked)~.scroll-area .first-click {
+            cursor: pointer;
+            pointer-events: all;
+            width: 110px;
+            height: 110px;
+            display: flex;
+            position: absolute;
+        }
+
+        #kit-toggle:not(:checked)~.scroll-area .kit-box {
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div style="max-width: 1200px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column;">
+        <!-- Toggle control -->
+        <input type="checkbox" id="kit-toggle">
+        <div class="scroll-area" id="scroller">
+
+            <!-- Portada -->
+            <header class="profile-header">
+                <div class="cover-gradient"></div>
+                <div class="profile-details">
+                    <label for="kit-toggle" class="first-click"></label>
+                    <div class="kit-box">
+                        <div class="c">S<div class="kit-name">SEO Tech</div>
+                        </div>
+                        <div class="c">O<div class="kit-name">Optimization</div>
+                        </div>
+                        <div class="c">D<div class="kit-name">Design</div>
+                        </div>
+                        <div class="c">A<div class="kit-name">Analytics</div>
+                        </div>
+                    </div>
+                    <!-- Overlay -->
+                    <label for="kit-toggle" class="kit-overlay"></label>
+                    <div class="main-text">
+                        <h1>Kit SODA</h1>
+                        <p>Tu infraestructura digital en piloto automático.</p>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Navigation -->
+            <nav class="sticky-nav">
+                <div class="nav-link" data-active="true" data-sec="modulos" onclick="goSec('modulos')">Módulos</div>
+                <div class="nav-link" data-sec="roadmap" onclick="goSec('roadmap')" data-active="false">Roadmap</div>
+                <div class="nav-link" data-sec="faq" onclick="goSec('faq')" data-active="false">Preguntas</div>
+            </nav>
+
+            <div class="sections-wrapper">
+                <!-- Modulos -->
+                <section class="sec" id="modulos">
+                    <h2>Módulos del Sistema</h2>
+                    <div class="card-grid">
+                        <div class="premium-card">
+                            <h3>S — SEO Technical</h3>
+                            <p>Configuración profunda de Schema, Web Vitals y estructura de datos para dominar los
+                                resultados de búsqueda.</p>
+                        </div>
+                        <div class="premium-card">
+                            <h3>O — Optimization</h3>
+                            <p>Entrega de activos a través de CDN, compresión inteligente y carga asíncrona para
+                                velocidad extrema.</p>
+                        </div>
+                        <div class="premium-card">
+                            <h3>D — Design Language</h3>
+                            <p>Sistema de diseño coherente que comunica confianza y calidad en cada interacción.</p>
+                        </div>
+                        <div class="premium-card">
+                            <h3>A — Analytics &amp; Growth</h3>
+                            <p>Tracking de eventos, mapas de calor e integración con tu embudo de ventas actual.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Roadmap -->
+                <section class="sec" id="roadmap">
+                    <h2>Hoja de Ruta</h2>
+                    <div style="border-left: 2px solid var(--border); padding-left: 25px; margin-left: 10px;">
+                        <div style="margin-bottom: 30px; position: relative;">
+                            <div
+                                style="position: absolute; left: -32px; top: 4px; width: 12px; height: 12px; background: var(--accent); border-radius: 50%;">
+                            </div>
+                            <h4 style="margin:0; font-size: 18px;">Día 1-7: Auditoría y Estrategia</h4>
+                            <p style="margin: 5px 0 0; color: var(--text-muted);">Definimos los objetivos y la
+                                arquitectura técnica inicial.</p>
+                        </div>
+                        <div style="margin-bottom: 30px; position: relative;">
+                            <div
+                                style="position: absolute; left: -32px; top: 4px; width: 12px; height: 12px; background: var(--accent); border-radius: 50%;">
+                            </div>
+                            <h4 style="margin:0; font-size: 18px;">Día 8-25: Desarrollo y Diseño</h4>
+                            <p style="margin: 5px 0 0; color: var(--text-muted);">Construcción modular de la
+                                interfaz y optimización SODA.</p>
+                        </div>
+                        <div style="position: relative;">
+                            <div
+                                style="position: absolute; left: -32px; top: 4px; width: 12px; height: 12px; background: var(--accent); border-radius: 50%;">
+                            </div>
+                            <h4 style="margin:0; font-size: 18px;">Día 30: Lanzamiento</h4>
+                            <p style="margin: 5px 0 0; color: var(--text-muted);">QA final y despliegue en entorno
+                                de producción.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- FAQ -->
+                <section class="sec" id="faq">
+                    <h2>Ayuda y Soporte</h2>
+                    <div style="display: grid; gap: 10px;">
+                        <div
+                            style="background: white; padding: 15px 20px; border-radius: 15px; border: 1px solid var(--border);">
+                            <div style="font-weight: 700;">¿Es compatible con mi tecnología actual?</div>
+                            <div style="font-size: 14px; color: var(--text-muted); margin-top: 5px;">Totalmente. El
+                                Kit SODA es agnóstico y puede integrarse con cualquier stack moderno.</div>
+                        </div>
+                        <div
+                            style="background: white; padding: 15px 20px; border-radius: 15px; border: 1px solid var(--border);">
+                            <div style="font-weight: 700;">¿Cuánto tiempo tarda el retorno de inversión?</div>
+                            <div style="font-size: 14px; color: var(--text-muted); margin-top: 5px;">Nuestros
+                                clientes ven mejoras en el performance y tráfico orgánico en los primeros 30-60
+                                días.</div>
+                        </div>
+                    </div>
+
+                    <!-- VENTA FINAL (CTA) -->
+                    <div class="conversion-zone">
+                        <h2>¿Listo para escalar?</h2>
+                        <p>Únete a las empresas que ya utilizan SODA para dominar su industria digital.</p>
+                        <button class="btn-cta">Empezar ahora</button>
+                        <div style="margin-top: 15px; font-size: 13px; color: #515154;">Soporte garantizado 24/7
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const dr = document.getElementById('drawer');
+        const sh = document.getElementById('sheet');
+        const sc = document.getElementById('scroller');
+        const lks = document.querySelectorAll('.nav-link');
+
+        function openDrawer() { dr.setAttribute('data-open', 'true'); document.body.style.overflow = 'hidden'; }
+        function closeDrawer() { dr.setAttribute('data-open', 'false'); document.body.style.overflow = ''; }
+        function openSheet() { sh.setAttribute('data-open', 'true'); }
+        function closeSheet() { sh.setAttribute('data-open', 'false'); }
+
+        function goSec(id) {
+            const el = document.getElementById(id);
+            if (el) sc.scrollTo({ top: el.offsetTop - 80, behavior: 'smooth' });
+        }
+
+        sc.addEventListener('scroll', () => {
+            const sections = ['modulos', 'roadmap', 'faq'];
+            let active = 'modulos';
+
+            // Lógica especial para detectar final de scroll (el último tab)
+            const isAtBottom = sc.scrollHeight - sc.scrollTop <= sc.clientHeight + 50;
+
+            if (isAtBottom) {
+                active = 'faq';
+            } else {
+                sections.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (sc.scrollTop >= (el.offsetTop - 100)) {
+                        active = id;
+                    }
+                });
+            }
+
+            lks.forEach(l => l.setAttribute('data-active', l.getAttribute('data-sec') === active));
+        });
+    </script>
+</body>
+
+</html>
