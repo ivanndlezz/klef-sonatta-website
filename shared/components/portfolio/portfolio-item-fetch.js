@@ -130,7 +130,7 @@ function getSlugFromURL() {
   }
 
   // Fallback? Retornar null o lanzar error es mejor que un mock hardcodeado en producción
-  console.warn("Could not extract slug from URL");
+  // console.warn("Could not extract slug from URL");
   return null;
 }
 
@@ -140,7 +140,7 @@ function getSlugFromURL() {
 async function fetchPortfolioItem(slug) {
   try {
     if (!slug) throw new Error("No slug provided");
-    console.log(`🔍 Fetching portfolio item: ${slug}`);
+    // console.log(`🔍 Fetching portfolio item: ${slug}`);
 
     const response = await fetch(GRAPHQL_ENDPOINT, {
       method: "POST",
@@ -154,7 +154,7 @@ async function fetchPortfolioItem(slug) {
     const json = await response.json();
 
     if (json.errors) {
-      console.error("❌ GraphQL errors:", json.errors);
+      // console.error("❌ GraphQL errors:", json.errors);
       throw new Error(json.errors[0].message);
     }
 
@@ -162,10 +162,10 @@ async function fetchPortfolioItem(slug) {
       throw new Error("Portfolio item not found");
     }
 
-    console.log("✅ Portfolio item fetched:", json.data.post);
+    // console.log("✅ Portfolio item fetched:", json.data.post);
     return json.data.post;
   } catch (error) {
-    console.error("❌ Fetch error:", error);
+    // console.error("❌ Fetch error:", error);
     throw new Error(`Failed to fetch portfolio item: ${error.message}`);
   }
 }
@@ -273,30 +273,153 @@ function renderHeader(data) {
 }
 
 /**
- * Render portfolio images
+ * Count total images (featured + portfolio)
  */
-function renderImages(data) {
+function countTotalImages(data) {
+  const featuredCount = data.featuredImage && data.featuredImage.node ? 1 : 0;
+  const portfolioCount = data.portfolioImages ? data.portfolioImages.length : 0;
+  return featuredCount + portfolioCount;
+}
+
+/**
+ * Setup progressive image loading with IntersectionObserver
+ */
+function setupProgressiveImageLoading() {
   const portfolioImages = document.querySelector(".portfolio-images");
   if (!portfolioImages) return;
 
-  // Start with featured image if exists
-  let imagesHTML = "";
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const placeholder = entry.target;
+          const src = placeholder.dataset.src;
+          const alt = placeholder.dataset.alt;
+          const imgIndex = placeholder.dataset.imageIndex;
+
+          if (src) {
+            // Create new image and wait for it to load
+            const newImg = new Image();
+            newImg.className = "portfolio-img"; // Base class
+
+            newImg.onload = () => {
+              placeholder.replaceWith(newImg);
+              // Add loaded class for fade-in effect
+              // RequestAnimationFrame ensures transition happens after mount
+              requestAnimationFrame(() => {
+                newImg.classList.add("loaded");
+              });
+
+              // Dispatch event for tracking
+              document.dispatchEvent(
+                new CustomEvent("image-loaded", {
+                  detail: { index: parseInt(imgIndex) },
+                }),
+              );
+            };
+
+            newImg.onerror = () => {
+              // On error, show error placeholder
+              const errorDiv = document.createElement("div");
+              errorDiv.className = "image-error";
+              errorDiv.textContent = "Error al cargar imagen";
+              placeholder.replaceWith(errorDiv);
+            };
+
+            newImg.src = src;
+            newImg.alt = alt || "Portfolio image";
+            newImg.dataset.imageIndex = imgIndex;
+
+            observer.unobserve(placeholder);
+          }
+        }
+      });
+    },
+    {
+      rootMargin: "100px", // Start loading 100px before visible
+      threshold: 0.1,
+    },
+  );
+
+  // Observe all skeleton placeholders
+  portfolioImages
+    .querySelectorAll(".skeleton-loading")
+    .forEach((placeholder) => {
+      observer.observe(placeholder);
+    });
+}
+
+/**
+ * Render portfolio images with progressive loading
+ */
+function renderImages(data) {
+  const portfolioImages = document.querySelector(".portfolio-images");
+  if (!portfolioImages) {
+    // console.error("❌ renderImages: .portfolio-images no encontrado");
+    return;
+  }
+
+  // console.log("🎨 renderImages ejecutado", data);
+  // console.log("  - featuredImage:", data.featuredImage);
+  // console.log("  - portfolioImages:", data.portfolioImages);
+
+  // Count total images first
+  const totalImages = countTotalImages(data);
+  // console.log("  - totalImages:", totalImages);
+
+  if (totalImages === 0) {
+    // console.warn("⚠️ No hay imágenes para renderizar");
+    portfolioImages.innerHTML =
+      '<div class="no-images">No hay imágenes disponibles</div>';
+    return;
+  }
+
+  // Build images array with metadata for progressive loading
+  const images = [];
+  let imageIndex = 0;
 
   if (data.featuredImage && data.featuredImage.node) {
-    imagesHTML += `<img src="${data.featuredImage.node.sourceUrl}" alt="${data.featuredImage.node.altText || data.title}" />`;
+    images.push({
+      src: data.featuredImage.node.sourceUrl,
+      alt: data.featuredImage.node.altText || data.title,
+      index: imageIndex++,
+    });
+    // console.log("  - featured added:", images[0].src);
   }
 
-  // Add portfolio images
+  // Add portfolio images with correct incremental indices
   if (data.portfolioImages && data.portfolioImages.length > 0) {
-    imagesHTML += data.portfolioImages
-      .map(
-        (img) =>
-          `<img src="${img.sourceUrl}" alt="${img.altText || "Portfolio image"}" />`,
-      )
-      .join("");
+    data.portfolioImages.forEach((img) => {
+      images.push({
+        src: img.sourceUrl,
+        alt: img.altText || "Portfolio image",
+        index: imageIndex++,
+      });
+    });
+    // console.log("  - portfolio images added:", images.length);
   }
+
+  // Create div elements with skeleton styling and data-src for progressive loading
+  const imagesHTML = images
+    .map(
+      (img) =>
+        `<div 
+          class="portfolio-img skeleton skeleton-loading" 
+          data-image-index="${img.index}"
+          data-src="${img.src}"
+          data-alt="${img.alt}"
+        >
+          <div class="skeleton-shimmer"></div>
+        </div>`,
+    )
+    .join("");
 
   portfolioImages.innerHTML = imagesHTML;
+
+  // Setup progressive loading
+  setupProgressiveImageLoading();
+
+  // Remove skeleton class from container
   portfolioImages.classList.remove("skeleton");
 }
 
@@ -438,7 +561,7 @@ function renderTags(tags) {
  * Main render function
  */
 function renderPortfolioItem(data) {
-  console.log("🎨 Rendering portfolio item:", data.title);
+  // console.log("🎨 Rendering portfolio item:", data.title);
 
   renderHeader(data);
   renderImages(data);
@@ -449,7 +572,7 @@ function renderPortfolioItem(data) {
     new CustomEvent("portfolio-rendered", { detail: data }),
   );
 
-  console.log("✅ Portfolio item rendered successfully");
+  // console.log("✅ Portfolio item rendered successfully");
 }
 
 /**
@@ -485,7 +608,7 @@ function updateState(newState) {
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     const slug = getSlugFromURL();
-    console.log("🚀 Initializing portfolio item page with slug:", slug);
+    // console.log("🚀 Initializing portfolio item page with slug:", slug);
 
     if (!slug) {
       throw new Error("Could not determine project slug from URL");
@@ -639,10 +762,10 @@ const PortfolioComponents = {
 window.addEventListener("load", () => {
   if (window.initAdaptiveSheet) {
     window.initAdaptiveSheet(PortfolioComponents);
-    console.log("✅ Portfolio components initialized");
+    // console.log("✅ Portfolio components initialized");
   } else {
-    console.warn(
-      "⚠️ adaptive-sheet.js not loaded, PortfolioComponents not initialized",
-    );
+    // console.warn(
+    //   "⚠️ adaptive-sheet.js not loaded, PortfolioComponents not initialized",
+    // );
   }
 });

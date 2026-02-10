@@ -1034,6 +1034,8 @@
   window.openSearch = openSearch;
   window.closeSearch = closeSearch;
   window.searchFor = searchFor;
+  window.performSearch = performSearch;
+  window.clearAllFilters = clearAllFilters;
   window.getActiveFilters = function () {
     return activeFilters;
   };

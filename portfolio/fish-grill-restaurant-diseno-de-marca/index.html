@@ -6,9 +6,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portfolio Item - Loading</title>
     <link rel="stylesheet" href="../../shared/components/portfolio/portfolio.css">
+    <link rel="stylesheet" href="../../shared/components/sheet/sheet.css">
+    <link rel="stylesheet" href="../../shared/components/mega-menu/mega-menu.css">
     <style>
-
+        /* Portfolio: Menú no sticky */
+        #main-navigation-menu .navbar {
+            position: relative !important;
+        }
     </style>
+
 </head>
 
 <body>
@@ -34,6 +40,225 @@
             </symbol>
         </defs>
     </svg>
+    <div id="icon-set"></div>
+    <script src="../../shared/utilities/icon-loader/svg-load.js"></script>
+    <!-- Main Navigation -->
+
+    <!-- Mobile Topbar -->
+    <div class="mobile-topbar">
+        <div data-logo="klef-logo-mobile">
+            <a id="logo" href="/" class="no-image">
+                <img src="../../assets/images/favicons/klef-logo.png" alt="Logo de Klef Agency" width="30"
+                    height="30" />
+                Klef Agency
+            </a>
+        </div>
+        <button class="close-btn toggle-menu" aria-label="Toggle menu" data-action="toggle-menu">
+            <!-- Menu -->
+        </button>
+    </div>
+
+    <!-- Mega Topbar -->
+    <div class="mega-topbar">
+        <button class="back-btn" data-action="go-back" aria-label="Volver al menú anterior">
+            Volver
+        </button>
+        <button class="close-btn" data-action="close-menu" aria-label="Cerrar menú de navegación">
+            Cerrar
+        </button>
+    </div>
+
+    <!-- Main Navigation -->
+    <nav class="navbar" id="main-nav">
+        <div data-logo="klef-logo-desktop">
+            <a id="logo" href="/" class="no-image">
+                <img src="../../assets/images/favicons/klef-logo.png" alt="Klef Logo" width="30" height="30" />
+                Klef Agency
+            </a>
+        </div>
+
+        <div class="menu-links">
+            <div class="section-label">MENÚ</div>
+
+            <a href="#" data-mega="#Diseno" data-name="#Diseno" aria-label="Sección Diseño y Media">
+                <span class="icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        style="--wh: 20px; width: var(--wh); height: var(--wh)">
+                        <use href="#icon-color-palette"></use>
+                    </svg>
+                </span>
+                <span class="label">Diseño y Media</span>
+            </a>
+
+            <a href="#" data-mega="#Tecnologia" data-name="#Tecnologia" aria-label="Sección Tecnología">
+                <span class="icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        style="--wh: 20px; width: var(--wh); height: var(--wh)">
+                        <use href="#icon-code"></use>
+                    </svg>
+                </span>
+                <span class="label">Tecnología</span>
+            </a>
+
+            <a href="#" data-mega="#Marketing" data-name="#Marketing" aria-label="Sección Marketing">
+                <span class="icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        style="--wh: 20px; width: var(--wh); height: var(--wh)">
+                        <use href="#icon-megaphone"></use>
+                    </svg>
+                </span>
+                <span class="label">Marketing</span>
+            </a>
+        </div>
+
+        <div class="right-menu">
+            <button class="btn-icon" data-action="open-search" aria-label="Buscar">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    style="--wh: 20px; width: var(--wh); height: var(--wh)">
+                    <use href="#icon-search"></use>
+                </svg>
+            </button>
+            <button class="btn-icon" data-action="open-contact-sheet" aria-label="Phone">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <use href="#phone"></use>
+                </svg>
+                <div class="vertical-line"></div>
+                <!-- squircle-message   -->
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <use href="#squircle-message"></use>
+                </svg>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mega Menus Container -->
+    <div class="mega-menus-container">
+        <!-- Diseño y Media -->
+        <div class="mega-menu" id="Diseno">
+            <div class="mega-content">
+                <div class="mega-sidebar">
+                    <div class="mega-sidebar-title">Diseño y Media</div>
+                    <a href="#" aria-label="Ver proyectos de Branding">
+                        <span>Branding</span>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="Ver proyectos de Studio Multimedia">
+                        <span>Studio Multimedia</span>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="Ver proyectos de Publicidad">
+                        <span>Publicidad</span>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </div>
+                <div class="mega-main">
+                    <div class="mega-featured">
+                        <div class="featured-image">🎨</div>
+                        <div class="featured-content">
+                            <div class="featured-tag">By Klef•Brand</div>
+                            <h3>Branding</h3>
+                            <p>
+                                Descubre las marcas que hemos desarrollado y nuestras
+                                estrategias de diseño
+                            </p>
+                            <a href="#" class="btn-primary">Ir a Brands</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tecnología -->
+        <div class="mega-menu" id="Tecnologia">
+            <div class="mega-content">
+                <div class="mega-sidebar">
+                    <div class="mega-sidebar-title">Tecnología</div>
+                    <a href="#" aria-label="Ver proyectos de Desarrollo Web">
+                        <span>Desarrollo Web</span>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="Ver proyectos de Apps Móviles">
+                        <span>Apps Móviles</span>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="Ver proyectos de E-commerce">
+                        <span>E-commerce</span>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </div>
+                <div class="mega-main">
+                    <div class="mega-featured">
+                        <div class="featured-image" style="background: linear-gradient(135deg, #c0e8ff, #a3c7ff)">
+                            💻
+                        </div>
+                        <div class="featured-content">
+                            <div class="featured-tag">By Klef•Tech</div>
+                            <h3>Desarrollo Web</h3>
+                            <p>
+                                Soluciones tecnológicas modernas y escalables para tu negocio
+                            </p>
+                            <a href="#" class="btn-primary">Ver Proyectos</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Marketing -->
+        <div class="mega-menu" id="Marketing">
+            <div class="mega-content">
+                <div class="mega-sidebar">
+                    <div class="mega-sidebar-title">Marketing</div>
+                    <a href="#" aria-label="Ver proyectos de Social Media">
+                        <span>Social Media</span>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="Ver estrategias SEO/SEM">
+                        <span>SEO/SEM</span>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                    <a href="#" aria-label="Ver estrategias de Content Strategy">
+                        <span>Content Strategy</span>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </div>
+                <div class="mega-main">
+                    <div class="mega-featured">
+                        <div class="featured-image" style="background: linear-gradient(135deg, #d4f1d4, #a3e6a3)">
+                            📊
+                        </div>
+                        <div class="featured-content">
+                            <div class="featured-tag">By Klef•Marketing</div>
+                            <h3>Marketing Digital</h3>
+                            <p>Estrategias data-driven para impulsar tu presencia online</p>
+                            <a href="#" class="btn-primary">Conocer Más</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Main navigation end -->
 
     <!--Breadcrumb -->
     <div class="breadcrumb container">
@@ -57,12 +282,14 @@
 
                 <!-- Project Info -->
                 <div class="project-info">
-                    <!-- Avatar Skeleton -->
-                    <div class="avatar skeleton skeleton-avatar"></div>
+                    <div style="display: flex; align-items: center; gap: 10px">
+                        <!-- Avatar Skeleton -->
+                        <div class="avatar skeleton skeleton-avatar"></div>
 
-                    <div class="project-info-text">
-                        <div class="project-label skeleton skeleton-text short"></div>
-                        <div class="project-name skeleton skeleton-text medium"></div>
+                        <div class="project-info-text">
+                            <div class="project-label skeleton skeleton-text short"></div>
+                            <div class="project-name skeleton skeleton-text medium"></div>
+                        </div>
                     </div>
 
                     <!-- Button Skeleton -->
@@ -81,12 +308,11 @@
                     </div>
                 </div>
 
-                <!-- Portfolio Images Skeleton -->
+                <!-- Portfolio Images - Skeletons generated dynamically -->
                 <div class="portfolio-images">
-                    <div class="skeleton skeleton-image"></div>
-                    <div class="skeleton skeleton-image" style="height: 300px;"></div>
-                    <div class="skeleton skeleton-image" style="height: 300px;"></div>
-                    <div class="skeleton skeleton-image" style="height: 350px;"></div>
+                    <div class="skeleton skeleton-image skeleton-loading">
+                        <div class="skeleton-shimmer"></div>
+                    </div>
                 </div>
             </div>
 
@@ -131,29 +357,194 @@
 
     <!-- Bottom Sheet / Side Panel -->
     <div id="bottomsheet">
-        <div class="sheet-header" id="header">
-            <div class="drag-handle"></div>
-            <div class="sheet-title-bar">
-                <h2 id="component-name">Título del Panel</h2>
-                <button class="close-btn" id="close-btn">×</button>
+        <div class="drag-handle"></div>
+        <div class="sheet-top-controls">
+            <div class="top-controls-wrapper">
+                <div class="top-controls-left"></div>
             </div>
+            <button class="close-btn" id="close-btn" aria-label="Cerrar panel">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
         </div>
-
-        <div class="sheet-content" id="loadzone">
+        <div id="sheet-content">
             <div class="loading">
                 <div class="spinner"></div>
                 <p>Cargando contenido...</p>
             </div>
         </div>
-
-        <div class="sheet-cta" id="load-cta" style="display: none">
-            <!-- CTA dinámico se inyecta aquí -->
-        </div>
+        <div class="sheet-bottom-controls"></div>
     </div>
 
     <!-- Scripts -->
+    <script src="../../assets/scripts/scroll-lock.js"></script>
+    <script src="../../assets/scripts/mega-menu-spa.js"></script>
+    <script src="../../shared/components/sheet/sheet-templates.js"></script>
+    <script src="../../shared/components/sheet/sheet-content.js"></script>
+    <script src="../../shared/components/sheet/sheet-handlers.js"></script>
+    <script src="../../shared/components/sheet/sheet-system.js"></script>
     <script src="../../shared/components/adaptive-sheet/adaptive-sheet.js"></script>
     <script src="../../shared/components/portfolio/portfolio-item-fetch.js"></script>
+
+    <!-- Search Overlay -->
+    <div class="search-overlay" id="searchOverlay">
+        <div class="search-panel">
+            <button class="close-search" onclick="closeSearch()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+            <div class="search-content">
+                <div class="search-input-wrapper">
+                    <div class="search-icon">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <input type="text" class="search-input" placeholder="Buscar en klef.agency" id="searchInput"
+                        autocomplete="off" spellcheck="false">
+                </div>
+                <div class="quick-suggestions" id="quickSuggestions">
+                    <div class="suggestions-grid">
+                        <div class="suggestion-section">
+                            <div class="suggestion-title">Sugerencias</div>
+                            <ul class="suggestion-list">
+                                <li><a href="#" class="suggestion-link" onclick="searchFor('portfolio'); return false;">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                        </svg>
+                                        Portfolio
+                                    </a></li>
+                                <li><a href="#" class="suggestion-link" onclick="searchFor('servicios'); return false;">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                        </svg>
+                                        Servicios
+                                    </a></li>
+                                <li><a href="#" class="suggestion-link" onclick="searchFor('contacto'); return false;">
+                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                        </svg>
+                                        Contacto
+                                    </a></li>
+                            </ul>
+                        </div>
+                        <div class="suggestion-section">
+                            <div class="suggestion-title">Búsquedas recientes</div>
+                            <ul class="suggestion-list" id="recentSearches">
+                                <li><a href="#" data-action="search-term" data-term="Test"><svg fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>Test</a></li>
+                                <li><a href="#" data-action="search-term" data-term="diseño"><svg fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>diseño</a></li>
+                                <li><a href="#" data-action="search-term" data-term="marketing"><svg fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>marketing</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div id="resultsContainer"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../shared/components/search/query-parser.js"></script>
+    <script src="../../shared/components/search/search-system.js"></script>
+
+    <!-- Contact Sheet Handler -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const contactBtn = document.querySelector('[data-action="open-contact-sheet"]');
+            if (contactBtn) {
+                contactBtn.addEventListener('click', function () {
+                    const contactHtml = `
+              <div class="contact-sheet-content">
+                <div class="contact-cta-section">
+                  <h3>¿Listo para comenzar?</h3>
+                  <div class="contact-options">
+                    <a href="tel:+526245161037" class="contact-option phone">
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                      </svg>
+                      <span>Atención al cliente</span>
+                    </a>
+                    <a href="https://wa.me/526241682048" class="contact-option phone">
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                      </svg>
+                      <span>Soporte técnico</span>
+                    </a>
+                    <a href="mailto:info@klef.agency" class="contact-option email">
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                      </svg>
+                      <span>info@klef.agency</span>
+                    </a>
+                    <a href="https://wa.me/526245161037" class="contact-option whatsapp" target="_blank" rel="noopener">
+                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/>
+                      </svg>
+                      <span>WhatsApp</span>
+                    </a>
+                  </div>
+                </div>
+                <div class="social-section">
+                  <h4>Síguenos</h4>
+                  <div class="social-links">
+                    <a href="https://www.instagram.com/klef.agency/" target="_blank" rel="noopener" aria-label="Instagram">
+                      <svg fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                      </svg>
+                    </a>
+                    <a href="https://www.facebook.com/klef.agency/" target="_blank" rel="noopener" aria-label="Facebook">
+                      <svg fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
+                      </svg>
+                    </a>
+                    <a href="https://www.youtube.com/channel/UCYFT6kwbsDzbiK6OjuKWM5w" target="_blank" rel="noopener" aria-label="YouTube">
+                      <svg fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.872.505 9.377.505 9.377.505s7.505 0 9.377-.505a3.017 3.017 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            `;
+                    loadSheet({
+                        topControls: {
+                            actions: [],
+                            moreActions: { enabled: false },
+                        },
+                        content: {
+                            type: 'html',
+                            data: { html: contactHtml },
+                        },
+                        bottomControls: {
+                            primary: null,
+                            moreActions: { enabled: false },
+                        },
+                    });
+                });
+            }
+        });
+    </script>
 </body>
 
 </html>

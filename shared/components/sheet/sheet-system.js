@@ -116,7 +116,7 @@
       this.backdrop.classList.add("visible");
       this.isOpen = true;
       // Use iOS-compatible scroll lock
-      if (typeof ScrollLock !== 'undefined') {
+      if (typeof ScrollLock !== "undefined") {
         ScrollLock.lock();
       } else {
         document.body.style.overflow = "hidden";
@@ -133,7 +133,7 @@
       this.backdrop.classList.remove("visible");
       this.isOpen = false;
       // Use iOS-compatible scroll unlock
-      if (typeof ScrollLock !== 'undefined') {
+      if (typeof ScrollLock !== "undefined") {
         ScrollLock.unlock();
       } else {
         document.body.style.overflow = "";
@@ -215,7 +215,16 @@
   // INSTANCIA GLOBAL
   // ============================================
   const sheetSystem = new SheetSystem();
-  sheetSystem.init();
+
+  // Inicialización automática solo si no existe ya un sistema de sheets
+  const autoInit = window.adaptiveSheet === undefined;
+  if (autoInit) {
+    sheetSystem.init();
+  } else {
+    console.log(
+      "[SheetSystem] AdaptiveSheet detected, using deferred initialization",
+    );
+  }
 
   // ============================================
   // API PÚBLICA
@@ -224,6 +233,10 @@
 
   // Función principal loadSheet(config)
   window.loadSheet = function (config) {
+    // Ensure sheetSystem is initialized before loading
+    if (!sheetSystem.sheet) {
+      sheetSystem.init();
+    }
     return sheetSystem.load(config);
   };
 

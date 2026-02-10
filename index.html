@@ -872,6 +872,9 @@
       width: 100%;
       position: relative;
       overflow: hidden;
+      background: linear-gradient(90deg, #f0f0f0, #e0e0e0, #f0f0f0);
+      background-size: 200% 100%;
+      animation: skeleton-loading 1s ease-in-out infinite;
     }
 
     .result-image img {
@@ -997,7 +1000,23 @@
     }
 
     .result-image:has(.result-image-placeholder) {
-      height: 70px !important;
+      background-image: linear-gradient(transparent, transparent);
+    }
+
+    .result-image:has(.result-image-placeholder):has(.result-type-icon.blog) {
+      background-image: linear-gradient(#fedddd, transparent);
+    }
+
+    .result-image:has(.result-image-placeholder):has(.result-type-icon.page) {
+      background-image: linear-gradient(#dbebfb, transparent);
+    }
+
+    .result-image:has(.result-image-placeholder):has(.result-type-icon.portfolio) {
+      background-image: linear-gradient(#ffe8d6, transparent);
+    }
+
+    .result-image:has(.result-image-placeholder):has(.result-type-icon.service) {
+      background-image: linear-gradient(#e8ffd6, transparent);
     }
 
     /* ADAPTIVE SHEET */
@@ -3657,90 +3676,7 @@
     </div>
   </div>
 
-  <!-- Search Overlay -->
-  <div class="search-overlay" id="searchOverlay">
-    <div class="search-panel">
-      <button class="close-search" aria-label="Close search" data-action="close-search">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
-      </button>
-      <div class="search-content">
-        <!-- Filter Chips Container -->
-        <div id="filterChipsContainer" class="filter-chips-container"></div>
-        <div class="search-input-wrapper">
-          <div class="search-icon">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <input type="text" class="search-input" placeholder="Buscar en klef.agency" id="searchInput"
-            autocomplete="off" spellcheck="false" />
-          <button type="button" class="clear-input" id="clearInput" aria-label="Limpiar búsqueda">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="size-5">
-              <path fill-rule="evenodd"
-                d="M7.22 3.22A.75.75 0 0 1 7.75 3h9A2.25 2.25 0 0 1 19 5.25v9.5A2.25 2.25 0 0 1 16.75 17h-9a.75.75 0 0 1-.53-.22L.97 10.53a.75.75 0 0 1 0-1.06l6.25-6.25Zm3.06 4a.75.75 0 1 0-1.06 1.06L10.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L12 8.94l-1.72-1.72Z"
-                clip-rule="evenodd" />
-            </svg>
-          </button>
-          <label for="searchInput" class="section-label"></label>
-        </div>
-        <div class="quick-suggestions" id="quickSuggestions">
-          <div class="suggestions-grid">
-            <div class="suggestion-section">
-              <div class="suggestion-title">Sugerencias</div>
-              <ul class="suggestion-list">
-                <li>
-                  <a href="#" data-action="search-suggestion" data-term="portfolio">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                    </svg>
-                    Portfolio
-                  </a>
-                </li>
-                <li>
-                  <a href="#" data-action="search-suggestion" data-term="servicios">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                    </svg>
-                    Servicios
-                  </a>
-                </li>
-                <li>
-                  <a href="#" data-action="search-suggestion" data-term="contacto">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                    </svg>
-                    Contacto
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div class="suggestion-section">
-              <div class="suggestion-title">Búsquedas recientes</div>
-              <ul class="suggestion-list" id="recentSearches">
-                <li>
-                  <a href="#" data-action="search-suggestion" data-term="diseño web">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    diseño web
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
 
-        <div id="resultsContainer"></div>
-      </div>
-    </div>
-  </div>
 
   <!-- SEO IMAGES BLOCK - Hidden but indexable (SYMBOLS) -->
   <div id="seo-images" style="display: none">
@@ -3814,7 +3750,7 @@
               </div>
 
               <div id="search-tags">
-                <span class="border-emerald-500" role="button" tabindex="0"
+                <span class="border-emerald-500" data-filter="desarrollo" role="button" tabindex="0"
                   aria-label="Filtrar proyectos por Desarrollo">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor">
@@ -3823,7 +3759,8 @@
                   </svg>
                   Desarrollo
                 </span>
-                <span class="border-amber-500" role="button" tabindex="0" aria-label="Filtrar proyectos por Diseño">
+                <span class="border-amber-500" data-filter="diseño" role="button" tabindex="0"
+                  aria-label="Filtrar proyectos por Diseño">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -3832,7 +3769,8 @@
                   </svg>
                   Diseño
                 </span>
-                <span class="border-blue-500" role="button" tabindex="0" aria-label="Filtrar proyectos por Marketing">
+                <span class="border-blue-500" data-filter="marketing" role="button" tabindex="0"
+                  aria-label="Filtrar proyectos por Marketing">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -5727,6 +5665,97 @@
       }
     });
   </script>
+  <!-- Search Overlay -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-panel">
+      <button class="close-search" onclick="closeSearch()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+          </path>
+        </svg>
+      </button>
+
+      <div class="search-content">
+        <div class="search-input-wrapper">
+          <div class="search-icon">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+          <input type="text" class="search-input" placeholder="Buscar en klef.agency" id="searchInput"
+            autocomplete="off" spellcheck="false">
+          <div id="filterChipsContainer" class="filter-chips-container" style="display: none;"></div>
+        </div>
+
+        <div class="quick-suggestions" id="quickSuggestions">
+          <div class="suggestions-grid">
+            <div class="suggestion-section">
+              <div class="suggestion-title">Sugerencias</div>
+              <ul class="suggestion-list">
+                <li><a href="#" class="suggestion-link" onclick="searchFor('portfolio'); return false;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    Portfolio
+                  </a></li>
+                <li><a href="#" class="suggestion-link" onclick="searchFor('servicios'); return false;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    Servicios
+                  </a></li>
+                <li><a href="#" class="suggestion-link" onclick="searchFor('contacto'); return false;">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    Contacto
+                  </a></li>
+              </ul>
+            </div>
+            <div class="suggestion-section">
+              <div class="suggestion-title">Búsquedas recientes</div>
+              <ul class="suggestion-list" id="recentSearches">
+                <!-- Se llenará dinámicamente -->
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div id="resultsContainer"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SVG Icons (hidden) -->
+  <svg style="display: none;">
+    <symbol id="icon-page" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round" />
+      <polyline points="14 2 14 8 20 8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </symbol>
+    <symbol id="icon-post" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke-width="2" stroke-linecap="round"
+        stroke-linejoin="round" />
+    </symbol>
+    <symbol id="icon-portfolio" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <circle cx="13.5" cy="6.5" r=".5" stroke-width="2" />
+      <circle cx="17.5" cy="10.5" r=".5" stroke-width="2" />
+      <circle cx="8.5" cy="7.5" r=".5" stroke-width="2" />
+      <circle cx="6.5" cy="12.5" r=".5" stroke-width="2" />
+      <path
+        d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"
+        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </symbol>
+  </svg>
+
+  <script src="./shared/components/search/query-parser.js"></script>
+  <script src="./shared/components/search/search-system.js"></script>
+  <script src="./shared/components/search/search-tags-filter.js"></script>
 </body>
 
 </html>
