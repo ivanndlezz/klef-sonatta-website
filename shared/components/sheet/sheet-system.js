@@ -18,6 +18,8 @@
 
     // Inicializar el sistema
     init() {
+      if (this.initialized) return this;
+
       this.sheet = document.getElementById("bottomsheet");
       this.backdrop = document.getElementById("backdrop");
 
@@ -40,6 +42,7 @@
         }
       });
 
+      this.initialized = true;
       console.log("[SheetSystem] Initialized");
       return this;
     }

@@ -10,8 +10,18 @@
     <link rel="stylesheet" href="../../shared/components/mega-menu/mega-menu.css">
     <style>
         /* Portfolio: Menú no sticky */
-        #main-navigation-menu .navbar {
+        .navbar#main-nav {
             position: relative !important;
+        }
+
+        @media (max-width: 768px) {
+            .navbar#main-nav {
+                position: fixed !important;
+            }
+
+            .breadcrumb {
+                margin-top: 64px !important;
+            }
         }
     </style>
 

@@ -58,13 +58,21 @@
       .forEach((m) => m.classList.remove("active"));
 
     // Mostrar el contenedor y el menú seleccionado
-    if (megaMenusContainer) megaMenusContainer.classList.add("show");
+    if (megaMenusContainer) {
+      megaMenusContainer.classList.add("show");
+    }
     menu.classList.add("active");
 
     currentMegaMenu = menu;
 
-    if (megaTopbar) megaTopbar.classList.add("active");
-    if (backBtn) backBtn.classList.add("visible");
+    // El mega-topbar es SOLO para mobile
+    // En desktop, el mega menu se muestra directamente debajo del navbar
+    if (window.innerWidth <= 768) {
+      if (megaTopbar) {
+        megaTopbar.classList.add("active");
+      }
+      if (backBtn) backBtn.classList.add("visible");
+    }
   }
 
   function goBack() {
@@ -74,8 +82,12 @@
 
     if (megaMenusContainer) megaMenusContainer.classList.remove("show");
     currentMegaMenu = null;
-    if (megaTopbar) megaTopbar.classList.remove("active");
-    if (backBtn) backBtn.classList.remove("visible");
+
+    // El mega-topbar es SOLO para mobile
+    if (window.innerWidth <= 768) {
+      if (megaTopbar) megaTopbar.classList.remove("active");
+      if (backBtn) backBtn.classList.remove("visible");
+    }
   }
 
   function closeMenu() {
@@ -166,6 +178,23 @@
       });
     });
 
+    // Contact Sheet trigger
+    document
+      .querySelectorAll('[data-action="open-contact-sheet"]')
+      .forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          if (
+            typeof loadSheet === "function" &&
+            typeof sheetUtils !== "undefined"
+          ) {
+            loadSheet(sheetUtils.createContactConfig("General Inquiry"));
+          } else {
+            console.warn("[Navigation] loadSheet or sheetUtils not found");
+          }
+        });
+      });
+
     // Click en items con mega menú (móvil)
     document.querySelectorAll("[data-mega]").forEach((btn) => {
       btn.addEventListener("click", (e) => {
@@ -181,10 +210,9 @@
       // Hover en desktop
       btn.addEventListener("mouseenter", (e) => {
         if (window.innerWidth > 768) {
-          const value = e.currentTarget.getAttribute("data-name");
-          if (navbar && value) {
-            navbar.dataset.mega = value;
-            applyDynamicStyle(value);
+          const selector = btn.getAttribute("data-mega");
+          if (selector) {
+            openMegaMenu(selector);
           }
         }
       });
@@ -193,12 +221,29 @@
     // Cerrar mega menús al salir con el mouse en desktop
     document.addEventListener("mousemove", (e) => {
       if (window.innerWidth > 768) {
+        // En desktop, el mega-topbar NO debería estar activo
+        if (megaTopbar && megaTopbar.classList.contains("active")) {
+          megaTopbar.classList.remove("active");
+        }
+        if (backBtn) backBtn.classList.remove("visible");
+
+        if (!megaMenusContainer) {
+          megaMenusContainer = document.querySelector(".mega-menus-container");
+        }
+
         const overNavbar = navbar && navbar.contains(e.target);
-        const overMega = Array.from(
-          document.querySelectorAll(".mega-menu"),
-        ).some((menu) => menu.contains(e.target));
+        const overMega =
+          megaMenusContainer && megaMenusContainer.contains(e.target);
+
         if (!overNavbar && !overMega) {
-          removeDynamicStyle();
+          // Solo cerrar el mega menu, NO el navbar
+          if (currentMegaMenu) {
+            currentMegaMenu.classList.remove("active");
+          }
+          if (megaMenusContainer) {
+            megaMenusContainer.classList.remove("show");
+          }
+          currentMegaMenu = null;
         }
       }
     });
