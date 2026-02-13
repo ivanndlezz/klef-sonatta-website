@@ -558,6 +558,21 @@ function renderTags(tags) {
 }
 
 /**
+ * Render post content (full HTML from GraphQL)
+ */
+function renderPostContent(data) {
+  const postContent = document.getElementById("post-content");
+  if (!postContent) return;
+
+  if (data.content) {
+    postContent.innerHTML = data.content;
+    postContent.classList.remove("skeleton");
+  } else {
+    postContent.innerHTML = "<p>No content available</p>";
+  }
+}
+
+/**
  * Main render function
  */
 function renderPortfolioItem(data) {
@@ -566,6 +581,7 @@ function renderPortfolioItem(data) {
   renderHeader(data);
   renderImages(data);
   renderSidebar(data);
+  renderPostContent(data);
 
   // Dispatch event that render is complete
   document.dispatchEvent(

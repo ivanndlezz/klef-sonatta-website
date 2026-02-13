@@ -1,560 +1,977 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Item - Loading</title>
-    <link rel="stylesheet" href="../../shared/components/portfolio/portfolio.css">
-    <link rel="stylesheet" href="../../shared/components/sheet/sheet.css">
-    <link rel="stylesheet" href="../../shared/components/mega-menu/mega-menu.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fish & Grill | Manual de Marca</title>
     <style>
-        /* Portfolio: Menú no sticky */
-        .navbar#main-nav {
-            position: relative !important;
-        }
+      :root {
+        --brand-coral: #e95f47;
+        --brand-aqua: #4ecdc4;
+        --brand-cream: #f7f3e9;
+        --text-main: #202124;
+        --text-sub: #5f6368;
+        --outline: #e8eaed;
+        --surface: #ffffff;
+        --bg-body: #ffffff;
+        --transition-ui: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      }
 
-        @media (max-width: 768px) {
-            .navbar#main-nav {
-                position: fixed !important;
-            }
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
 
-            .breadcrumb {
-                margin-top: 64px !important;
-            }
+      body {
+        font-family: "Google Sans", sans-serif;
+        margin: 0;
+        color: var(--text-main);
+        background-color: var(--bg-body);
+        line-height: 1.6;
+        overflow-x: hidden;
+      }
+
+      /* --- SKELETON SHIMMER ANIMATION --- */
+      @keyframes shimmer {
+        0% {
+          background-position: -468px 0;
         }
+        100% {
+          background-position: 468px 0;
+        }
+      }
+
+      body[data-loading="true"] .section-container h2,
+      body[data-loading="true"] .section-container p,
+      body[data-loading="true"] .section-container h3,
+      body[data-loading="true"] .tag-row .tag,
+      body[data-loading="true"] .cat-tag,
+      body[data-loading="true"] .cover h1,
+      body[data-loading="true"] .cover p:not(.cat-tag),
+      body[data-loading="true"] .accordion,
+      body[data-loading="true"] .final-tags .pill {
+        display: block !important;
+        background: #f6f7f8;
+        background-image: linear-gradient(
+          to right,
+          #f6f7f8 0%,
+          #edeef1 20%,
+          #f6f7f8 40%,
+          #f6f7f8 100%
+        );
+        background-size: 800px 100%;
+        animation: shimmer 1.2s linear infinite forwards;
+        color: transparent !important;
+        border-radius: 8px;
+        pointer-events: none;
+        min-height: 1em;
+      }
+
+      /* --- TOP NAVIGATION --- */
+      .top-nav {
+        padding: 8px 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid var(--outline);
+      }
+
+      .breadcrumbs {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+      }
+      .breadcrumbs a {
+        text-decoration: none;
+        color: var(--text-sub);
+      }
+      .breadcrumbs .dot {
+        width: 3px;
+        height: 3px;
+        background: var(--outline);
+        border-radius: 50%;
+      }
+      .breadcrumbs [data-active="true"] {
+        border: solid 1px;
+        border-color: #bfc0cd;
+        font-weight: 500;
+        padding: 1px 10px;
+        border-radius: 100px;
+        padding-top: 3px;
+      }
+
+      .view-controls {
+        display: flex;
+        background: #f1f3f4;
+        padding: 4px;
+        border-radius: 12px;
+        gap: 4px;
+      }
+
+      .control-btn {
+        border: none;
+        background: transparent;
+        padding: 6px 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-sub);
+        transition: var(--transition-ui);
+      }
+
+      .control-btn svg {
+        width: 14px;
+        height: 14px;
+      }
+      .control-btn[data-state="active"] {
+        background: white;
+        color: var(--text-main);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      /* --- COVER --- */
+      .cover {
+        padding: 100px 1px 60px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        max-width: 800px;
+        margin: 0 auto;
+        align-items: center;
+      }
+      .cat-tag {
+        padding: 4px 12px;
+        background: #5154785e;
+        color: #1d1e22;
+        border-radius: 100px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        width: fit-content;
+      }
+      .cover h1 {
+        font-size: 42px;
+        line-height: 1.1;
+        margin: 0;
+        letter-spacing: -1px;
+      }
+      .cover p {
+        font-size: 18px;
+        color: var(--text-sub);
+        margin: 0;
+      }
+
+      .cover-visual {
+        width: 100%;
+        aspect-ratio: 16/9;
+        background: var(--brand-cream);
+        border-radius: 20px;
+        margin-top: 24px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      @keyframes pan {
+        from {
+          transform: translate(-25%, -25%);
+        }
+        to {
+          transform: translate(0, 0);
+        }
+      }
+
+      /* --- STICKY TABS --- */
+      .tabs-nav {
+        position: sticky;
+        top: 52px;
+        background: var(--surface);
+        border-bottom: 1px solid var(--outline);
+        z-index: 900;
+      }
+      .tabs-wrapper {
+        display: flex;
+        overflow-x: auto;
+        scrollbar-width: none;
+        padding: 0 12px;
+        max-width: 800px;
+        margin: 0 auto;
+      }
+      .tabs-wrapper::-webkit-scrollbar {
+        display: none;
+      }
+
+      .tab-btn {
+        padding: 16px 20px;
+        border: none;
+        background: none;
+        font-family: inherit;
+        font-weight: 500;
+        color: var(--text-sub);
+        white-space: nowrap;
+        cursor: pointer;
+        transition: var(--transition-ui);
+      }
+      .tab-btn[data-state="active"] {
+        color: var(--brand-coral);
+        box-shadow: inset 0 -3px 0 var(--brand-coral);
+      }
+
+      /* --- CONTENT SECTIONS --- */
+      .section-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 60px 24px;
+        transition: padding 0.5s ease;
+      }
+
+      /* Modificadores de vista final (Ocultar texto y elementos no visuales en modo visual-only) */
+      body[data-view="visual-only"]:not([data-loading="true"])
+        .section-container
+        > p,
+      body[data-view="visual-only"]:not([data-loading="true"])
+        .section-container
+        > h2:not(.creativos),
+      body[data-view="visual-only"]:not([data-loading="true"])
+        .section-container
+        > h3,
+      body[data-view="visual-only"]:not([data-loading="true"]) .tag-row,
+      body[data-view="visual-only"]:not([data-loading="true"]) .cover h1,
+      body[data-view="visual-only"]:not([data-loading="true"])
+        .cover
+        p:not(.cat-tag) {
+        display: none;
+      }
+
+      body[data-view="visual-only"] .section-container {
+        padding: 20px 24px;
+      }
+
+      h2 {
+        font-size: 28px;
+        margin-bottom: 24px;
+      }
+      p {
+        margin-bottom: 20px;
+        font-size: 16px;
+        color: #3c4043;
+      }
+
+      /* --- CREATIVES ACCORDION --- */
+      .accordion {
+        border: 1px solid var(--outline);
+        border-radius: 20px;
+        margin: 32px 0;
+        overflow: hidden;
+        background: #fff;
+      }
+      .accordion-header {
+        padding: 16px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+      }
+      .avatar-group {
+        display: flex;
+        align-items: center;
+      }
+      .avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 2px solid #fff;
+        margin-left: -10px;
+        background: #eee;
+      }
+      .avatar:first-child {
+        margin-left: 0;
+      }
+      .avatar-count {
+        margin-left: 12px;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-sub);
+      }
+      .accordion-content {
+        padding: 0 20px;
+        max-height: 0;
+        overflow: hidden;
+        transition: var(--transition-ui);
+        background: #f8f9fa;
+      }
+      .accordion[data-open="true"] .accordion-content {
+        max-height: 200px;
+        padding: 20px;
+      }
+      .creative-names {
+        font-size: 14px;
+        color: var(--text-sub);
+        font-style: italic;
+      }
+
+      /* --- FINAL TAGS SECTION --- */
+      .final-tags {
+        max-width: 800px;
+        margin: 40px auto 0;
+        padding: 0 24px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .final-tags .pill {
+        padding: 6px 14px;
+        background: #f1f3f4;
+        color: var(--text-sub);
+        border-radius: 100px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: default;
+        transition: var(--transition-ui);
+      }
+      .final-tags .pill:hover {
+        background: var(--outline);
+        color: var(--text-main);
+      }
+
+      /* --- TAXONOMY MATRIX SECTION --- */
+      .showcase-context {
+        max-width: 800px;
+        margin: 80px auto 40px;
+        padding: 40px 24px;
+        border: 1px solid #606060;
+        display: flex;
+        flex-direction: column;
+        gap: 32px;
+        font-family: "Inter", sans-serif;
+        border-radius: 20px;
+      }
+      .text-content {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .ctx-description {
+        font-size: 15px;
+        line-height: 1.5;
+        color: #666;
+        margin: 0;
+        max-width: 520px;
+      }
+      .cta-link {
+        font-size: 14px;
+        font-weight: 600;
+        color: #111;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: opacity 0.2s;
+      }
+      .cta-link:hover {
+        opacity: 0.7;
+      }
+
+      .taxonomy-matrix {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px;
+      }
+      .domain-section {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        max-width: 90px;
+      }
+      .domain-name {
+        font-size: 10px;
+        font-weight: 600;
+        color: #999;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+      }
+      .folder-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 4px;
+        width: fit-content;
+      }
+      .folder-item {
+        width: 22px;
+        height: 16px;
+        background: #adb8bb;
+        border-radius: 2px 5px 2px 2px;
+        position: relative;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .folder-item::before {
+        content: "";
+        position: absolute;
+        top: -3px;
+        left: 0;
+        width: 9px;
+        height: 4px;
+        background: inherit;
+        border-radius: 2px 2px 0 0;
+      }
+
+      .branding .active {
+        background: #ff6b35;
+      }
+      .marketing .active {
+        background: #7209b7;
+      }
+      .software .active {
+        background: #00a896;
+      }
+
+      .folder-item:hover::after {
+        content: attr(data-label);
+        position: absolute;
+        bottom: 140%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #111;
+        color: #fff;
+        padding: 4px 8px;
+        font-size: 10px;
+        border-radius: 4px;
+        white-space: nowrap;
+        z-index: 10;
+      }
+
+      /* --- TAGS & PALETTES --- */
+      .tag-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-bottom: 24px;
+      }
+      .tag {
+        font-size: 12px;
+        padding: 6px 14px;
+        background: #f1f3f4;
+        border-radius: 100px;
+        color: var(--text-main);
+      }
+      .color-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 12px;
+        margin: 20px 0;
+      }
+      .color-card {
+        padding: 12px;
+        border-radius: 16px;
+        aspect-ratio: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        font-size: 11px;
+        font-weight: bold;
+      }
+
+      /* --- UTILS --- */
+      .image-placeholder {
+        width: 100%;
+        background: #f1f3f4;
+        border-radius: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #bdc1c6;
+        font-size: 14px;
+        margin: 20px 0;
+        min-height: 240px;
+        border: 1px dashed #dadce0;
+      }
+
+      @media (max-width: 600px) {
+        .cover h1 {
+          font-size: 32px;
+        }
+        .tabs-nav {
+          top: 48px;
+        }
+        .control-btn span {
+          display: none;
+        }
+        .taxonomy-matrix {
+          gap: 24px;
+        }
+      }
+
+      .taxonomy-matrix {
+        padding: 0px 20px;
+      }
+
+      :root {
+        --brand-coral: #e95f47;
+        --brand-aqua: #4ecdc4;
+        --brand-cream: #f7f3e9;
+        --text-main: #202124;
+        --text-sub: #5f6368;
+        --outline: #e8eaed;
+        --surface: #ffffff;
+        --bg-body: #ffffff;
+        --transition-ui: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+
+        --klef-blue: hsl(204, 64%, 44%);
+        --klef-orange: hsl(35, 100%, 45%);
+      }
+
+      .project-icon {
+        --wh: 35px;
+        width: var(--wh);
+        height: var(--wh);
+        object-fit: contain;
+      }
+
+      .team-section {
+        display: flex;
+        align-items: center;
+        height: fit-content;
+        flex-wrap: wrap;
+        gap: 7px;
+        padding: 16px 20px;
+      }
+
+      .team-avatars {
+        display: flex;
+      }
+
+      .team-avatars .team-avatar:not(:first-child) {
+        margin-left: -10px;
+      }
+
+      .team-avatar {
+        --wh: 50px;
+        width: var(--wh);
+        height: var(--wh);
+        border-radius: 50%;
+        border: 2px solid white;
+        box-shadow: 0 0 29px #92add188;
+      }
+
+      .team-names {
+        font-size: 13px;
+        color: #666;
+      }
+
+      .creatives-in-project h3 {
+        margin: 0px;
+        font-size: 18px;
+      }
+
+      #labAccordion {
+        margin-botom: 0px;
+      }
+
+      img.portfolio-img.loaded {
+        width: -webkit-fill-available;
+      }
     </style>
+  </head>
+  <body data-view="visual-only" data-loading="false">
+    <header class="top-nav">
+      <nav class="breadcrumbs">
+        <a href="#">Lab</a>
+        <div class="dot"></div>
+        <a href="#" data-active="true">Fish & Grill</a>
+      </nav>
 
-</head>
-
-<body>
-    <!-- SVG Icons -->
-    <svg style="display: none">
-        <defs>
-            <symbol id="icon-book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25">
-                </path>
-            </symbol>
-
-            <symbol id="home" viewBox="0 0 24 24" fill="currentColor">
-                <path
-                    d="m12 5.432 8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V21a.75.75 0 0 1-.75.75H5.625a1.875 1.875 0 0 1-1.875-1.875v-6.198a2.29 2.29 0 0 0 .091-.086L12 5.432Z">
-                </path>
-            </symbol>
-
-            <symbol id="bag-mini" viewBox="0 0 20 20" fill="currentColor" class="size-5">
-                <path fill-rule="evenodd"
-                    d="M6 5v1H4.667a1.75 1.75 0 0 0-1.743 1.598l-.826 9.5A1.75 1.75 0 0 0 3.84 19H16.16a1.75 1.75 0 0 0 1.743-1.902l-.826-9.5A1.75 1.75 0 0 0 15.333 6H14V5a4 4 0 0 0-8 0Zm4-2.5A2.5 2.5 0 0 0 7.5 5v1h5V5A2.5 2.5 0 0 0 10 2.5ZM7.5 10a2.5 2.5 0 0 0 5 0V8.75a.75.75 0 0 1 1.5 0V10a4 4 0 0 1-8 0V8.75a.75.75 0 0 1 1.5 0V10Z"
-                    clip-rule="evenodd" />
-            </symbol>
-        </defs>
-    </svg>
-    <div id="icon-set"></div>
-    <script src="../../shared/utilities/icon-loader/svg-load.js"></script>
-    <!-- Main Navigation -->
-
-    <!-- Mobile Topbar -->
-    <div class="mobile-topbar">
-        <div data-logo="klef-logo-mobile">
-            <a id="logo" href="/" class="no-image">
-                <img src="../../assets/images/favicons/klef-logo.png" alt="Logo de Klef Agency" width="30"
-                    height="30" />
-                Klef Agency
-            </a>
-        </div>
-        <button class="close-btn toggle-menu" aria-label="Toggle menu" data-action="toggle-menu">
-            <!-- Menu -->
+      <div class="view-controls">
+        <button class="control-btn" data-view-target="full" data-state="idle">
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M4 6h16M4 12h16M4 18h7" />
+          </svg>
+          <span>Completo</span>
         </button>
+        <button
+          class="control-btn"
+          data-view-target="visual-only"
+          data-state="active"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            <circle cx="8.5" cy="8.5" r="1.5" />
+            <polyline points="21 15 16 10 5 21" />
+          </svg>
+          <span>Visuales</span>
+        </button>
+      </div>
+    </header>
+
+    <div class="cover">
+      <div class="cat-tag">Manual de Marca</div>
+      <h1>Fish & Grill: Extensión de Identidad</h1>
+      <p>
+        De un logo atractivo a un ecosistema de diseño coherente y soberano.
+      </p>
+      <div class="cover-visual">
+        <img
+          class="portfolio-img loaded"
+          src="https://klef.newfacecards.com/wp-content/uploads/2026/01/Fish-and-Grill-Web-01-1024x576.jpg"
+          alt="Fish &amp; Grill: Re-diseño de Marca y Extensión de Identidad"
+          data-image-index="0"
+        />
+      </div>
     </div>
 
-    <!-- Mega Topbar -->
-    <div class="mega-topbar">
-        <button class="back-btn" data-action="go-back" aria-label="Volver al menú anterior">
-            Volver
+    <nav class="tabs-nav">
+      <div class="tabs-wrapper" id="tabsScroll">
+        <button
+          class="tab-btn"
+          data-target="estado-inicial"
+          data-state="active"
+        >
+          Estado Inicial
         </button>
-        <button class="close-btn" data-action="close-menu" aria-label="Cerrar menú de navegación">
-            Cerrar
-        </button>
-    </div>
-
-    <!-- Main Navigation -->
-    <nav class="navbar" id="main-nav">
-        <div data-logo="klef-logo-desktop">
-            <a id="logo" href="/" class="no-image">
-                <img src="../../assets/images/favicons/klef-logo.png" alt="Klef Logo" width="30" height="30" />
-                Klef Agency
-            </a>
-        </div>
-
-        <div class="menu-links">
-            <div class="section-label">MENÚ</div>
-
-            <a href="#" data-mega="#Diseno" data-name="#Diseno" aria-label="Sección Diseño y Media">
-                <span class="icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        style="--wh: 20px; width: var(--wh); height: var(--wh)">
-                        <use href="#icon-color-palette"></use>
-                    </svg>
-                </span>
-                <span class="label">Diseño y Media</span>
-            </a>
-
-            <a href="#" data-mega="#Tecnologia" data-name="#Tecnologia" aria-label="Sección Tecnología">
-                <span class="icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        style="--wh: 20px; width: var(--wh); height: var(--wh)">
-                        <use href="#icon-code"></use>
-                    </svg>
-                </span>
-                <span class="label">Tecnología</span>
-            </a>
-
-            <a href="#" data-mega="#Marketing" data-name="#Marketing" aria-label="Sección Marketing">
-                <span class="icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                        style="--wh: 20px; width: var(--wh); height: var(--wh)">
-                        <use href="#icon-megaphone"></use>
-                    </svg>
-                </span>
-                <span class="label">Marketing</span>
-            </a>
-        </div>
-
-        <div class="right-menu">
-            <button class="btn-icon" data-action="open-search" aria-label="Buscar">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                    style="--wh: 20px; width: var(--wh); height: var(--wh)">
-                    <use href="#icon-search"></use>
-                </svg>
-            </button>
-            <button class="btn-icon" data-action="open-contact-sheet" aria-label="Phone">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <use href="#phone"></use>
-                </svg>
-                <div class="vertical-line"></div>
-                <!-- squircle-message   -->
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <use href="#squircle-message"></use>
-                </svg>
-            </button>
-        </div>
+        <button class="tab-btn" data-target="construccion">Construcción</button>
+        <button class="tab-btn" data-target="recursos">Recursos</button>
+        <button class="tab-btn" data-target="manual">El Manual</button>
+        <button class="tab-btn" data-target="equipo">Equipo</button>
+        <button class="tab-btn" data-target="context">Contexto</button>
+      </div>
     </nav>
 
-    <!-- Mega Menus Container -->
-    <div class="mega-menus-container">
-        <!-- Diseño y Media -->
-        <div class="mega-menu" id="Diseno">
-            <div class="mega-content">
-                <div class="mega-sidebar">
-                    <div class="mega-sidebar-title">Diseño y Media</div>
-                    <a href="#" aria-label="Ver proyectos de Branding">
-                        <span>Branding</span>
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
-                    <a href="#" aria-label="Ver proyectos de Studio Multimedia">
-                        <span>Studio Multimedia</span>
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
-                    <a href="#" aria-label="Ver proyectos de Publicidad">
-                        <span>Publicidad</span>
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
-                </div>
-                <div class="mega-main">
-                    <div class="mega-featured">
-                        <div class="featured-image">🎨</div>
-                        <div class="featured-content">
-                            <div class="featured-tag">By Klef•Brand</div>
-                            <h3>Branding</h3>
-                            <p>
-                                Descubre las marcas que hemos desarrollado y nuestras
-                                estrategias de diseño
-                            </p>
-                            <a href="#" class="btn-primary">Ir a Brands</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <main id="mainContent">
+      <section id="estado-inicial" class="section-container">
+        <div class="tag-row">
+          <span class="tag">#Auditoría</span>
+          <span class="tag">#Identidad</span>
         </div>
+        <h2>Bloque 1: El Estado Inicial</h2>
+        <p>
+          Nos encontramos con un logo visualmente atractivo pero que vivía solo.
+          Tenía carácter y personalidad marina, pero carecía de adaptabilidad
+          técnica.
+        </p>
+        <img
+          class="portfolio-img loaded"
+          src="https://klef.newfacecards.com/wp-content/uploads/2026/02/Fish-and-grill-Guidelines-2.jpg"
+          alt="Portfolio image"
+          data-image-index="2"
+        />
+      </section>
 
-        <!-- Tecnología -->
-        <div class="mega-menu" id="Tecnologia">
-            <div class="mega-content">
-                <div class="mega-sidebar">
-                    <div class="mega-sidebar-title">Tecnología</div>
-                    <a href="#" aria-label="Ver proyectos de Desarrollo Web">
-                        <span>Desarrollo Web</span>
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
-                    <a href="#" aria-label="Ver proyectos de Apps Móviles">
-                        <span>Apps Móviles</span>
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
-                    <a href="#" aria-label="Ver proyectos de E-commerce">
-                        <span>E-commerce</span>
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
-                </div>
-                <div class="mega-main">
-                    <div class="mega-featured">
-                        <div class="featured-image" style="background: linear-gradient(135deg, #c0e8ff, #a3c7ff)">
-                            💻
-                        </div>
-                        <div class="featured-content">
-                            <div class="featured-tag">By Klef•Tech</div>
-                            <h3>Desarrollo Web</h3>
-                            <p>
-                                Soluciones tecnológicas modernas y escalables para tu negocio
-                            </p>
-                            <a href="#" class="btn-primary">Ver Proyectos</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <section id="construccion" class="section-container">
+        <h2>Bloque 2: Construcción del Sistema</h2>
+        <p>
+          Refinamos el tracking y jerarquías. El símbolo "&" pasó de aqua a
+          negro para actuar como anclaje estructural.
+        </p>
+        <img
+          class="portfolio-img loaded"
+          src="https://klef.newfacecards.com/wp-content/uploads/2026/01/Fish-and-Grill-Web-03-600x400-1.jpg"
+          alt="Portfolio image"
+          data-image-index="1"
+        />
+      </section>
+
+      <section id="recursos" class="section-container">
+        <h2>Desarrollo de Recursos</h2>
+        <p>
+          Codificamos la paleta original y desarrollamos cinco paletas
+          adicionales para diferentes estados de ánimo.
+        </p>
+        <div class="color-grid">
+          <div
+            class="color-card"
+            style="background: var(--brand-coral); color: white"
+          >
+            #E95F47
+          </div>
+          <div
+            class="color-card"
+            style="background: var(--brand-aqua); color: #202124"
+          >
+            #4ECDC4
+          </div>
+          <div
+            class="color-card"
+            style="
+              background: var(--brand-cream);
+              color: #202124;
+              border: 1px solid #ddd;
+            "
+          >
+            #F7F3E9
+          </div>
         </div>
+        <img
+          class="portfolio-img loaded"
+          src="https://klef.newfacecards.com/wp-content/uploads/2026/02/fish-and-grill-re-diseno-de-marca-y-extension-de-identidad-4.jpg"
+          alt="Portfolio image"
+          data-image-index="3"
+        />
+        <img
+          class="portfolio-img loaded"
+          src="https://klef.newfacecards.com/wp-content/uploads/2026/02/fish-and-grill-re-diseno-de-marca-y-extension-de-identidad-6.jpg"
+          alt="Portfolio image"
+          data-image-index="3"
+        />
+        <img
+          class="portfolio-img loaded"
+          src="https://klef.newfacecards.com/wp-content/uploads/2026/02/fish-and-grill-re-diseno-de-marca-y-extension-de-identidad-2.jpg"
+          alt="Portfolio image"
+          data-image-index="3"
+        />
+      </section>
 
-        <!-- Marketing -->
-        <div class="mega-menu" id="Marketing">
-            <div class="mega-content">
-                <div class="mega-sidebar">
-                    <div class="mega-sidebar-title">Marketing</div>
-                    <a href="#" aria-label="Ver proyectos de Social Media">
-                        <span>Social Media</span>
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
-                    <a href="#" aria-label="Ver estrategias SEO/SEM">
-                        <span>SEO/SEM</span>
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
-                    <a href="#" aria-label="Ver estrategias de Content Strategy">
-                        <span>Content Strategy</span>
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
-                </div>
-                <div class="mega-main">
-                    <div class="mega-featured">
-                        <div class="featured-image" style="background: linear-gradient(135deg, #d4f1d4, #a3e6a3)">
-                            📊
-                        </div>
-                        <div class="featured-content">
-                            <div class="featured-tag">By Klef•Marketing</div>
-                            <h3>Marketing Digital</h3>
-                            <p>Estrategias data-driven para impulsar tu presencia online</p>
-                            <a href="#" class="btn-primary">Conocer Más</a>
-                        </div>
-                    </div>
-                </div>
+      <section id="manual" class="section-container">
+        <h2>Bloque 3: Documentación</h2>
+        <p>
+          Creamos un manual de 17 páginas enfocado en la recursividad y
+          escalabilidad del negocio.
+        </p>
+        <img
+          class="portfolio-img loaded"
+          src="https://klef.newfacecards.com/wp-content/uploads/2026/02/fish-and-grill-re-diseno-de-marca-y-extension-de-identidad-9.jpg"
+          alt="Portfolio image"
+          data-image-index="3"
+        />
+        <img
+          class="portfolio-img loaded"
+          src="https://klef.newfacecards.com/wp-content/uploads/2026/02/fish-and-grill-re-diseno-de-marca-y-extension-de-identidad-10.jpg"
+          alt="Portfolio image"
+          data-image-index="3"
+        />
+        <img
+          class="portfolio-img loaded"
+          src="https://klef.newfacecards.com/wp-content/uploads/2026/02/fish-and-grill-re-diseno-de-marca-y-extension-de-identidad-3.jpg"
+          alt="Portfolio image"
+          data-image-index="3"
+        />
+      </section>
+
+      <section id="equipo" class="section-container">
+        <h2 class="creativos">Creativos y Colaboradores</h2>
+        <div class="accordion" id="labAccordion">
+          <div class="team-section">
+            <div class="team-avatars">
+              <img
+                src="https://klef.newfacecards.com/wp-content/uploads/ultimatemember/1/profile_photo-190x190.jpg?1770947530"
+                alt="ivangonzalez"
+                class="team-avatar"
+              /><img
+                src="https://klef.newfacecards.com/wp-content/uploads/ultimatemember/2/profile_photo-190x190.jpg?1770960675"
+                alt="Daniela Millan"
+                class="team-avatar"
+              />
             </div>
+            <div class="creatives-in-project">
+              <h3 class="team-names">Ivan Gonzalez • Daniela Millan</h3>
+            </div>
+          </div>
         </div>
-    </div>
+      </section>
 
+      <!-- FINAL TAGS SECTION -->
+      <div class="final-tags">
+        <span class="pill">#IdentidadVisual</span>
+        <span class="pill">#EstrategiaDeMarca</span>
+        <span class="pill">#GuíasEstilo</span>
+        <span class="pill">#SistemasDeDiseño</span>
+        <span class="pill">#Documentación</span>
+        <span class="pill">#Escalabilidad</span>
+        <span class="pill">#UIX</span>
+      </div>
 
-    <!-- Main navigation end -->
-
-    <!--Breadcrumb -->
-    <div class="breadcrumb container">
-        <a href="/">
-            <svg>
-                <use href="#home"></use>
-            </svg>
-        </a>
-        / portfolio
-    </div>
-
-    <!--Main Container-->
-    <div class="container">
-        <div class="header">
-            <div class="header-left">
-                <!-- Tag Skeleton -->
-                <div class="tag skeleton skeleton-tag"></div>
-
-                <!-- Title Skeleton -->
-                <h1 id="title" data-fetch="data.title" class="skeleton skeleton-title"></h1>
-
-                <!-- Project Info -->
-                <div class="project-info">
-                    <div style="display: flex; align-items: center; gap: 10px">
-                        <!-- Avatar Skeleton -->
-                        <div class="avatar skeleton skeleton-avatar"></div>
-
-                        <div class="project-info-text">
-                            <div class="project-label skeleton skeleton-text short"></div>
-                            <div class="project-name skeleton skeleton-text medium"></div>
-                        </div>
-                    </div>
-
-                    <!-- Button Skeleton -->
-                    <button class="btn-view skeleton skeleton-button"></button>
-                </div>
-
-                <!-- Mobile Team Section -->
-                <div class="team-section mobile">
-                    <div class="team-avatars">
-                        <div class="team-avatar skeleton skeleton-team-avatar"></div>
-                        <div class="team-avatar skeleton skeleton-team-avatar"></div>
-                    </div>
-                    <div>
-                        <h3 class="skeleton skeleton-text medium"><!-- 🦄 Creativos en este proyecto --></h3>
-                        <div class="team-names skeleton skeleton-text medium"></div>
-                    </div>
-                </div>
-
-                <!-- Portfolio Images - Skeletons generated dynamically -->
-                <div class="portfolio-images">
-                    <div class="skeleton skeleton-image skeleton-loading">
-                        <div class="skeleton-shimmer"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sidebar -->
-            <aside class="sidebar">
-                <!-- About Section -->
-                <div class="sidebar-section">
-                    <h3 class="skeleton skeleton-text medium"><!-- Acerca de este proyecto --></h3>
-                    <p class="skeleton skeleton-text long"></p>
-                    <p class="skeleton skeleton-text medium"></p>
-
-                    <div class="history-card skeleton skeleton-card"></div>
-                </div>
-
-                <!-- Team Section -->
-                <div class="sidebar-section">
-                    <div class="team-section">
-                        <div class="team-avatars">
-                            <div class="team-avatar skeleton skeleton-team-avatar"></div>
-                            <div class="team-avatar skeleton skeleton-team-avatar"></div>
-                        </div>
-                        <div class="creatives-in-project">
-                            <h3 class="skeleton skeleton-text medium"><!-- 🦄 Creativos en este proyecto --></h3>
-                            <div class="team-names skeleton skeleton-text medium"></div>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-        </div>
-    </div>
-
-    <!--Footer Spacer-->
-    <div class="footer-spacer"></div>
-
-    <!--Mobile Bottom Bar-->
-    <div class="mobile-bottom-bar">
-        <div class="mobile-card skeleton skeleton-card"></div>
-    </div>
-
-    <!-- Backdrop -->
-    <div id="backdrop"></div>
-
-    <!-- Bottom Sheet / Side Panel -->
-    <div id="bottomsheet">
-        <div class="drag-handle"></div>
-        <div class="sheet-top-controls">
-            <div class="top-controls-wrapper">
-                <div class="top-controls-left"></div>
-            </div>
-            <button class="close-btn" id="close-btn" aria-label="Cerrar panel">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
+      <!-- PROJECT CONTEXT SECTION -->
+      <section id="context" class="showcase-context">
+        <div class="text-content">
+          <p class="ctx-description">
+            Este showcase es solo una pieza de un ecosistema mayor. Representa
+            una fase específica dentro de una estrategia integral multi-dominio.
+          </p>
+          <div class="accordion" id="labAccordion" data-open="true">
+            <div class="accordion-header" id="accordionTrigger">
+              <a href="#" class="cta-link">
+                <img
+                  src="https://klef.newfacecards.com/wp-content/uploads/2026/02/lab-logo-black-folder.svg"
+                  alt="Lab"
+                  class="project-icon"
+                />
+                Conoce el proyecto completo de Fish &amp; Grill
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <line x1="7" y1="17" x2="17" y2="7"></line>
+                  <polyline points="7 7 17 7 17 17"></polyline>
                 </svg>
-            </button>
-        </div>
-        <div id="sheet-content">
-            <div class="loading">
-                <div class="spinner"></div>
-                <p>Cargando contenido...</p>
+              </a>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
             </div>
-        </div>
-        <div class="sheet-bottom-controls"></div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="../../assets/scripts/scroll-lock.js"></script>
-    <script src="../../assets/scripts/mega-menu-spa.js"></script>
-    <script src="../../shared/components/sheet/sheet-templates.js"></script>
-    <script src="../../shared/components/sheet/sheet-content.js"></script>
-    <script src="../../shared/components/sheet/sheet-handlers.js"></script>
-    <script src="../../shared/components/sheet/sheet-system.js"></script>
-    <script src="../../shared/components/adaptive-sheet/adaptive-sheet.js"></script>
-    <script src="../../shared/components/portfolio/portfolio-item-fetch.js"></script>
-
-    <!-- Search Overlay -->
-    <div class="search-overlay" id="searchOverlay">
-        <div class="search-panel">
-            <button class="close-search" onclick="closeSearch()">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-                    </path>
-                </svg>
-            </button>
-            <div class="search-content">
-                <div class="search-input-wrapper">
-                    <div class="search-icon">
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                        </svg>
-                    </div>
-                    <input type="text" class="search-input" placeholder="Buscar en klef.agency" id="searchInput"
-                        autocomplete="off" spellcheck="false">
-                </div>
-                <div class="quick-suggestions" id="quickSuggestions">
-                    <div class="suggestions-grid">
-                        <div class="suggestion-section">
-                            <div class="suggestion-title">Sugerencias</div>
-                            <ul class="suggestion-list">
-                                <li><a href="#" class="suggestion-link" onclick="searchFor('portfolio'); return false;">
-                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                        </svg>
-                                        Portfolio
-                                    </a></li>
-                                <li><a href="#" class="suggestion-link" onclick="searchFor('servicios'); return false;">
-                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                        </svg>
-                                        Servicios
-                                    </a></li>
-                                <li><a href="#" class="suggestion-link" onclick="searchFor('contacto'); return false;">
-                                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                        </svg>
-                                        Contacto
-                                    </a></li>
-                            </ul>
-                        </div>
-                        <div class="suggestion-section">
-                            <div class="suggestion-title">Búsquedas recientes</div>
-                            <ul class="suggestion-list" id="recentSearches">
-                                <li><a href="#" data-action="search-term" data-term="Test"><svg fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>Test</a></li>
-                                <li><a href="#" data-action="search-term" data-term="diseño"><svg fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>diseño</a></li>
-                                <li><a href="#" data-action="search-term" data-term="marketing"><svg fill="none"
-                                            stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>marketing</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div id="resultsContainer"></div>
-            </div>
-        </div>
-    </div>
-
-    <script src="../../shared/components/search/query-parser.js"></script>
-    <script src="../../shared/components/search/search-system.js"></script>
-
-    <!-- Contact Sheet Handler -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const contactBtn = document.querySelector('[data-action="open-contact-sheet"]');
-            if (contactBtn) {
-                contactBtn.addEventListener('click', function () {
-                    const contactHtml = `
-              <div class="contact-sheet-content">
-                <div class="contact-cta-section">
-                  <h3>¿Listo para comenzar?</h3>
-                  <div class="contact-options">
-                    <a href="tel:+526245161037" class="contact-option phone">
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
-                      </svg>
-                      <span>Atención al cliente</span>
-                    </a>
-                    <a href="https://wa.me/526241682048" class="contact-option phone">
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                      </svg>
-                      <span>Soporte técnico</span>
-                    </a>
-                    <a href="mailto:info@klef.agency" class="contact-option email">
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
-                      </svg>
-                      <span>info@klef.agency</span>
-                    </a>
-                    <a href="https://wa.me/526245161037" class="contact-option whatsapp" target="_blank" rel="noopener">
-                      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/>
-                      </svg>
-                      <span>WhatsApp</span>
-                    </a>
+            <div class="accordion-content">
+              <div class="taxonomy-matrix">
+                <div class="domain-name">/Archivos-de-proyecto/</div>
+                <div class="domain-section branding">
+                  <span class="domain-name">Branding(2)</span>
+                  <div class="folder-grid">
+                    <div class="folder-item active" data-label="Strategy"></div>
+                    <div class="folder-item" data-label="Messaging"></div>
+                    <div
+                      class="folder-item active"
+                      data-label="Visual Identity"
+                    ></div>
+                    <div class="folder-item" data-label="Guidelines"></div>
                   </div>
                 </div>
-                <div class="social-section">
-                  <h4>Síguenos</h4>
-                  <div class="social-links">
-                    <a href="https://www.instagram.com/klef.agency/" target="_blank" rel="noopener" aria-label="Instagram">
-                      <svg fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                      </svg>
-                    </a>
-                    <a href="https://www.facebook.com/klef.agency/" target="_blank" rel="noopener" aria-label="Facebook">
-                      <svg fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/>
-                      </svg>
-                    </a>
-                    <a href="https://www.youtube.com/channel/UCYFT6kwbsDzbiK6OjuKWM5w" target="_blank" rel="noopener" aria-label="YouTube">
-                      <svg fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.872.505 9.377.505 9.377.505s7.505 0 9.377-.505a3.017 3.017 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                      </svg>
-                    </a>
+
+                <div class="domain-section marketing">
+                  <span class="domain-name">Marketing</span>
+                  <div class="folder-grid">
+                    <div class="folder-item" data-label="Campaign"></div>
+                    <div
+                      class="folder-item active"
+                      data-label="Content System"
+                    ></div>
+                    <div class="folder-item" data-label="Performance"></div>
+                    <div class="folder-item" data-label="Analytics"></div>
+                  </div>
+                </div>
+
+                <div class="domain-section software">
+                  <span class="domain-name">Software</span>
+                  <div class="folder-grid">
+                    <div class="folder-item" data-label="Architecture"></div>
+                    <div class="folder-item active" data-label="Build"></div>
+                    <div class="folder-item active" data-label="QA & Sec"></div>
+                    <div class="folder-item" data-label="Deploy"></div>
                   </div>
                 </div>
               </div>
-            `;
-                    loadSheet({
-                        topControls: {
-                            actions: [],
-                            moreActions: { enabled: false },
-                        },
-                        content: {
-                            type: 'html',
-                            data: { html: contactHtml },
-                        },
-                        bottomControls: {
-                            primary: null,
-                            moreActions: { enabled: false },
-                        },
-                    });
-                });
-            }
-        });
-    </script>
-</body>
+            </div>
+          </div>
+        </div>
 
+        <div style="height: 60px"></div>
+      </section>
+    </main>
+
+    <script>
+      // Lógica de Toggles de Vista con Shimmer intermedio
+      const controlBtns = document.querySelectorAll(".control-btn");
+      controlBtns.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          if (btn.getAttribute("data-state") === "active") return;
+
+          const view = btn.getAttribute("data-view-target");
+          document.body.setAttribute("data-loading", "true");
+
+          controlBtns.forEach((b) => b.setAttribute("data-state", "idle"));
+          btn.setAttribute("data-state", "active");
+
+          setTimeout(() => {
+            document.body.setAttribute("data-view", view);
+            document.body.setAttribute("data-loading", "false");
+          }, 500);
+        });
+      });
+
+      // Lógica de Acordeón
+      const accordion = document.getElementById("labAccordion");
+      const trigger = document.getElementById("accordionTrigger");
+      trigger.addEventListener("click", () => {
+        const isOpen = accordion.getAttribute("data-open") === "true";
+        accordion.setAttribute("data-open", !isOpen);
+      });
+
+      // Scroll Spy & Navigation
+      const sections = document.querySelectorAll("section");
+      const tabs = document.querySelectorAll(".tab-btn");
+      const tabsWrapper = document.getElementById("tabsScroll");
+
+      const observerOptions = {
+        root: null,
+        threshold: 0.2,
+        rootMargin: "-10% 0px -40% 0px",
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            updateTabs(id);
+          }
+        });
+      }, observerOptions);
+
+      sections.forEach((section) => observer.observe(section));
+
+      function updateTabs(activeId) {
+        tabs.forEach((tab) => {
+          const isTarget = tab.getAttribute("data-target") === activeId;
+          tab.setAttribute("data-state", isTarget ? "active" : "idle");
+          if (isTarget) centerTab(tab);
+        });
+      }
+
+      function centerTab(tab) {
+        const wrapperRect = tabsWrapper.getBoundingClientRect();
+        const tabRect = tab.getBoundingClientRect();
+        const scrollLeft =
+          tabRect.left -
+          wrapperRect.left -
+          wrapperRect.width / 2 +
+          tabRect.width / 2;
+        tabsWrapper.scrollBy({ left: scrollLeft, behavior: "smooth" });
+      }
+
+      tabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const target = document.getElementById(
+            tab.getAttribute("data-target"),
+          );
+          const offset = 120;
+          window.scrollTo({
+            top: target.offsetTop - offset,
+            behavior: "smooth",
+          });
+        });
+      });
+    </script>
+    <!-- -->
+  </body>
 </html>
