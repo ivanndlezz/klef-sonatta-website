@@ -198,7 +198,7 @@
       /* --- STICKY TABS --- */
       .tabs-nav {
         position: sticky;
-        top: 52px;
+        top: 51px;
         background: var(--surface);
         border-bottom: 1px solid var(--outline);
         z-index: 900;
@@ -584,14 +584,61 @@
       img.portfolio-img.loaded {
         width: -webkit-fill-available;
       }
+
+      .breadcrumbs svg {
+        width: 20px;
+        height: 20px;
+      }
     </style>
   </head>
   <body data-view="visual-only" data-loading="false">
+    <svg style="display: none">
+      <defs>
+        <symbol
+          id="icon-book"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25"
+          ></path>
+        </symbol>
+
+        <symbol id="home" viewBox="0 0 24 24" fill="currentColor">
+          <path
+            d="m12 5.432 8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 0-.75-.75h-3a.75.75 0 0 0-.75.75V21a.75.75 0 0 1-.75.75H5.625a1.875 1.875 0 0 1-1.875-1.875v-6.198a2.29 2.29 0 0 0 .091-.086L12 5.432Z"
+          ></path>
+        </symbol>
+
+        <symbol
+          id="bag-mini"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+          class="size-5"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M6 5v1H4.667a1.75 1.75 0 0 0-1.743 1.598l-.826 9.5A1.75 1.75 0 0 0 3.84 19H16.16a1.75 1.75 0 0 0 1.743-1.902l-.826-9.5A1.75 1.75 0 0 0 15.333 6H14V5a4 4 0 0 0-8 0Zm4-2.5A2.5 2.5 0 0 0 7.5 5v1h5V5A2.5 2.5 0 0 0 10 2.5ZM7.5 10a2.5 2.5 0 0 0 5 0V8.75a.75.75 0 0 1 1.5 0V10a4 4 0 0 1-8 0V8.75a.75.75 0 0 1 1.5 0V10Z"
+            clip-rule="evenodd"
+          ></path>
+        </symbol>
+      </defs>
+    </svg>
     <header class="top-nav">
       <nav class="breadcrumbs">
-        <a href="#">Lab</a>
-        <div class="dot"></div>
+        <a href="/">
+          <svg>
+            <use href="#home"></use>
+          </svg>
+        </a>
+        <a href="/portfolio"> / portfolio /</a>
+
         <a href="#" data-active="true">Fish & Grill</a>
+        <a href="#">#Lab</a>
       </nav>
 
       <div class="view-controls">
