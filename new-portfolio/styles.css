@@ -197,9 +197,16 @@ body[data-loading="true"] .skeleton,
 .breadcrumbs [data-active="true"] {
   border: solid 1px #bfc0cd;
   font-weight: 500;
-  padding: 1px 10px;
-  border-radius: 100px;
-  padding-top: 3px;
+  padding: 3px 10px;
+  border-radius: 15px;
+  padding-top: 4px;
+  max-width: 30vw;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  height: 3.5ch;
+  overflow: hidden;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 /* View Controls */
