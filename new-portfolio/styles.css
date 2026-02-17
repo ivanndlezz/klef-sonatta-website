@@ -1,0 +1,626 @@
+/**
+ * New Portfolio Styles
+ * Based on Fish & Grill template with Gutenberg Section Navigation
+ */
+
+/* ============================================
+   CSS VARIABLES
+   ============================================ */
+:root {
+  /* Brand Colors */
+  --brand-coral: #e95f47;
+  --brand-aqua: #4ecdc4;
+  --brand-cream: #f7f3e9;
+
+  /* Text Colors */
+  --text-main: #202124;
+  --text-sub: #5f6368;
+
+  /* UI Colors */
+  --outline: #e8eaed;
+  --surface: #ffffff;
+  --bg-body: #ffffff;
+
+  /* Transitions */
+  --transition-ui: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Klef Brand */
+  --klef-blue: hsl(204, 64%, 44%);
+  --klef-orange: hsl(35, 100%, 45%);
+}
+
+/* ============================================
+   BASE STYLES
+   ============================================ */
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family:
+    "Google Sans",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
+  margin: 0;
+  color: var(--text-main);
+  background-color: var(--bg-body);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ============================================
+   SKELETON LOADER ANIMATIONS
+   ============================================ */
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+/* Skeleton base styles */
+body[data-loading="true"] .skeleton,
+.skeleton {
+  display: block !important;
+  background: #f6f7f8;
+  background-image: linear-gradient(
+    to right,
+    #f6f7f8 0%,
+    #edeef1 20%,
+    #f6f7f8 40%,
+    #f6f7f8 100%
+  );
+  background-size: 800px 100%;
+  animation: shimmer 1.2s linear infinite forwards;
+  color: transparent !important;
+  border-radius: 8px;
+  pointer-events: none;
+  min-height: 1em;
+}
+
+/* Skeleton variants */
+.skeleton-title {
+  height: 48px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.skeleton-text {
+  height: 20px;
+  border-radius: 4px;
+}
+
+.skeleton-text.short {
+  max-width: 120px;
+}
+
+.skeleton-text.medium {
+  max-width: 250px;
+}
+
+.skeleton-text.long {
+  max-width: 400px;
+}
+
+.skeleton-tag {
+  height: 24px;
+  width: 100px;
+  border-radius: 100px;
+}
+
+/* Image hydrator skeleton */
+.image-hydrator.skeleton {
+  background: #f1f3f4;
+  border-radius: 16px;
+  position: relative;
+  overflow: hidden;
+  min-height: 300px;
+}
+
+.image-hydrator.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+/* Hydrated state */
+.image-hydrator.hydrated {
+  background: transparent;
+}
+
+.image-hydrator img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 16px;
+}
+
+/* ============================================
+   TOP NAVIGATION
+   ============================================ */
+.top-nav {
+  padding: 8px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--outline);
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.breadcrumbs a {
+  text-decoration: none;
+  color: var(--text-sub);
+  transition: var(--transition-ui);
+}
+
+.breadcrumbs a:hover {
+  color: var(--text-main);
+}
+
+.breadcrumbs svg {
+  width: 20px;
+  height: 20px;
+}
+
+.breadcrumbs .dot {
+  width: 3px;
+  height: 3px;
+  background: var(--outline);
+  border-radius: 50%;
+}
+
+.breadcrumbs [data-active="true"] {
+  border: solid 1px #bfc0cd;
+  font-weight: 500;
+  padding: 1px 10px;
+  border-radius: 100px;
+  padding-top: 3px;
+}
+
+/* View Controls */
+.view-controls {
+  display: flex;
+  background: #f1f3f4;
+  padding: 4px;
+  border-radius: 12px;
+  gap: 4px;
+}
+
+.control-btn {
+  border: none;
+  background: transparent;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-sub);
+  transition: var(--transition-ui);
+}
+
+.control-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.control-btn[data-state="active"] {
+  background: white;
+  color: var(--text-main);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* ============================================
+   COVER/HERO SECTION
+   ============================================ */
+.cover {
+  padding: 100px 24px 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+  align-items: center;
+}
+
+.cat-tag {
+  padding: 4px 12px;
+  background: #5154785e;
+  color: #1d1e22;
+  border-radius: 100px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  width: fit-content;
+}
+
+.cover h1 {
+  font-size: 42px;
+  line-height: 1.1;
+  margin: 0;
+  letter-spacing: -1px;
+  text-align: center;
+}
+
+.cover p {
+  font-size: 18px;
+  color: var(--text-sub);
+  margin: 0;
+  text-align: center;
+}
+
+.cover-visual {
+  width: 100%;
+  aspect-ratio: 16/9;
+  background: var(--brand-cream);
+  border-radius: 20px;
+  margin-top: 24px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cover-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ============================================
+   STICKY TABS NAVIGATION
+   ============================================ */
+.tabs-nav {
+  position: sticky;
+  top: 51px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--outline);
+  z-index: 900;
+}
+
+.tabs-wrapper {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 0 12px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.tabs-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-btn {
+  padding: 16px 20px;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-weight: 500;
+  color: var(--text-sub);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: var(--transition-ui);
+}
+
+.tab-btn:hover {
+  color: var(--text-main);
+}
+
+.tab-btn[data-state="active"] {
+  color: var(--brand-coral);
+  box-shadow: inset 0 -3px 0 var(--brand-coral);
+}
+
+/* ============================================
+   CONTENT SECTIONS
+   ============================================ */
+.section-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 60px 24px;
+  transition: padding 0.5s ease;
+  scroll-margin-top: 120px; /* Offset for sticky header + tabs */
+}
+
+/* Visual-only mode (hide text elements) */
+body[data-view="visual-only"]:not([data-loading="true"]) .section-container > p,
+body[data-view="visual-only"]:not([data-loading="true"])
+  .section-container
+  > h2:not(.creativos),
+body[data-view="visual-only"]:not([data-loading="true"])
+  .section-container
+  > h3,
+body[data-view="visual-only"]:not([data-loading="true"]) .tag-row,
+body[data-view="visual-only"]:not([data-loading="true"]) .cover h1,
+body[data-view="visual-only"]:not([data-loading="true"])
+  .cover
+  p:not(.cat-tag) {
+  display: none;
+}
+
+body[data-view="visual-only"] .section-container {
+  padding: 20px 24px;
+}
+
+/* Typography */
+h2 {
+  font-size: 28px;
+  margin-bottom: 24px;
+  line-height: 1.2;
+}
+
+h3 {
+  font-size: 20px;
+  margin-bottom: 16px;
+}
+
+p {
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #3c4043;
+}
+
+/* ============================================
+   IMAGE STYLES
+   ============================================ */
+img.portfolio-img {
+  width: 100%;
+  height: auto;
+  border-radius: 16px;
+  margin: 20px 0;
+  display: block;
+}
+
+img.portfolio-img.loaded {
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   TAGS & COLOR GRIDS
+   ============================================ */
+.tag-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.tag {
+  font-size: 12px;
+  padding: 6px 14px;
+  background: #f1f3f4;
+  border-radius: 100px;
+  color: var(--text-main);
+}
+
+.color-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.color-card {
+  padding: 12px;
+  border-radius: 16px;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+/* ============================================
+   TEAM SECTION & ACCORDION
+   ============================================ */
+.creativos {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text-main);
+}
+
+.team-section {
+  display: flex;
+  align-items: center;
+  height: fit-content;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 16px 20px;
+  background: #f8f9fa;
+  border-radius: 16px;
+  margin: 32px 0;
+}
+
+.team-avatars {
+  display: flex;
+}
+
+.team-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 20px rgba(146, 173, 177, 0.3);
+}
+
+.team-avatars .team-avatar:not(:first-child) {
+  margin-left: -10px;
+}
+
+.team-names {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* ============================================
+   ACCORDION
+   ============================================ */
+.accordion {
+  border: 1px solid var(--outline);
+  border-radius: 20px;
+  margin: 32px 0;
+  overflow: hidden;
+  background: #fff;
+}
+
+.accordion-header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: var(--transition-ui);
+}
+
+.accordion-header:hover {
+  background: #f8f9fa;
+}
+
+.accordion-content {
+  padding: 0 20px;
+  max-height: 0;
+  overflow: hidden;
+  transition: var(--transition-ui);
+  background: #f8f9fa;
+}
+
+.accordion[data-open="true"] .accordion-content {
+  max-height: 600px;
+  padding: 20px;
+}
+
+/* ============================================
+   TAGS / PILLS
+   ============================================ */
+.final-tags {
+  max-width: 800px;
+  margin: 40px auto 0;
+  padding: 0 24px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.pill {
+  display: inline-block;
+  padding: 8px 16px;
+  background: #f1f3f4;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-main);
+  transition: var(--transition-ui);
+}
+
+.pill:hover {
+  background: #e8eaed;
+}
+
+/* ============================================
+   UTILITIES
+   ============================================ */
+.hidden {
+  display: none !important;
+}
+
+.image-placeholder {
+  width: 100%;
+  background: #f1f3f4;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #bdc1c6;
+  font-size: 14px;
+  margin: 20px 0;
+  min-height: 240px;
+  border: 1px dashed #dadce0;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .cover h1 {
+    font-size: 32px;
+  }
+
+  .tabs-nav {
+    top: 48px;
+  }
+
+  .control-btn span {
+    display: none;
+  }
+
+  .section-container {
+    padding: 40px 16px;
+  }
+
+  body[data-view="visual-only"] .section-container {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .cover {
+    padding: 80px 16px 40px;
+  }
+
+  .cover h1 {
+    font-size: 28px;
+  }
+
+  .cover p {
+    font-size: 16px;
+  }
+
+  .tab-btn {
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+}

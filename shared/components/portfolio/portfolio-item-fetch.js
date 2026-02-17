@@ -558,17 +558,74 @@ function renderTags(tags) {
 }
 
 /**
- * Render post content (full HTML from GraphQL)
+ * Render post content (full HTML from GraphQL) with dynamic section parsing
  */
 function renderPostContent(data) {
   const postContent = document.getElementById("post-content");
-  if (!postContent) return;
+  const mainContent = document.getElementById("mainContent"); // Alternate container sometimes used
+  const target = postContent || mainContent;
+
+  if (!target) return;
 
   if (data.content) {
-    postContent.innerHTML = data.content;
-    postContent.classList.remove("skeleton");
+    // If SectionNavigation is available, parse the content
+    if (window.SectionNavigation) {
+      const { sections, processedContent, imageRegistry } =
+        window.SectionNavigation.parse(data.content);
+
+      if (sections.length > 0) {
+        target.innerHTML = processedContent;
+
+        // --- SEO IMAGE HYDRATION INTEGRATION ---
+        if (imageRegistry && imageRegistry.size > 0) {
+          // 1. Populate/Create #seo-images for SEO (hidden container)
+          let seoContainer = document.getElementById("seo-images");
+          if (!seoContainer) {
+            seoContainer = document.createElement("div");
+            seoContainer.id = "seo-images";
+            seoContainer.style.display = "none";
+            document.body.appendChild(seoContainer);
+          } else {
+            seoContainer.innerHTML = ""; // Clear old
+          }
+
+          imageRegistry.forEach((imgData, id) => {
+            // Append original markup to the hidden SEO container
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(
+              imgData.originalMarkup,
+              "text/html",
+            );
+            const imgEl = doc.querySelector("img");
+            if (imgEl) {
+              imgEl.dataset.id = id;
+              seoContainer.appendChild(imgEl);
+            }
+          });
+
+          // 2. Initialize Hydrator
+          window.SectionNavigation.initHydrator(imageRegistry);
+        }
+
+        // Render tabs if container exists
+        const tabsScroll = document.getElementById("tabsScroll");
+        if (tabsScroll) {
+          window.SectionNavigation.renderTabs(sections, "#tabsScroll");
+
+          // Re-initialize tab events and scroll spy if they exist
+          if (typeof setupTabsNavigation === "function") {
+            setupTabsNavigation();
+          }
+        }
+      } else {
+        target.innerHTML = data.content;
+      }
+    } else {
+      target.innerHTML = data.content;
+    }
+    target.classList.remove("skeleton");
   } else {
-    postContent.innerHTML = "<p>No content available</p>";
+    target.innerHTML = "<p>No content available</p>";
   }
 }
 
