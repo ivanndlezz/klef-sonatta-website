@@ -13,7 +13,7 @@ function openSearch() {
   if (searchOverlay) {
     searchOverlay.classList.add("active");
     // Use iOS-compatible scroll lock
-    if (typeof ScrollLock !== 'undefined') {
+    if (typeof ScrollLock !== "undefined") {
       ScrollLock.lock();
     } else {
       document.body.style.overflow = "hidden";
@@ -44,7 +44,7 @@ function toggleMenu() {
   if (mainNav) {
     const isOpen = mainNav.classList.toggle("mobile-open");
     // Use iOS-compatible scroll lock
-    if (typeof ScrollLock !== 'undefined') {
+    if (typeof ScrollLock !== "undefined") {
       if (isOpen) {
         ScrollLock.lock();
       } else {
@@ -647,7 +647,7 @@ class DynamicIsland {
       if (!this.container || !this.island) return;
 
       // Don't show dynamic island if body is scroll-locked (overlays are open)
-      if (typeof ScrollLock !== 'undefined' && ScrollLock.isLocked()) {
+      if (typeof ScrollLock !== "undefined" && ScrollLock.isLocked()) {
         return;
       }
 
@@ -702,7 +702,7 @@ class DynamicIsland {
           this.island.classList.add("expanded");
         }
         // Use iOS-compatible scroll unlock
-        if (typeof ScrollLock !== 'undefined') {
+        if (typeof ScrollLock !== "undefined") {
           ScrollLock.unlock();
         } else {
           document.body.style.overflow = "";

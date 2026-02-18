@@ -140,7 +140,7 @@ function getSlugFromURL() {
 async function fetchPortfolioItem(slug) {
   try {
     if (!slug) throw new Error("No slug provided");
-    // console.log(`🔍 Fetching portfolio item: ${slug}`);
+    console.log(`🔍 Fetching portfolio item: ${slug}`);
 
     const response = await fetch(GRAPHQL_ENDPOINT, {
       method: "POST",
@@ -154,7 +154,7 @@ async function fetchPortfolioItem(slug) {
     const json = await response.json();
 
     if (json.errors) {
-      // console.error("❌ GraphQL errors:", json.errors);
+      console.error("❌ GraphQL errors:", json.errors);
       throw new Error(json.errors[0].message);
     }
 
@@ -162,10 +162,10 @@ async function fetchPortfolioItem(slug) {
       throw new Error("Portfolio item not found");
     }
 
-    // console.log("✅ Portfolio item fetched:", json.data.post);
+    console.log("✅ Portfolio item fetched:", json.data.post);
     return json.data.post;
   } catch (error) {
-    // console.error("❌ Fetch error:", error);
+    console.error("❌ Fetch error:", error);
     throw new Error(`Failed to fetch portfolio item: ${error.message}`);
   }
 }
@@ -678,7 +678,10 @@ function updateState(newState) {
 /**
  * Initialize on page load
  */
-document.addEventListener("DOMContentLoaded", async () => {
+/**
+ * Initialize on page load
+ */
+async function initPortfolioItem() {
   try {
     const slug = getSlugFromURL();
     // console.log("🚀 Initializing portfolio item page with slug:", slug);
@@ -692,7 +695,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (error) {
     updateState({ loading: false, data: null, error: error.message });
   }
-});
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initPortfolioItem);
+} else {
+  initPortfolioItem();
+}
 
 // ============================================
 // COMPONENT LIBRARY - Portfolio Specific
