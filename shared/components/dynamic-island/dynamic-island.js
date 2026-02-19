@@ -356,28 +356,30 @@ class DynamicIsland {
       getHtmlStructure(data) {
         return `
         <div class="island-content">
+          <button class="center-content island-btn accent" data-action="historia">
+            <span class="icon">${data.historia.icon}</span>
+            <span>${data.historia.name}</span>
+          </button>
           <button class="island-btn secondary" data-action="visuales">
             <span class="icon">${data.visuales.icon}</span>
             <span>${data.visuales.name}</span>
-          </button>
-          <button class="island-btn accent" data-action="historia">
-            <span class="icon">${data.historia.icon}</span>
-            <span>${data.historia.name}</span>
           </button>
         </div>`;
       },
       data: {
         visuales: {
           icon: ICONS.gallery,
-          name: "Solo Visuales",
+          name: "Visuales",
           function: () => {
-            const visualBtn = document.querySelector(
-              '.control-btn[data-view-target="visual"]',
+            // Find the control button with data-view-target="full"
+            const fullViewBtn = document.querySelector(
+              '.control-btn[data-view-target="visual-only"]',
             );
-            if (visualBtn) {
-              visualBtn.click();
+            if (fullViewBtn) {
+              fullViewBtn.click();
             } else {
-              document.body.setAttribute("data-view", "visual");
+              // Fallback: directly set the view attribute
+              document.body.setAttribute("data-view", "visual-only");
             }
           },
         },

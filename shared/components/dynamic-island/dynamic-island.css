@@ -46,11 +46,16 @@
   padding: 0;
 }
 
-.dynamic-island.pill .island-btn span:not(.icon) {
+.dynamic-island.pill .island-btn:not(.center-content) span:not(.icon) {
   display: none;
 }
 
 .dynamic-island.pill .center-content {
+  min-width: fit-content;
+  padding: 8px 16px;
+}
+
+.dynamic-island.pill .center-content[data-action="search"] {
   min-width: 140px;
   padding: 8px 16px;
   padding-left: 0px;

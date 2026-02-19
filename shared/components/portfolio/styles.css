@@ -209,9 +209,9 @@ body[data-loading="true"] .skeleton,
 .breadcrumbs [data-active="true"] {
   border: solid 1px #bfc0cd;
   font-weight: 500;
-  padding: 3px 10px;
+  padding: 4px 10px;
   border-radius: 15px;
-  padding-top: 2px;
+  padding-top: 4px;
   max-width: 30vw;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -607,10 +607,6 @@ img.portfolio-img.loaded {
   font-weight: 500;
   color: var(--text-main);
   transition: var(--transition-ui);
-}
-
-.pill:hover {
-  background: #e8eaed;
 }
 
 /* ============================================
