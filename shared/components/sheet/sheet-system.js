@@ -24,7 +24,7 @@
       this.backdrop = document.getElementById("backdrop");
 
       if (!this.sheet || !this.backdrop) {
-        console.warn("[SheetSystem] Sheet elements not found in DOM");
+        // Sheet elements not found in DOM
         return this;
       }
 
@@ -43,14 +43,13 @@
       });
 
       this.initialized = true;
-      console.log("[SheetSystem] Initialized");
       return this;
     }
 
     // Cargar configuración y renderizar
     load(config) {
       if (!this.sheet) {
-        console.error("[SheetSystem] Sheet not initialized");
+        // Sheet not initialized
         return this;
       }
 
@@ -224,9 +223,7 @@
   if (autoInit) {
     sheetSystem.init();
   } else {
-    console.log(
-      "[SheetSystem] AdaptiveSheet detected, using deferred initialization",
-    );
+    // AdaptiveSheet detected, using deferred initialization
   }
 
   // ============================================
@@ -333,6 +330,4 @@
       };
     },
   };
-
-  console.log("[SheetSystem] Loaded and ready");
 })();

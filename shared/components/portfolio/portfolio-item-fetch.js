@@ -140,7 +140,6 @@ function getSlugFromURL() {
 async function fetchPortfolioItem(slug) {
   try {
     if (!slug) throw new Error("No slug provided");
-    console.log(`🔍 Fetching portfolio item: ${slug}`);
 
     const response = await fetch(GRAPHQL_ENDPOINT, {
       method: "POST",
@@ -154,7 +153,6 @@ async function fetchPortfolioItem(slug) {
     const json = await response.json();
 
     if (json.errors) {
-      console.error("❌ GraphQL errors:", json.errors);
       throw new Error(json.errors[0].message);
     }
 
@@ -162,10 +160,8 @@ async function fetchPortfolioItem(slug) {
       throw new Error("Portfolio item not found");
     }
 
-    console.log("✅ Portfolio item fetched:", json.data.post);
     return json.data.post;
   } catch (error) {
-    console.error("❌ Fetch error:", error);
     throw new Error(`Failed to fetch portfolio item: ${error.message}`);
   }
 }
@@ -666,7 +662,6 @@ function updateState(newState) {
       errorEl.textContent = `⚠️ ${state.error}`;
       errorEl.style.display = "block";
     }
-    console.error("❌ Error state:", state.error);
   } else if (state.data) {
     document.body.classList.remove("loading");
     document.body.classList.add("loaded");

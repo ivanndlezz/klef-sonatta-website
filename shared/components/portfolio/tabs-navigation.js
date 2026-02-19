@@ -76,6 +76,31 @@ window.setupTabsNavigation = function () {
       }
     });
   });
+
+  /**
+   * Dynamic Island Preset Switching
+   * Toggle between search_totop and portfolio_full_view based on scroll
+   */
+  window.addEventListener(
+    "scroll",
+    () => {
+      // Usar Klef.DynamicIsland namespace para evitar errores de scope
+      const di = window.Klef?.DynamicIsland;
+      if (!di || typeof di.loadPreset !== "function") return;
+
+      const currentScroll = window.pageYOffset;
+      const footer = document.querySelector("footer");
+      const footerVisible =
+        footer && footer.getBoundingClientRect().top < window.innerHeight - 200;
+
+      if (currentScroll > 500 && !footerVisible) {
+        di.loadPreset("portfolio_full_view");
+      } else {
+        di.loadPreset("search_totop");
+      }
+    },
+    { passive: true },
+  );
 };
 
 /**

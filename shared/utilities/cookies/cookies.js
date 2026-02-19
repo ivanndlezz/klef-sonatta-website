@@ -71,9 +71,6 @@ const KLEF_COOKIE_SCRIPTS = {
       id: "mock_cookie_script",
       load() {
         // Script de ejemplo para testing - reemplazar con scripts reales
-        console.log(
-          "🍪 Mock cookie script loaded - replace with real implementation",
-        );
         // Ejemplo: cargar un script de chat o funcionalidad adicional
         /*
         const s = document.createElement("script");

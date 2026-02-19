@@ -35,7 +35,7 @@ function openSearch() {
       return;
     }
   } else {
-    console.log("Abrir búsqueda");
+    // Abrir búsqueda
   }
 }
 
@@ -55,12 +55,12 @@ function toggleMenu() {
     }
     hideDynamicIsland();
   } else {
-    console.log("Toggle menú");
+    // Toggle menú
   }
 }
 
 function openCart() {
-  console.log("Abrir carrito");
+  // Abrir carrito
 }
 
 function hideDynamicIsland() {
@@ -90,7 +90,7 @@ const SafeActions = {
 // ============================================================================
 function renderTemplate(templateString, data = {}) {
   if (typeof templateString !== "string") {
-    console.warn("DynamicIsland: template is not a string");
+    // Template is not a string
     return "";
   }
 
@@ -113,7 +113,7 @@ function renderTemplate(templateString, data = {}) {
 
     return fn(safeData);
   } catch (err) {
-    console.error("DynamicIsland template error:", err);
+    // Template error
     return "";
   }
 }
@@ -173,6 +173,28 @@ const ICONS = {
     <use href="#arrow-up"></use>
   </svg>
   `,
+  listMenu: `
+  <svg
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  style="--wh:20px; width: var(--wh); height: var(--wh);">
+    <path d="M4 6h16M4 12h16M4 18h7"></path>
+  </svg>
+`,
+  gallery: `
+  <svg
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="2"
+  style="--wh:20px; width: var(--wh); height: var(--wh);">
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+    <polyline points="21 15 16 10 5 21"></polyline>
+  </svg>
+`,
 };
 
 // ============================================================================
@@ -315,17 +337,65 @@ class DynamicIsland {
         settings: {
           icon: ICONS.hamMenu,
           name: "Ajustes",
-          function: () => console.log("Abrir ajustes"),
+          function: () => {},
         },
         help: {
           icon: "❓",
           name: "Ayuda",
-          function: () => console.log("Abrir ayuda"),
+          function: () => {},
         },
         profile: {
           icon: "👤",
           name: "Perfil",
-          function: () => console.log("Abrir perfil"),
+          function: () => {},
+        },
+      },
+    },
+
+    portfolio_full_view: {
+      getHtmlStructure(data) {
+        return `
+        <div class="island-content">
+          <button class="island-btn secondary" data-action="visuales">
+            <span class="icon">${data.visuales.icon}</span>
+            <span>${data.visuales.name}</span>
+          </button>
+          <button class="island-btn accent" data-action="historia">
+            <span class="icon">${data.historia.icon}</span>
+            <span>${data.historia.name}</span>
+          </button>
+        </div>`;
+      },
+      data: {
+        visuales: {
+          icon: ICONS.gallery,
+          name: "Solo Visuales",
+          function: () => {
+            const visualBtn = document.querySelector(
+              '.control-btn[data-view-target="visual"]',
+            );
+            if (visualBtn) {
+              visualBtn.click();
+            } else {
+              document.body.setAttribute("data-view", "visual");
+            }
+          },
+        },
+        historia: {
+          icon: ICONS.listMenu,
+          name: "Historia Completa",
+          function: () => {
+            // Find the control button with data-view-target="full"
+            const fullViewBtn = document.querySelector(
+              '.control-btn[data-view-target="full"]',
+            );
+            if (fullViewBtn) {
+              fullViewBtn.click();
+            } else {
+              // Fallback: directly set the view attribute
+              document.body.setAttribute("data-view", "full");
+            }
+          },
         },
       },
     },
@@ -396,6 +466,7 @@ class DynamicIsland {
     this.scrollTimeout = null;
     this.isFullscreen = false;
     this.escapeHandler = null;
+    this.currentPreset = initialConfig.presetName || "default";
 
     this.init();
   }
@@ -404,8 +475,6 @@ class DynamicIsland {
   // INICIALIZACIÓN
   // ==========================================================================
   init() {
-    console.time("DynamicIsland init");
-    console.log("DynamicIsland: Starting initialization");
     this._findOrCreateElements();
     this.setupScrollDetection();
     this.setupEventListeners();
@@ -419,8 +488,6 @@ class DynamicIsland {
     if (this.config.htmlStructure && this.config.data) {
       this.hydrateIsland(this.config.htmlStructure, this.config.data);
     }
-    console.timeEnd("DynamicIsland init");
-    console.log("DynamicIsland: Initialization complete");
   }
 
   _findOrCreateElements() {
@@ -460,7 +527,7 @@ class DynamicIsland {
     }
 
     if (this.island && !this.islandContent) {
-      console.warn("DynamicIsland: .island-content not found");
+      // .island-content not found
     }
 
     this.centerBtn = document.querySelector(".center-content");
@@ -481,7 +548,7 @@ class DynamicIsland {
         this.config = { data: fallbackData };
         this.attachEventListeners(fallbackData);
       } catch (err) {
-        console.error("DynamicIsland: error auto-mapping static DOM", err);
+        // Error auto-mapping static DOM
       }
     }
   }
@@ -505,7 +572,7 @@ class DynamicIsland {
 
   hydrateIsland(htmlStructure, data) {
     if (!this.islandContent) {
-      console.error("DynamicIsland: islandContent not found");
+      // islandContent not found
       return;
     }
 
@@ -578,7 +645,7 @@ class DynamicIsland {
 
   attachEventListeners(data) {
     if (!this.islandContent) {
-      console.warn("DynamicIsland: islandContent not available");
+      // islandContent not available
       return;
     }
 
@@ -589,7 +656,7 @@ class DynamicIsland {
       const handler = data?.[action]?.function;
 
       if (!handler) {
-        console.warn("DynamicIsland: no handler found for action:", action);
+        // no handler found for action
         return;
       }
 
@@ -610,11 +677,7 @@ class DynamicIsland {
           handler();
           this.createRipple(el);
         } catch (err) {
-          console.error(
-            "DynamicIsland: error executing handler for",
-            action,
-            err,
-          );
+          // Error executing handler
         }
       });
     });
@@ -779,16 +842,14 @@ class DynamicIsland {
 
   _attachToastActionHandlers(actions) {
     if (!this.islandContent) {
-      console.error(
-        "DynamicIsland: islandContent not available for toast actions",
-      );
+      // islandContent not available for toast actions
       return;
     }
 
     const actionBtns = this.islandContent.querySelectorAll(".toast-action-btn");
 
     if (actionBtns.length === 0) {
-      console.warn("DynamicIsland: No .toast-action-btn elements found");
+      // No .toast-action-btn elements found
       return;
     }
 
@@ -796,10 +857,7 @@ class DynamicIsland {
       const action = actions[index];
 
       if (!action) {
-        console.warn(
-          "DynamicIsland: No action defined for button index",
-          index,
-        );
+        // No action defined for button index
         return;
       }
 
@@ -814,16 +872,13 @@ class DynamicIsland {
           if (typeof action.onClick === "function") {
             action.onClick();
           } else {
-            console.error(
-              "DynamicIsland: action.onClick is not a function",
-              action,
-            );
+            // action.onClick is not a function
           }
 
           // Restaurar contenido inmediatamente (el onClick puede mostrar otro toast después)
           this.restoreContent();
         } catch (err) {
-          console.error("DynamicIsland: Error executing toast action", err);
+          // Error executing toast action
         }
       };
 
@@ -867,15 +922,17 @@ class DynamicIsland {
 
   setDynamicIsland(content) {
     this.config = content;
+    this.currentPreset = content.presetName || "custom";
     this.hydrateIsland(content.htmlStructure, content.data);
   }
 
   loadDefault() {
-    const preset = DynamicIsland.presets.default;
+    const preset =
+      DynamicIsland.presets.search_totop || DynamicIsland.presets.default;
     if (!preset) {
-      console.warn("DynamicIsland: default preset missing");
       return;
     }
+    this.currentPreset = "search_totop";
     this.hydrateIsland(preset.getHtmlStructure(preset.data), preset.data);
   }
 
@@ -984,14 +1041,14 @@ function listIslandActions() {
 
 function triggerIslandAction(action) {
   if (!dynamicIslandInstance) {
-    console.warn("DynamicIsland: no instance available");
+    // no instance available
     return;
   }
   const el = dynamicIslandInstance.islandContent.querySelector(
     `[data-action="${action}"]`,
   );
   if (!el) {
-    console.warn("DynamicIsland: action element not found", action);
+    // action element not found
     return;
   }
   el.click();
@@ -1000,9 +1057,11 @@ function triggerIslandAction(action) {
 function loadPreset(presetName) {
   const preset = DynamicIsland.presets[presetName];
   if (preset) {
-    setDynamicIsland(preset);
-  } else {
-    console.error("DynamicIsland: preset not found", presetName);
+    const config = {
+      ...preset,
+      presetName: presetName,
+    };
+    setDynamicIsland(config);
   }
 }
 
@@ -1034,12 +1093,7 @@ function showCookieConsent(customText, options = {}) {
                 functional: true,
               });
               loadScriptsForConsentedCategories(consent);
-              console.log(
-                "✅ Todas las cookies aceptadas - guardado en localStorage",
-              );
-
-              // NO llamar a restoreContent aquí - dejamos que showToast lo maneje
-              // Mostrar confirmación DESPUÉS de cerrar el consent
+              // Cookie preferences saved
               setTimeout(() => {
                 showToast(
                   "✅ Preferencias de cookies guardadas",
@@ -1068,11 +1122,7 @@ function showCookieConsent(customText, options = {}) {
                 functional: false,
               });
               loadScriptsForConsentedCategories(consent);
-              console.log(
-                "✅ Solo cookies esenciales - guardado en localStorage",
-              );
-
-              // NO llamar a restoreContent aquí - dejamos que showToast lo maneje
+              // Cookie preferences saved
               setTimeout(() => {
                 showToast(
                   "✅ Solo cookies esenciales activadas",
@@ -1182,16 +1232,11 @@ window.Klef.DynamicIsland = {
 // AUTO-INICIALIZACIÓN
 // ============================================================================
 document.addEventListener("DOMContentLoaded", () => {
-  console.log(
-    "DynamicIsland: DOMContentLoaded fired, waiting for scroll to init",
-  );
-
   let initialized = false;
 
   const initOnScroll = () => {
     if (!initialized) {
       initialized = true;
-      console.log("DynamicIsland: First scroll detected, starting init");
       initDynamicIsland();
       // Descomentar para mostrar cookie consent automáticamente
       // checkAndShowCookieConsent();

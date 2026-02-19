@@ -21,9 +21,6 @@
   const scriptUrl = new URL(document.currentScript.src);
   const componentBaseUrl = scriptUrl.href.replace("load-basics.js", "");
 
-  console.log("[LoadBasics] Script location:", scriptUrl.href);
-  console.log("[LoadBasics] Component base:", componentBaseUrl);
-
   /**
    * Calculate the path prefix needed to reach the project root
    * from the current page location
@@ -42,10 +39,6 @@
 
     const depth = pathParts.length;
     const prefix = "../".repeat(depth);
-
-    console.log("[LoadBasics] Current path:", currentPath);
-    console.log("[LoadBasics] Depth:", depth);
-    console.log("[LoadBasics] Path prefix:", prefix || "(root)");
 
     return prefix;
   }
@@ -93,11 +86,11 @@
             absoluteUrl.href,
           );
 
-          console.log(`[LoadBasics] Path adjusted: ${path} -> ${relativePath}`);
+          // Debug: console.log(`[LoadBasics] Path adjusted: ${path} -> ${relativePath}`);
 
           return `${attr}=${quote1}${relativePath}${quote2}`;
         } catch (e) {
-          console.warn("[LoadBasics] Could not adjust path:", path, e);
+          // Debug: console.warn("[LoadBasics] Could not adjust path:", path, e);
           return match;
         }
       },
@@ -196,11 +189,6 @@
     elements.forEach((element) => {
       const clone = element.cloneNode(true);
       document.head.appendChild(clone);
-      console.log(
-        "[LoadBasics] Injected head element:",
-        element.tagName,
-        element.rel || element.name,
-      );
     });
   }
 
@@ -227,8 +215,6 @@
     } else {
       CONFIG.targetElement.appendChild(fragment);
     }
-
-    console.log("[LoadBasics] Injected HTML content");
   }
 
   /**
@@ -259,9 +245,9 @@
           const func = new Function(scriptContent);
           func();
 
-          console.log("[LoadBasics] Executed inline script");
+          // Debug: console.log("[LoadBasics] Executed inline script");
         } catch (e) {
-          console.error("[LoadBasics] Error executing inline script:", e);
+          // Debug: console.error("[LoadBasics] Error executing inline script:", e);
         }
       }
     });
@@ -309,8 +295,6 @@
       injectHTML(body);
       executeScripts(scripts);
 
-      console.log("[LoadBasics] Component successfully loaded and injected!");
-
       // Dispatch custom event
       window.dispatchEvent(
         new CustomEvent("loadBasicsReady", {
@@ -318,7 +302,7 @@
         }),
       );
     } catch (error) {
-      console.error("[LoadBasics] Error loading component:", error);
+      // Debug: console.error("[LoadBasics] Error loading component:", error);
       throw error;
     }
   }

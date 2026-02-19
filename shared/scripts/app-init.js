@@ -6,11 +6,10 @@
   "use strict";
 
   function initApp() {
-    // Esperar a que todos los módulos estén cargados
-    // Dynamic Island y Cookie Consent se inicializan después
+    // Detectar si es una página de portafolio para cargar el preset correcto
+    // Cargar el preset inicial (Búsqueda + Volver arriba)
     if (typeof loadPreset === "function") {
       loadPreset("search_totop");
-      // loadPreset('search_menu_cart');
     }
 
     if (typeof initCookieConsentUI === "function") {
