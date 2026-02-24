@@ -279,6 +279,7 @@ if (document.readyState === "loading") {
 document.addEventListener("portfolio-rendered", () => {
   // Remove loading state
   document.body.setAttribute("data-loading", "false");
+  document.body.setAttribute("data-view", "visual-only");
 
   // Setup tabs navigation
   window.setupTabsNavigation();

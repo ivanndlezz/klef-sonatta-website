@@ -8,14 +8,14 @@
 // CONFIGURATION
 // ============================================
 
-/**
- * Default slug to use when no slug is found in URL
- * Set to null to disable fallback behavior
- */
-const DEFAULT_FALLBACK_SLUG = "fish-and-grill-los-cabos-restaurant-brand";
+// Flag para debugging - cambiar a false en producción
+const is_debugging = false;
 
-// To disable fallback, comment out the line above and uncomment this:
-// const DEFAULT_FALLBACK_SLUG = null;
+// Default slug to use when no slug is found in URL
+// Set to null to disable fallback behavior
+const DEFAULT_FALLBACK_SLUG = is_debugging
+  ? "fish-and-grill-los-cabos-restaurant-brand"
+  : null;
 
 // ============================================
 // IMMEDIATE EXECUTION (runs before DOMContentLoaded)

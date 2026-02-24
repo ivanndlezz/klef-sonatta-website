@@ -23,6 +23,9 @@ function renderCoverSection(data) {
 
     coverVisual.innerHTML = "";
     coverVisual.appendChild(img);
+  } else if (coverVisual) {
+    // No cover image - add data-state to disable skeleton animation
+    coverVisual.setAttribute("data-state", "no-cover");
   }
 
   // Update description paragraph in cover
