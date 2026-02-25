@@ -197,6 +197,10 @@
   flex-shrink: 0;
 }
 
+.sheet-bottom-controls:empty {
+  display: none;
+}
+
 .btn-secondary {
   padding: 12px 20px;
   background: transparent;

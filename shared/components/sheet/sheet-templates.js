@@ -117,11 +117,7 @@ const SheetTemplates = {
       ? `<button class="btn-more" data-action="more-options" aria-label="Más opciones">${this.icons.more}</button>`
       : "";
 
-    return `<div class="sheet-bottom-controls">
-      ${secondaryHtml}
-      ${primaryHtml}
-      ${moreHtml}
-    </div>`;
+    return `<div class="sheet-bottom-controls">${secondaryHtml}${primaryHtml}${moreHtml}</div>`;
   },
 
   // Renderizar contenido
