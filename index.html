@@ -390,7 +390,6 @@
         height: 20px;
         stroke: #1d1d1f;
       }
-      
 
       @media (max-width: 768px) {
         .floating-right-menu .btn-icon:has([href="#phone"]) {
@@ -398,6 +397,10 @@
         }
         .floating-right-menu {
           right: 1rem;
+        }
+
+        .re-index-z-active + .mega-topbar + .floating-right-menu {
+          z-index: 1;
         }
       }
 
