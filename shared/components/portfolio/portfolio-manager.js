@@ -418,22 +418,7 @@
   // ============================================
   window.PortfolioManager = PortfolioManager;
 
-  // Auto-inicialización si la sección portfolio está presente
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", () => {
-      if (document.getElementById("cardGrid")) {
-        console.log("[PortfolioManager] Portfolio section detected, initializing...");
-        PortfolioManager.init().catch(err => {
-          console.error("[PortfolioManager] Init failed:", err);
-        });
-      }
-    });
-  } else {
-    if (document.getElementById("cardGrid")) {
-      PortfolioManager.init().catch(err => {
-        console.error("[PortfolioManager] Init failed:", err);
-      });
-    }
-  }
+  // Auto-inicialización removida para evitar race conditions con portfolio-grid.js
+  // portfolio-grid.js ahora controla la inicialización explícitamente
 
 })();

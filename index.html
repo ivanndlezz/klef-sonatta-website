@@ -6059,6 +6059,9 @@
               return;
             }
 
+            // Store current item for the CTA button
+            window.currentPortfolioItem = portfolioItem;
+
             // Generar tags HTML
             const disciplineLabels = {
               brands: "Brands",
@@ -6143,6 +6146,15 @@
             const portfolioId = trigger.getAttribute("data-id");
             if (window.loadPortfolioDetail) {
               window.loadPortfolioDetail(portfolioId);
+            }
+          }
+        });
+
+        // Handle CTA button in sheet
+        document.addEventListener("click", (e) => {
+          if (e.target.matches(".sheet-bottom-controls .btn-primary[data-action='open-project']")) {
+            if (window.currentPortfolioItem && window.currentPortfolioItem.slug) {
+              window.location.href = `/portfolio/${window.currentPortfolioItem.slug}`;
             }
           }
         });

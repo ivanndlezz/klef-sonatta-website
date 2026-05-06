@@ -86,14 +86,13 @@
         return;
       }
 
-      const onReady = (e) => {
-        allPortfolioItems = e.detail.data;
-        resolve();
-      };
-      window.addEventListener("portfolioReady", onReady, { once: true });
-
-      const onError = (e) => reject(e.detail.error);
-      window.addEventListener("portfolioError", onError, { once: true });
+      // No cached, initialize PortfolioManager explicitly
+      window.PortfolioManager.init()
+        .then((data) => {
+          allPortfolioItems = data;
+          resolve();
+        })
+        .catch(reject);
     });
   }
 
