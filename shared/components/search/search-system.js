@@ -1,4 +1,4 @@
-// ============================================================================
+﻿// ============================================================================
 // SEARCH SYSTEM - GraphQL Search with key:value Filter Support
 // ============================================================================
 
@@ -588,30 +588,85 @@
         "</ul></div>";
     }
 
-    // GraphQL query
-    var queryStr =
+    // ESTRATEGIA DE BÚSQUEDA DUAL:
+    // WordPress `where: { search }` solo busca en post_title y post_content, NO en tags.
+    // Usamos dos queries paralelas y unimos los resultados por post ID.
+    var POST_FIELDS =
+      "id title slug uri date featuredImage { node { sourceUrl altText } } " +
+      "categories { nodes { name slug uri } } tags { nodes { name slug } } " +
+      "author { node { name uri } }";
+    var queryStandard =
       "query FlexibleSearch($searchTerm: String!) {" +
       "pages(first: 20, where: { search: $searchTerm }) {" +
-      "nodes { id title slug uri date content featuredImage { node { sourceUrl altText } } }" +
+      "nodes { id title slug uri date featuredImage { node { sourceUrl altText } } }" +
       "}" +
       "posts(first: 20, where: { search: $searchTerm }) {" +
-      "nodes { id title slug uri date content featuredImage { node { sourceUrl altText } } " +
-      "categories { nodes { name slug uri } } tags { nodes { name slug } } " +
-      "author { node { name uri } } }" +
-      "}" +
+      "nodes { " + POST_FIELDS + " }}" +
       "}";
-
+    var queryByTag =
+      "query FlexibleSearchByTag($searchTerm: String!) {" +
+      "tags(first: 10, where: { search: $searchTerm }) {" +
+      "nodes { name slug posts(first: 20) { nodes { " + POST_FIELDS + " } } }" +
+      "} }";
+    // DEBUG: ver queries
+    console.group("SEARCH DEBUG - termino: " + searchText);
+    console.log("Endpoint:", CONFIG.GRAPHQL_ENDPOINT);
+    console.log("Query 1:", queryStandard);
+    console.log("Query 2 (tags):", queryByTag);
+    console.log("Variables:", { searchTerm: searchText });
     try {
-      var response = await fetch(CONFIG.GRAPHQL_ENDPOINT, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          query: queryStr,
-          variables: { searchTerm: searchText },
+      // Lanzar ambas queries en paralelo
+      var [responseStd, responseTag] = await Promise.all([
+        fetch(CONFIG.GRAPHQL_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: queryStandard, variables: { searchTerm: searchText } }),
         }),
-      });
+        fetch(CONFIG.GRAPHQL_ENDPOINT, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ query: queryByTag, variables: { searchTerm: searchText } }),
+        }),
+      ]);
+      var response = responseStd; // alias para compatibilidad
 
-      var json = await response.json();
+      // ── DEBUG ──────────────────────────────────────────────────────────────
+      console.log("🌐 HTTP Status:", response.status, response.statusText);
+      // ───────────────────────────────────────────────────────────────────────
+
+      var [jsonStd, jsonTag] = await Promise.all([ responseStd.json(), responseTag.json() ]);
+      var json = jsonStd; // alias para compatibilidad
+      // Recolectar posts de tags
+      var tagPosts = [];
+      var tagNodes = (jsonTag.data && jsonTag.data.tags && jsonTag.data.tags.nodes) || [];
+      tagNodes.forEach(function(tag) {
+        ((tag.posts && tag.posts.nodes) || []).forEach(function(p) { tagPosts.push(p); });
+      });
+      // Deduplicar por ID: Q1 tiene prioridad
+      var seenIds = {};
+      var mergedPosts = [];
+      ((jsonStd.data && jsonStd.data.posts && jsonStd.data.posts.nodes) || []).forEach(function(p) {
+        if (!seenIds[p.id]) { seenIds[p.id] = true; mergedPosts.push(p); }
+      });
+      tagPosts.forEach(function(p) {
+        if (!seenIds[p.id]) { seenIds[p.id] = true; mergedPosts.push(p); }
+      });
+      // Reemplazar posts en json con la lista merged
+      json.data.posts = { nodes: mergedPosts };
+      // DEBUG
+      console.log("HTTP Q1:", responseStd.status, "| Q2:", responseTag.status);
+      console.log("posts Q1:", (jsonStd.data&&jsonStd.data.posts&&jsonStd.data.posts.nodes||[]).length, "| posts Q2 (de tags):", tagPosts.length, "| merged:", mergedPosts.length);
+      console.log("Titulos merged:", mergedPosts.map(function(p){return p.title;}));
+      if (jsonTag.errors) console.warn("Q2 errors:", jsonTag.errors);
+
+      // ── DEBUG ──────────────────────────────────────────────────────────────
+      console.log("📨 Respuesta GraphQL RAW:", JSON.parse(JSON.stringify(json)));
+      console.log("📊 pages devueltos:", json.data?.pages?.nodes?.length ?? "N/A");
+      console.log("📊 posts devueltos:", json.data?.posts?.nodes?.length ?? "N/A");
+      if (json.errors) {
+        console.error("❌ GraphQL errors:", json.errors);
+      }
+      // ───────────────────────────────────────────────────────────────────────
 
       if (json.errors) throw new Error(json.errors[0].message);
 
@@ -634,6 +689,12 @@
 
         var filteredResults = filterResultsLocally(allResults, parsed);
 
+        // ── DEBUG ────────────────────────────────────────────────────────────
+        console.log("🔧 Filtros activos:", parsed);
+        console.log("🔧 Resultados antes del filtro local:", allResults.length);
+        console.log("🔧 Resultados DESPUÉS del filtro local:", filteredResults.length);
+        // ─────────────────────────────────────────────────────────────────────
+
         // Reconstruir data para displayResults
         data = {
           pages: {
@@ -649,10 +710,16 @@
         };
       }
 
+      // ── DEBUG ──────────────────────────────────────────────────────────────
+      console.log("✅ Data final enviada a displayResults:", JSON.parse(JSON.stringify(data)));
+      console.groupEnd();
+      // ───────────────────────────────────────────────────────────────────────
+
       displayResults(data, searchTerm, parsed);
       saveToRecent(searchTerm);
     } catch (error) {
-      console.error("Error en busqueda:", error);
+      console.groupEnd();
+      console.error("💥 Error en busqueda:", error);
       if (resultsContainer) {
         resultsContainer.innerHTML =
           '<div class="no-results"><div class="no-results-title">Error</div><div class="no-results-text">' +

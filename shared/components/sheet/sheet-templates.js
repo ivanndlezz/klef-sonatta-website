@@ -33,7 +33,8 @@ const SheetTemplates = {
   renderButton(config, className) {
     if (!config) return "";
     const icon = config.icon ? config.icon : "";
-    return `<button class="${className}" data-action="${config.action}">
+    const dataAttrs = config.data ? Object.keys(config.data).map(key => `data-${key}="${config.data[key]}"`).join(' ') : "";
+    return `<button class="${className}" data-action="${config.action}" ${dataAttrs}>
       ${icon}
       ${config.label || ""}
     </button>`;
