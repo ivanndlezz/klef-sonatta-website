@@ -7,6 +7,7 @@
 
   const scriptUrl = new URL(document.currentScript.src);
   const componentBaseUrl = scriptUrl.href.replace("portfolio-index-loader.js", "");
+  const assetVersion = scriptUrl.searchParams.get("v") || "1";
   let loaded = false;
 
   function loadExternalScript(src) {
@@ -24,7 +25,9 @@
     loaded = true;
 
     try {
-      const response = await fetch(componentBaseUrl + "portfolio-index.html");
+      const response = await fetch(
+        componentBaseUrl + `portfolio-index.html?v=${assetVersion}`,
+      );
       if (!response.ok) {
         throw new Error(`Portfolio index failed: ${response.status}`);
       }
@@ -40,15 +43,21 @@
 
       const stylesheet = document.createElement("link");
       stylesheet.rel = "stylesheet";
-      stylesheet.href = componentBaseUrl + "portfolio-index.css";
+      stylesheet.href = componentBaseUrl + `portfolio-index.css?v=${assetVersion}`;
       document.head.appendChild(stylesheet);
 
       main.appendChild(page);
       document.title = "Portafolio | Klef Agency";
 
-      await loadExternalScript(componentBaseUrl + "portfolio-manager.js");
-      await loadExternalScript(componentBaseUrl + "../index-portfolio/portfolio-grid.js");
-      await loadExternalScript(componentBaseUrl + "portfolio-index-runtime.js");
+      await loadExternalScript(
+        componentBaseUrl + `portfolio-manager.js?v=${assetVersion}`,
+      );
+      await loadExternalScript(
+        componentBaseUrl + `../index-portfolio/portfolio-grid.js?v=${assetVersion}`,
+      );
+      await loadExternalScript(
+        componentBaseUrl + `portfolio-index-runtime.js?v=${assetVersion}`,
+      );
 
       window.dispatchEvent(
         new CustomEvent("portfolioIndexReady", {
