@@ -1,3 +1,11 @@
+main section {
+  margin: 5rem 0;
+}
+
+#portfolio-index-page {
+  margin: 0 !important;
+}
+
 .portfolio-index-page {
   --portfolio-surface: #f7f9fc;
   background: var(--portfolio-surface);
