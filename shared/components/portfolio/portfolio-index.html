@@ -1,0 +1,71 @@
+<section id="portfolio-index-page" class="portfolio-index-page">
+  <header class="portfolio-index-hero" aria-labelledby="portfolio-index-title">
+    <div class="portfolio-index-hero-inner">
+      <p class="portfolio-index-eyebrow">Klef Agency · Trabajo seleccionado</p>
+      <h1 id="portfolio-index-title">Ideas que toman forma y se vuelven sistemas.</h1>
+      <p class="portfolio-index-lede">
+        Explora proyectos de estrategia, marca, producto digital, desarrollo y
+        growth construidos con una misma lógica: entender primero, construir
+        después.
+      </p>
+    </div>
+  </header>
+
+  <section
+    id="portfolio-section"
+    class="container portfolio-index-catalog"
+    aria-labelledby="portfolio-title"
+  >
+    <div class="portfolio-index-heading">
+      <p class="portfolio-index-kicker">Portafolio</p>
+      <h2 id="portfolio-title" class="k-section-title">Proyectos destacados</h2>
+      <p class="k-section-subtitle">
+        Filtra por disciplina o busca el proyecto que quieres conocer.
+      </p>
+    </div>
+
+    <div class="tab-menu-container">
+      <input type="checkbox" style="display: none" id="is-searching" />
+
+      <div class="tab-menu-wrapper" data-behavior="re-index-z">
+        <label for="tab-search__bar" class="search-wrapper">
+          <input
+            id="tab-search__bar"
+            type="text"
+            class="search-input-portfolio"
+            placeholder="Buscar proyectos..."
+            aria-label="Buscar proyectos"
+          />
+          <span class="search-icon-portfolio" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
+        </label>
+
+        <div class="tabs-scroll-container" id="tabsContainer">
+          <ul class="tabs-list" id="tabsList"></ul>
+        </div>
+
+        <button class="menu-toggle-btn" id="menuToggle" type="button" aria-label="Abrir menú" aria-expanded="false">
+          <svg id="menuIcon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+          <svg id="closeIcon" style="display: none" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <div class="desktop-sub-chips" id="desktopSubChips"></div>
+    </div>
+
+    <div class="mobile-thumb-dock" id="mobileSubDock"></div>
+    <div class="card-grid" id="cardGrid"></div>
+    <p id="results-count" class="portfolio-index-results" aria-live="polite">Cargando proyectos...</p>
+  </section>
+</section>
