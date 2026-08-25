@@ -6,7 +6,10 @@
   "use strict";
 
   const scriptUrl = new URL(document.currentScript.src);
-  const componentBaseUrl = scriptUrl.href.replace("portfolio-index-loader.js", "");
+  const componentBaseUrl = new URL(
+    "./",
+    scriptUrl.href,
+  ).href;
   const assetVersion = scriptUrl.searchParams.get("v") || "1";
   let loaded = false;
 
