@@ -17,10 +17,13 @@ Agregar en `wp-config.php`, fuera del repositorio:
 
 ```php
 define('KLEF_STATIFY_GITHUB_REPOSITORY', 'ivanndlezz/klef-sonatta-website');
-define('KLEF_STATIFY_GITHUB_TOKEN', 'TOKEN_DE_GITHUB');
 ```
 
+El token se administra desde `Ajustes → Klef Statify` dentro de WordPress. El formulario valida el token contra GitHub, lo cifra usando las claves privadas de WordPress y permite guardar un token actual y otro siguiente con sus fechas de expiración. El token siguiente se activa automáticamente cuando el actual expira.
+
 El token debe ser restringido al repositorio elegido y tener únicamente `Contents: Read and write`, que es el permiso requerido por la API de `repository_dispatch`. No se envía el contenido del post; sólo el ID y slug para identificar el evento.
+
+Como alternativa temporal, `KLEF_STATIFY_GITHUB_TOKEN` todavía se puede definir en `wp-config.php` para arrancar el sistema, pero conviene migrarlo al formulario junto con su fecha de expiración.
 
 ## Ejecución local o manual
 
