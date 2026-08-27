@@ -246,7 +246,8 @@ GRAPHQL;
             'creator' => ['@type' => 'Organization', 'name' => 'Klef Agency', 'url' => self::SITE_URL . '/'],
         ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
 
-        return '<!doctype html>\n<html lang="es">\n<head>\n'
+        return str_replace('\\n', "\n", (
+            '<!doctype html>\n<html lang="es">\n<head>\n'
             . '<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
             . '<title>' . self::html($title . ' | Klef Agency') . '</title>\n'
             . '<meta name="description" content="' . self::html($description) . '">\n'
@@ -261,7 +262,7 @@ GRAPHQL;
             . '</head>\n<body>\n'
             . '<article class="statify-static-content" data-statify-static><p class="statify-category">' . self::html($category) . '</p><h1>' . self::html($title) . '</h1><p class="statify-summary">' . self::html($description) . '</p><div class="statify-prose">' . $content . '</div></article>\n'
             . '<script src="../../shared/components/load-basics/load-basics.js"></script>\n<script src="../../shared/components/portfolio/portfolio-loader.js"></script>\n'
-            . '</body>\n</html>\n';
+            . '</body>\n</html>\n'));
     }
 
     private static function updateIndexFallback(string $path, array $cards): void
@@ -307,6 +308,7 @@ GRAPHQL;
         $html = preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $html) ?? '';
         $html = preg_replace('/\son\w+\s*=\s*(["\']).*?\1/is', '', $html) ?? $html;
         $html = preg_replace('/\s(?:href|src)\s*=\s*(["\'])\s*(?:javascript:|data:).*?\1/i', '', $html) ?? $html;
+        $html = preg_replace('/(^|>|\s)-#\s*/u', '$1', $html) ?? $html;
         return strip_tags($html, '<p><br><strong><em><h2><h3><h4><ul><ol><li><a><img><figure><figcaption><blockquote><video><source>');
     }
 
