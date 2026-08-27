@@ -151,6 +151,7 @@
     const label = disciplineLabels[card.discipline] || "Klef";
     const logoSrc = card.logo || card.cover_image;
     const displayTitle = truncateToWords(card.title[0], 2);
+    const projectHref = `./${encodeURIComponent(card.slug)}/`;
     return `
       <article class="card dark" data-id="${card.id}" data-discipline="${card.discipline}" data-slug="${card.slug}">
         <span class="category-tag tag-${tagClass}">${label}</span>
@@ -170,9 +171,9 @@
           </div>
           <p><br>${escapeHtml(card.extract)}</p>
           <div class="project-actions">
-            <div class="tag-portfolio" role="button" tabindex="0" aria-label="Leer historia de ${escapeHtml(card.title[0])}">
+            <a class="tag-portfolio" href="${escapeHtml(projectHref)}" aria-label="Leer historia de ${escapeHtml(card.title[0])}">
               <i class="fa-solid fa-user"></i> Leer historia
-            </div>
+            </a>
             <button class="see-more" data-component="portfolioDetail" data-id="${card.id}" aria-label="Ver detalles de ${escapeHtml(card.title[0])}">Más</button>
           </div>
         </section>

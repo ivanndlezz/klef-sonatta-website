@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /portfolio/test/
+
+Sitemap: https://klef.agency/sitemap.xml

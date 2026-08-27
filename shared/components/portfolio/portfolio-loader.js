@@ -243,6 +243,7 @@
           detail: { timestamp: Date.now() },
         }),
       );
+      document.querySelectorAll("[data-statify-static]").forEach((fallback) => fallback.remove());
     } catch (error) {
       console.error("[PortfolioLoader] Error loading portfolio:", error);
       throw error;

@@ -2,6 +2,8 @@
 
 > **Documento maestro:** Explicación técnica del sistema de generación de páginas SEO con templates dinámicos y carga paralela.
 
+> **Nota de arquitectura vigente (2026-08-27):** el diseño descrito aquí contiene secciones históricas del prototipo. La implementación actual usa Statify en PHP, no Node.js ni n8n: `server/portfolio-statify/PortfolioStatify.php` compila WordPress → snapshots JSON → HTML estático; el plugin en `server/wordpress/klef-portfolio-statify.php` dispara GitHub Actions y el workflow valida antes de desplegar. Consulta `server/portfolio-statify/README.md` como referencia operativa.
+
 ---
 
 ## 📋 Índice
@@ -232,18 +234,20 @@ t=270ms  → Hidratado completo
 
 ---
 
-### 4. **Generador de Páginas SEO (Node.js)**
+### 4. **Generador de Páginas SEO (PHP / Statify — diseño anterior abajo)**
 
-**Ubicación:** `/scripts/generate-seo-pages.js`
+**Implementación vigente:** `server/portfolio-statify/PortfolioStatify.php`
 
 **Función:**
 - Consultar todos los posts de WordPress vía GraphQL
 - Generar HTML mínimo con meta tags completos
 - Crear estructura `/portfolio/{slug}/index.html`
 - Generar `sitemap.xml`
-- Commit automático a GitHub
+- Entregar el resultado como artefacto del deploy, sin que WordPress ni el compilador hagan commits
 
 **Características del HTML generado:**
+
+> El ejemplo y el flujo descritos a continuación corresponden al prototipo anterior. El render actual genera el contenido directamente en PHP y no necesita detección de bots: el HTML estático se sirve desde la primera respuesta.
 
 ```html
 <!DOCTYPE html>
@@ -288,16 +292,17 @@ t=270ms  → Hidratado completo
 
 ---
 
-### 5. **Automatización (GitHub Actions)**
+### 5. **Automatización (GitHub Actions — implementación vigente y diseño anterior abajo)**
 
-**Ubicación:** `.github/workflows/generate-seo.yml`
+**Implementación vigente:** `.github/workflows/static.yml`
 
 **Función:**
-- Ejecutarse automáticamente (schedule diario)
-- Responder a webhooks de WordPress (tiempo real)
-- Correr script de Node.js
-- Commit y push de archivos generados
+- Ejecutarse por push, manualmente o por `repository_dispatch` de WordPress
+- Ejecutar el compilador PHP y la validación
+- Publicar el artefacto estático en GitHub Pages
 - Control de concurrencia (evitar colisiones)
+
+> El bloque YAML y el flujo visual que siguen describen el prototipo anterior y se conservan como historial de decisiones.
 
 **Triggers:**
 

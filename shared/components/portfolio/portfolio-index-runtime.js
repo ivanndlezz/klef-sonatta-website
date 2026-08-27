@@ -113,7 +113,7 @@
   window.loadPortfolioDetail = loadPortfolioDetail;
 
   document.addEventListener("click", (event) => {
-    const trigger = event.target.closest("[data-component='portfolioDetail'], .tag-portfolio");
+    const trigger = event.target.closest("[data-component='portfolioDetail']");
     if (!trigger) return;
 
 

@@ -16,6 +16,7 @@
   // ============================================
   const CONFIG = {
     GRAPHQL_ENDPOINT: "https://klef.newfacecards.com/graphql",
+    SNAPSHOT_URL: new URL("../../../data/portfolio/index.json", document.currentScript.src).href,
     CACHE_KEY: "portfolio_cache_v2", // v2: extract sanitizado
     CACHE_TTL: 5 * 60 * 1000, // 5 minutos
     MIN_SEARCH_LENGTH: 2,
@@ -95,6 +96,16 @@
   // FETCH Y CACHÉ
   // ============================================
 
+  async function fetchPortfolioSnapshot() {
+    const response = await fetch(CONFIG.SNAPSHOT_URL, { cache: "no-store" });
+    if (!response.ok) throw new Error(`Snapshot error: ${response.status}`);
+    const snapshot = await response.json();
+    if (!Array.isArray(snapshot.items) || snapshot.items.length === 0) {
+      throw new Error("Snapshot vacío");
+    }
+    return snapshot.items;
+  }
+
   /**
    * Obtiene datos desde GraphQL con cacheo en sessionStorage
    */
@@ -117,12 +128,25 @@
       }
     }
 
-    // Fetch desde GraphQL
-    console.log("[PortfolioManager] Fetching from GraphQL...");
+    // Preferir el snapshot estático publicado por Statify.
+    console.log("[PortfolioManager] Loading portfolio data...");
     isLoading = true;
     error = null;
 
     try {
+      try {
+        const snapshotData = await fetchPortfolioSnapshot();
+        sessionStorage.setItem(CONFIG.CACHE_KEY, JSON.stringify({
+          data: snapshotData,
+          timestamp: Date.now(),
+        }));
+        portfolioCache = snapshotData;
+        isLoading = false;
+        return snapshotData;
+      } catch (snapshotError) {
+        console.warn("[PortfolioManager] Snapshot unavailable, using GraphQL:", snapshotError.message);
+      }
+
       const response = await fetch(CONFIG.GRAPHQL_ENDPOINT, {
         method: "POST",
         headers: {

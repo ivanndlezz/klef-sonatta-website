@@ -11,6 +11,10 @@ const state = {
 
 // GraphQL endpoint
 const GRAPHQL_ENDPOINT = "https://klef.newfacecards.com/graphql";
+const PORTFOLIO_SNAPSHOT_BASE = new URL(
+  "../../../data/portfolio/",
+  document.currentScript.src,
+).href;
 
 // GraphQL query for portfolio item
 const GET_PORTFOLIO_ITEM_QUERY = `
@@ -141,6 +145,19 @@ async function fetchPortfolioItem(slug) {
   try {
     if (!slug) throw new Error("No slug provided");
 
+    try {
+      const snapshotResponse = await fetch(
+        `${PORTFOLIO_SNAPSHOT_BASE}${encodeURIComponent(slug)}.json`,
+        { cache: "no-store" },
+      );
+      if (snapshotResponse.ok) {
+        const snapshot = await snapshotResponse.json();
+        if (snapshot.data) return snapshot.data;
+      }
+    } catch (snapshotError) {
+      console.warn("[PortfolioItem] Snapshot unavailable, using GraphQL:", snapshotError.message);
+    }
+
     const response = await fetch(GRAPHQL_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -164,6 +181,91 @@ async function fetchPortfolioItem(slug) {
   } catch (error) {
     throw new Error(`Failed to fetch portfolio item: ${error.message}`);
   }
+}
+
+function getMetaDescription(data) {
+  const source = document.createElement("div");
+  source.innerHTML = data.content || "";
+  const text = source.textContent.replace(/\s+/g, " ").trim();
+  const fallback = `${data.title} — caso de estudio de Klef Agency.`;
+  const description = text || fallback;
+  return description.length > 160
+    ? `${description.substring(0, 157).trim()}...`
+    : description;
+}
+
+function upsertMeta(attribute, value, content) {
+  let element = document.head.querySelector(`meta[${attribute}="${value}"]`);
+  if (!element) {
+    element = document.createElement("meta");
+    element.setAttribute(attribute, value);
+    document.head.appendChild(element);
+  }
+  element.setAttribute("content", content);
+}
+
+function updatePageMetadata(data) {
+  const slug = data.slug || getSlugFromURL();
+  const canonicalUrl = `https://klef.agency/portfolio/${encodeURIComponent(slug)}/`;
+  const description = getMetaDescription(data);
+  const image = data.featuredImage?.node?.sourceUrl || "";
+
+  let canonical = document.head.querySelector('link[rel="canonical"]');
+  if (!canonical) {
+    canonical = document.createElement("link");
+    canonical.rel = "canonical";
+    document.head.appendChild(canonical);
+  }
+  canonical.href = canonicalUrl;
+
+  upsertMeta("name", "description", description);
+  upsertMeta("property", "og:type", "article");
+  upsertMeta("property", "og:title", data.title);
+  upsertMeta("property", "og:description", description);
+  upsertMeta("property", "og:url", canonicalUrl);
+  upsertMeta("name", "twitter:card", "summary_large_image");
+  upsertMeta("name", "twitter:title", data.title);
+  upsertMeta("name", "twitter:description", description);
+
+  if (image) {
+    upsertMeta("property", "og:image", image);
+    upsertMeta("name", "twitter:image", image);
+  }
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CreativeWork",
+        name: data.title,
+        description,
+        url: canonicalUrl,
+        ...(image ? { image } : {}),
+        creator: {
+          "@type": "Organization",
+          name: "Klef Agency",
+          url: "https://klef.agency/",
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Inicio", item: "https://klef.agency/" },
+          { "@type": "ListItem", position: 2, name: "Portafolio", item: "https://klef.agency/portfolio/" },
+          { "@type": "ListItem", position: 3, name: data.title, item: canonicalUrl },
+        ],
+      },
+    ],
+  };
+
+  let jsonLd = document.head.querySelector('script[data-seo="portfolio-item"]');
+  if (!jsonLd) {
+    jsonLd = document.createElement("script");
+    jsonLd.type = "application/ld+json";
+    jsonLd.dataset.seo = "portfolio-item";
+    document.head.appendChild(jsonLd);
+  }
+  jsonLd.textContent = JSON.stringify(structuredData);
 }
 
 /**
@@ -193,6 +295,7 @@ function renderHeader(data) {
 
   // Update page title
   document.title = `${data.title} - Klef Agency`;
+  updatePageMetadata(data);
 
   // Update h1
   const h1 = document.querySelector("h1");

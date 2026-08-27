@@ -62,6 +62,8 @@
         componentBaseUrl + `portfolio-index-runtime.js?v=${assetVersion}`,
       );
 
+      document.querySelectorAll("[data-statify-static]").forEach((fallback) => fallback.remove());
+
       window.dispatchEvent(
         new CustomEvent("portfolioIndexReady", {
           detail: { timestamp: Date.now() },
