@@ -56,6 +56,12 @@
     document
       .querySelectorAll(".mega-menu")
       .forEach((m) => m.classList.remove("active"));
+    document.querySelectorAll("[data-mega]").forEach((trigger) => {
+      trigger.setAttribute(
+        "aria-expanded",
+        trigger.getAttribute("data-mega") === selector ? "true" : "false",
+      );
+    });
 
     // Mostrar el contenedor y el menú seleccionado
     if (megaMenusContainer) {
@@ -82,6 +88,9 @@
 
     if (megaMenusContainer) megaMenusContainer.classList.remove("show");
     currentMegaMenu = null;
+    document.querySelectorAll("[data-mega]").forEach((trigger) => {
+      trigger.setAttribute("aria-expanded", "false");
+    });
 
     // El mega-topbar es SOLO para mobile
     if (window.innerWidth <= 768) {
@@ -118,6 +127,9 @@
     document
       .querySelectorAll(".mega-menu")
       .forEach((menu) => menu.classList.remove("active"));
+    document.querySelectorAll("[data-mega]").forEach((trigger) => {
+      trigger.setAttribute("aria-expanded", "false");
+    });
     currentMegaMenu = null;
     removeDynamicStyle();
   }
@@ -149,6 +161,12 @@
   function initNavigationListeners() {
     if (window.navigationInitialized) return;
     window.navigationInitialized = true;
+
+    // The simplified floating-menu patch is preserved for emergency rollback,
+    // but the reference mega menu is the default navigation system.
+    if (document.body && !document.body.dataset.menuPatch) {
+      document.body.dataset.menuPatch = "disabled";
+    }
 
     navbar = document.getElementById("main-nav");
     megaTopbar = document.querySelector(".mega-topbar");

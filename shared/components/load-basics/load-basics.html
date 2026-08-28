@@ -2013,9 +2013,6 @@
     ========
     */
 
-    nav [data-mega="#Diseno"],
-    nav [data-mega="#Tecnologia"],
-    nav [data-mega="#Marketing"],
     .footer-col[data-column="3"] {
       display: none;
     }
@@ -2033,7 +2030,7 @@
   <script src="../../../shared/components/search/filter-config.js"></script>
   <script src="../../../shared/components/search/search-system.js"></script>
 
-  <script src="../../../assets/scripts/mega-menu-spa.js"></script>
+  <!-- mega-menu-spa.js retained as legacy reference; navigation-system.js is active. -->
   <script src="../../../shared/components/navigation/navigation-system.js" defer></script>
 
   <style>
@@ -2468,15 +2465,15 @@
       transition: background 0.3s ease;
     }
 
-    [data-mega="#Marketing"]:hover [data-mega="#Marketing"] {
+    [data-mega="#Blog"]:hover [data-mega="#Blog"] {
       background-color: var(--strategy-hover);
     }
 
-    [data-mega="#Tecnologia"]:hover [data-mega="#Tecnologia"] {
+    [data-mega="#Proyectos"]:hover [data-mega="#Proyectos"] {
       background-color: var(--dev-hover);
     }
 
-    [data-mega="#Diseno"]:hover [data-mega="#Diseno"] {
+    [data-mega="#Servicios"]:hover [data-mega="#Servicios"] {
       background-color: var(--brands-hover);
     }
   </style>
@@ -3510,34 +3507,34 @@
     <div class="menu-links">
       <div class="section-label">MENÚ</div>
 
-      <a href="#" data-mega="#Diseno" data-name="#Diseno" aria-label="Sección Diseño y Media">
+      <a href="/servicios/" data-mega="#Servicios" data-name="#Servicios" aria-label="Sección Servicios" aria-haspopup="true" aria-expanded="false">
         <span class="icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
             style="--wh: 20px; width: var(--wh); height: var(--wh)">
-            <use href="#icon-color-palette"></use>
+            <use href="#icon-paint"></use>
           </svg>
         </span>
-        <span class="label">Diseño y Media</span>
+        <span class="label">Servicios</span>
       </a>
 
-      <a href="#" data-mega="#Tecnologia" data-name="#Tecnologia" aria-label="Sección Tecnología">
+      <a href="/portfolio/" data-mega="#Proyectos" data-name="#Proyectos" aria-label="Sección Proyectos" aria-haspopup="true" aria-expanded="false">
         <span class="icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
             style="--wh: 20px; width: var(--wh); height: var(--wh)">
-            <use href="#icon-code"></use>
+            <use href="#icon-portfolio"></use>
           </svg>
         </span>
-        <span class="label">Tecnología</span>
+        <span class="label">Proyectos</span>
       </a>
 
-      <a href="#" data-mega="#Marketing" data-name="#Marketing" aria-label="Sección Marketing">
+      <a href="/blog/" data-mega="#Blog" data-name="#Blog" aria-label="Sección Blog" aria-haspopup="true" aria-expanded="false">
         <span class="icon">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
             style="--wh: 20px; width: var(--wh); height: var(--wh)">
-            <use href="#icon-megaphone"></use>
+            <use href="#icon-book"></use>
           </svg>
         </span>
-        <span class="label">Marketing</span>
+        <span class="label">Blog</span>
       </a>
     </div>
 
@@ -3563,25 +3560,31 @@
 
   <!-- Mega Menus Container -->
   <div class="mega-menus-container">
-    <!-- Diseño y Media -->
-    <div class="mega-menu" id="Diseno">
+    <!-- Servicios -->
+    <div class="mega-menu" id="Servicios">
       <div class="mega-content">
         <div class="mega-sidebar">
-          <div class="mega-sidebar-title">Diseño y Media</div>
-          <a href="#" aria-label="Ver proyectos de Branding">
+          <div class="mega-sidebar-title">Servicios</div>
+          <a href="/servicios/branding-los-cabos/" aria-label="Ver servicio de Branding">
             <span>Branding</span>
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </a>
-          <a href="#" aria-label="Ver proyectos de Studio Multimedia">
-            <span>Studio Multimedia</span>
+          <a href="/servicios/diseno-web-los-cabos/" aria-label="Ver servicio de Diseño web">
+            <span>Diseño web</span>
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </a>
-          <a href="#" aria-label="Ver proyectos de Publicidad">
-            <span>Publicidad</span>
+          <a href="/servicios/desarrollo-web-los-cabos/" aria-label="Ver servicio de Desarrollo web">
+            <span>Desarrollo web</span>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+          <a href="/servicios/marketing-digital-los-cabos/" aria-label="Ver servicio de Marketing digital">
+            <span>Marketing digital</span>
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
@@ -3591,38 +3594,44 @@
           <div class="mega-featured">
             <div class="featured-image">🎨</div>
             <div class="featured-content">
-              <div class="featured-tag">By Klef•Brand</div>
-              <h3>Branding</h3>
+              <div class="featured-tag">By Klef•Strategy</div>
+              <h3>Servicios en Los Cabos</h3>
               <p>
-                Descubre las marcas que hemos desarrollado y nuestras
-                estrategias de diseño
+                Estrategia, branding y desarrollo digital para negocios con
+                visión.
               </p>
-              <a href="#" class="btn-primary">Ir a Brands</a>
+              <a href="/servicios/" class="btn-primary">Ver servicios</a>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Tecnología -->
-    <div class="mega-menu" id="Tecnologia">
+    <!-- Proyectos -->
+    <div class="mega-menu" id="Proyectos">
       <div class="mega-content">
         <div class="mega-sidebar">
-          <div class="mega-sidebar-title">Tecnología</div>
-          <a href="#" aria-label="Ver proyectos de Desarrollo Web">
-            <span>Desarrollo Web</span>
+          <div class="mega-sidebar-title">Proyectos</div>
+          <a href="/portfolio/" aria-label="Ver todos los proyectos">
+            <span>Todos los proyectos</span>
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </a>
-          <a href="#" aria-label="Ver proyectos de Apps Móviles">
-            <span>Apps Móviles</span>
+          <a href="/portfolio/hello-dish-los-cabos-branding/" aria-label="Ver proyectos de Branding">
+            <span>Branding</span>
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </a>
-          <a href="#" aria-label="Ver proyectos de E-commerce">
-            <span>E-commerce</span>
+          <a href="/portfolio/new-face-cards-los-cabos-devs/" aria-label="Ver proyectos de Producto digital">
+            <span>Producto digital</span>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </a>
+          <a href="/portfolio/jb-pools-custom-pool-construction-california-devs/" aria-label="Ver proyectos de Desarrollo web">
+            <span>Desarrollo web</span>
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
@@ -3634,37 +3643,38 @@
               💻
             </div>
             <div class="featured-content">
-              <div class="featured-tag">By Klef•Tech</div>
-              <h3>Desarrollo Web</h3>
+              <div class="featured-tag">By Klef•Work</div>
+              <h3>Casos que funcionan</h3>
               <p>
-                Soluciones tecnológicas modernas y escalables para tu negocio
+                Casos de estrategia, marca, producto digital, desarrollo y
+                growth.
               </p>
-              <a href="#" class="btn-primary">Ver Proyectos</a>
+              <a href="/portfolio/" class="btn-primary">Ver portafolio</a>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Marketing -->
-    <div class="mega-menu" id="Marketing">
+    <!-- Blog -->
+    <div class="mega-menu" id="Blog">
       <div class="mega-content">
         <div class="mega-sidebar">
-          <div class="mega-sidebar-title">Marketing</div>
-          <a href="#" aria-label="Ver proyectos de Social Media">
-            <span>Social Media</span>
+          <div class="mega-sidebar-title">Blog</div>
+          <a href="/blog/" aria-label="Ver todos los artículos">
+            <span>Todos los artículos</span>
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </a>
-          <a href="#" aria-label="Ver estrategias SEO/SEM">
-            <span>SEO/SEM</span>
+          <a href="/blog/" aria-label="Ver artículos de Estrategia">
+            <span>Estrategia</span>
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </a>
-          <a href="#" aria-label="Ver estrategias de Content Strategy">
-            <span>Content Strategy</span>
+          <a href="/blog/diseno-web-los-cabos-que-debe-resolver-un-sitio/" aria-label="Ver artículos de Diseño web">
+            <span>Diseño web</span>
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
@@ -3676,10 +3686,10 @@
               📊
             </div>
             <div class="featured-content">
-              <div class="featured-tag">By Klef•Marketing</div>
-              <h3>Marketing Digital</h3>
-              <p>Estrategias data-driven para impulsar tu presencia online</p>
-              <a href="#" class="btn-primary">Conocer Más</a>
+              <div class="featured-tag">By Klef•Notes</div>
+              <h3>Ideas para construir mejor</h3>
+              <p>Ideas sobre marca, diseño web, tecnología y crecimiento digital.</p>
+              <a href="/blog/" class="btn-primary">Leer el blog</a>
             </div>
           </div>
         </div>

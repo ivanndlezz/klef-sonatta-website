@@ -277,7 +277,8 @@
 
     try {
       // Fetch the component HTML
-      const componentUrl = componentBaseUrl + CONFIG.componentFileName;
+      const componentUrl =
+        componentBaseUrl + CONFIG.componentFileName + "?v=3";
       //console.log("[LoadBasics] Fetching:", componentUrl);
 
       const response = await fetch(componentUrl);

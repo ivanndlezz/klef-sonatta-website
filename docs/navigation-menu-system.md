@@ -1,0 +1,44 @@
+# Sistema de navegación de Klef
+
+## Estado actual
+
+El mega menú original es el sistema activo para el home y para las páginas que
+cargan `shared/components/load-basics/load-basics.html`. Conserva la referencia
+visual de la barra blanca, el panel desplegable de dos columnas y la navegación
+móvil por niveles.
+
+Sus tres entradas representan las secciones actuales del sitio:
+
+- `Servicios` → `/servicios/`
+- `Proyectos` → `/portfolio/`
+- `Blog` → `/blog/`
+
+`Contacto` permanece como acción directa en la barra de acciones.
+
+## Menú parche
+
+El menú simplificado/flotante no se elimina, pero permanece deshabilitado. En
+`index.html` se conserva bajo los selectores condicionados por
+`body[data-menu-patch="enabled"]`. El estado normal es `disabled`, definido por
+`shared/components/navigation/navigation-system.js`.
+
+Para una recuperación temporal, se puede cambiar el atributo del elemento
+`body` a `data-menu-patch="enabled"`; cualquier activación debe probarse antes
+de publicarse.
+
+## Regla de mantenimiento
+
+Cuando se agregue una sección, se deben actualizar en paralelo las dos copias
+del shell que todavía existen:
+
+- `index.html`
+- `shared/components/load-basics/load-basics.html`
+
+Los identificadores `data-mega` y los `id` de los paneles deben coincidir. Los
+enlaces secundarios deben apuntar a rutas reales; no se deben dejar enlaces
+`href="#"` dentro del mega menú.
+
+El controlador activo es
+`shared/components/navigation/navigation-system.js`. El archivo
+`assets/scripts/mega-menu-spa.js` queda como referencia heredada y no debe
+volver a cargarse junto con el controlador activo sin una prueba específica.
