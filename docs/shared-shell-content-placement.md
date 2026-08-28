@@ -23,6 +23,8 @@ Toda página estática que use el shell compartido debe:
 3. Dejar que load-basics.js mueva ese elemento a body > main.
 4. Mantener cualquier script específico sólo para comportamiento adicional, no para resolver el orden básico.
 
+Cuando se modifique el loader compartido, aumentar su query string de versión en las plantillas publicadas (por ejemplo, load-basics.js?v=3) para evitar que el navegador conserve una copia anterior.
+
 Ejemplo:
 
 ~~~html

@@ -19,7 +19,7 @@
 
   // Detect the script's own location
   const scriptUrl = new URL(document.currentScript.src);
-  const componentBaseUrl = scriptUrl.href.replace("load-basics.js", "");
+  const componentBaseUrl = new URL("./", scriptUrl).href;
 
   /**
    * Calculate the path prefix needed to reach the project root
