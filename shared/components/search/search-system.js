@@ -686,21 +686,32 @@
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ query: queryStandard, variables: { searchTerm: searchText } }),
-        }),
+        }).catch(function () { return null; }),
         fetch(CONFIG.GRAPHQL_ENDPOINT, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ query: queryByTag, variables: { searchTerm: searchText } }),
-        }),
+        }).catch(function () { return null; }),
       ]);
-      var response = responseStd; // alias para compatibilidad
+      if (!responseStd && !responseTag) {
+        throw new Error("No se pudo consultar el índice de búsqueda");
+      }
+      var response = responseStd || responseTag; // alias para compatibilidad
 
       // ── DEBUG ──────────────────────────────────────────────────────────────
       console.log("🌐 HTTP Status:", response.status, response.statusText);
       // ───────────────────────────────────────────────────────────────────────
 
-      var [jsonStd, jsonTag] = await Promise.all([ responseStd.json(), responseTag.json() ]);
+      var jsonStd = responseStd
+        ? await responseStd.json()
+        : { data: { pages: { nodes: [] }, posts: { nodes: [] } } };
+      var jsonTag = responseTag
+        ? await responseTag.json()
+        : { data: { tags: { nodes: [] } } };
       var json = jsonStd; // alias para compatibilidad
+      if (!json.data) {
+        json.data = { pages: { nodes: [] }, posts: { nodes: [] } };
+      }
       var staticBlogPosts = [];
       try {
         staticBlogPosts = await fetchStaticBlogPosts(searchText);
@@ -731,7 +742,7 @@
       // Reemplazar posts en json con la lista merged
       json.data.posts = { nodes: mergedPosts };
       // DEBUG
-      console.log("HTTP Q1:", responseStd.status, "| Q2:", responseTag.status);
+      console.log("HTTP Q1:", responseStd && responseStd.status, "| Q2:", responseTag && responseTag.status);
       console.log("posts Q1:", (jsonStd.data&&jsonStd.data.posts&&jsonStd.data.posts.nodes||[]).length, "| posts Q2 (de tags):", tagPosts.length, "| merged:", mergedPosts.length);
       console.log("Titulos merged:", mergedPosts.map(function(p){return p.title;}));
       if (jsonTag.errors) console.warn("Q2 errors:", jsonTag.errors);
