@@ -140,7 +140,8 @@
     }
     relativeParts.push(...downPath);
 
-    return relativeParts.join("/") || "./";
+    const relativePath = relativeParts.join("/") || "./";
+    return relativePath + to.search + to.hash;
   }
 
   /**
@@ -278,7 +279,7 @@
     try {
       // Fetch the component HTML
       const componentUrl =
-        componentBaseUrl + CONFIG.componentFileName + "?v=3";
+        componentBaseUrl + CONFIG.componentFileName + "?v=4";
       //console.log("[LoadBasics] Fetching:", componentUrl);
 
       const response = await fetch(componentUrl);
