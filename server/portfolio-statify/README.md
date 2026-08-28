@@ -9,7 +9,7 @@ Statify compila el portafolio desde WPGraphQL usando PHP y deja el HTML, los sna
 3. GitHub Actions ejecuta `build.php` y `validate-static.php`.
 4. El resultado se publica sólo si cada ficha contiene contenido HTML estático y no contiene placeholders.
 
-Mientras una ficha esté pendiente de contenido editorial, puede excluirse temporalmente del build con `PORTFOLIO_STATIFY_EXCLUDED_SLUGS` (lista separada por comas). La ficha de LOME queda fuera de esta primera activación y se reincorpora al terminar su contenido.
+Si una ficha necesita excluirse temporalmente por razones editoriales, el build admite `PORTFOLIO_STATIFY_EXCLUDED_SLUGS` como variable de entorno separada por comas. La configuración normal no excluye proyectos.
 
 ## Configuración en WordPress
 

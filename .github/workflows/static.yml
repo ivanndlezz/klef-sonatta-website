@@ -45,9 +45,6 @@ jobs:
           php -l server/portfolio-statify/validate-static.php
           php -l server/wordpress/klef-portfolio-statify.php
       - name: Build static portfolio
-        env:
-          # LOME se integra al final, cuando su contenido editorial esté listo.
-          PORTFOLIO_STATIFY_EXCLUDED_SLUGS: lome-beauty-clinic-spa-los-cabos-devs
         run: php server/portfolio-statify/build.php
       - name: Validate static portfolio
         run: php server/portfolio-statify/validate-static.php
