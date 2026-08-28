@@ -35,96 +35,63 @@
   // Configuracion de busqueda
   const CONFIG = {
     GRAPHQL_ENDPOINT: "https://klef.newfacecards.com/graphql",
-    REST_ENDPOINT: "https://klef.newfacecards.com/wp-json/wp/v2/posts",
+    STATIC_BLOG_INDEX: "/data/blog/index.json",
     MIN_SEARCH_LENGTH: 2,
     DEBOUNCE_DELAY: 300,
     FILTER_DEBOUNCE_DELAY: 150,
   };
 
-  function decodeRestHtml(value) {
-    var element = document.createElement("div");
-    element.innerHTML = value || "";
-    return element.textContent || element.innerText || "";
-  }
+  var staticBlogIndexPromise;
 
-  function mapRestPost(post) {
-    var terms = (post._embedded && post._embedded["wp:term"]) || [];
-    var categoryTerms = terms.find(function (group) {
-      return group.some(function (term) {
-        return term.taxonomy === "category";
-      });
-    }) || [];
-    var tagTerms = terms.find(function (group) {
-      return group.some(function (term) {
-        return term.taxonomy === "post_tag";
-      });
-    }) || [];
-    var author =
-      post._embedded &&
-      post._embedded.author &&
-      post._embedded.author[0];
-    var media =
-      post._embedded &&
-      post._embedded["wp:featuredmedia"] &&
-      post._embedded["wp:featuredmedia"][0];
-    var pathname = post.link || "/blog/" + post.slug + "/";
-
-    try {
-      pathname = new URL(pathname).pathname;
-    } catch (error) {
-      // Keep the REST link as-is when it is already relative.
-    }
-
+  function mapStaticBlogItem(item) {
     return {
-      id: "rest-post:" + post.id,
-      title: decodeRestHtml(post.title && post.title.rendered),
-      slug: post.slug || "",
-      uri: pathname,
-      date: post.date || post.modified || "",
-      content: (post.content && post.content.rendered) ||
-        (post.excerpt && post.excerpt.rendered) ||
-        "",
-      featuredImage: media
-        ? {
-            node: {
-              sourceUrl: media.source_url || "",
-              altText: media.alt_text || "",
-            },
-          }
+      id: "static-blog:" + (item.id || item.slug),
+      title: item.title || "",
+      slug: item.slug || "",
+      uri: "/blog/" + (item.slug || "") + "/",
+      date: item.date || item.modified || "",
+      content: [item.excerpt, ...(item.categories || []), ...(item.tags || [])]
+        .filter(Boolean)
+        .join(" "),
+      featuredImage: item.image
+        ? { node: { sourceUrl: item.image, altText: item.image_alt || "" } }
         : null,
       categories: {
-        nodes: categoryTerms.map(function (term) {
-          return {
-            name: decodeRestHtml(term.name),
-            slug: term.slug || "",
-            uri: term.link || "",
-          };
+        nodes: (item.categories || []).map(function (name) {
+          return { name: name, slug: name.toLowerCase().replace(/\s+/g, "-") };
         }),
       },
       tags: {
-        nodes: tagTerms.map(function (term) {
-          return { name: decodeRestHtml(term.name), slug: term.slug || "" };
+        nodes: (item.tags || []).map(function (name) {
+          return { name: name, slug: name.toLowerCase().replace(/\s+/g, "-") };
         }),
       },
-      author: {
-        node: {
-          name: (author && author.name) || "",
-          uri: (author && author.link) || "",
-        },
-      },
+      author: { node: { name: "Klef Agency", uri: "" } },
     };
   }
 
-  async function fetchRestPosts(searchTerm) {
-    var url =
-      CONFIG.REST_ENDPOINT +
-      "?search=" +
-      encodeURIComponent(searchTerm) +
-      "&per_page=20&_embed=1&_fields=id,slug,date,modified,title,link,categories,tags,author,excerpt,content,_embedded";
-    var response = await fetch(url, { headers: { Accept: "application/json" } });
-    if (!response.ok) throw new Error("WordPress REST search failed: " + response.status);
-    var posts = await response.json();
-    return Array.isArray(posts) ? posts.map(mapRestPost) : [];
+  async function fetchStaticBlogPosts(searchTerm) {
+    if (!staticBlogIndexPromise) {
+      staticBlogIndexPromise = fetch(CONFIG.STATIC_BLOG_INDEX, {
+        headers: { Accept: "application/json" },
+      }).then(function (response) {
+        if (!response.ok) {
+          throw new Error("Static blog index failed: " + response.status);
+        }
+        return response.json();
+      });
+    }
+
+    var payload = await staticBlogIndexPromise;
+    var items = Array.isArray(payload.items) ? payload.items : [];
+    var normalizedTerm = searchTerm.toLocaleLowerCase("es-MX");
+    return items
+      .map(mapStaticBlogItem)
+      .filter(function (post) {
+        return getItemSearchText(post)
+          .toLocaleLowerCase("es-MX")
+          .includes(normalizedTerm);
+      });
   }
 
   // ============================================
@@ -734,11 +701,11 @@
 
       var [jsonStd, jsonTag] = await Promise.all([ responseStd.json(), responseTag.json() ]);
       var json = jsonStd; // alias para compatibilidad
-      var restPosts = [];
+      var staticBlogPosts = [];
       try {
-        restPosts = await fetchRestPosts(searchText);
-      } catch (restError) {
-        console.warn("REST blog search unavailable:", restError);
+        staticBlogPosts = await fetchStaticBlogPosts(searchText);
+      } catch (staticError) {
+        console.warn("Static blog search unavailable:", staticError);
       }
       // Recolectar posts de tags
       var tagPosts = [];
@@ -757,7 +724,7 @@
         var key = p.slug || p.id;
         if (!seenIds[key]) { seenIds[key] = true; mergedPosts.push(p); }
       });
-      restPosts.forEach(function(p) {
+      staticBlogPosts.forEach(function(p) {
         var key = p.slug || p.id;
         if (!seenIds[key]) { seenIds[key] = true; mergedPosts.push(p); }
       });
