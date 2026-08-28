@@ -54,6 +54,16 @@ main section {
   line-height: 1.55;
 }
 
+.portfolio-index-signoff {
+  max-width: 620px;
+  margin: 1.5rem 0 0;
+  color: #111827;
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.35;
+}
+
 .portfolio-index-catalog {
   padding-top: clamp(4rem, 8vw, 7rem);
 }
