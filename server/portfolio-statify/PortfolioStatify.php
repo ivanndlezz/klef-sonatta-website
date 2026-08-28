@@ -7,6 +7,18 @@ final class PortfolioStatify
     public const GRAPHQL_ENDPOINT = 'https://klef.newfacecards.com/graphql';
     public const SITE_URL = 'https://klef.agency';
 
+    /**
+     * Static local-service pages are part of the SEO surface, but are not
+     * managed by WordPress portfolio content. Keep them in the same sitemap
+     * so every Statify deployment publishes one coherent URL inventory.
+     */
+    private const SERVICE_PAGES = [
+        '/servicios/',
+        '/servicios/branding-los-cabos/',
+        '/servicios/diseno-web-los-cabos/',
+        '/servicios/desarrollo-web-los-cabos/',
+    ];
+
     private const LIST_QUERY = <<<'GRAPHQL'
 query GetPortfolioCards {
   posts(first: 20, where: { categoryName: "Portfolio" }) {
@@ -86,6 +98,9 @@ GRAPHQL;
             ['loc' => self::SITE_URL . '/', 'lastmod' => $generatedAt],
             ['loc' => self::SITE_URL . '/portfolio/', 'lastmod' => $generatedAt],
         ];
+        foreach (self::SERVICE_PAGES as $servicePath) {
+            $sitemapUrls[] = ['loc' => self::SITE_URL . $servicePath, 'lastmod' => $generatedAt];
+        }
         $slugs = [];
         foreach ($nodes as $node) {
             $slug = self::safeSlug((string) ($node['slug'] ?? ''));
@@ -141,7 +156,8 @@ GRAPHQL;
         }
 
         $sitemap = is_file($root . '/sitemap.xml') ? (string) file_get_contents($root . '/sitemap.xml') : '';
-        if ($sitemap === '' || substr_count($sitemap, '<loc>') !== count($index['items']) + 2) {
+        $expectedUrlCount = count($index['items']) + 2 + count(self::SERVICE_PAGES);
+        if ($sitemap === '' || substr_count($sitemap, '<loc>') !== $expectedUrlCount) {
             $issues[] = 'El sitemap no coincide con el índice Statify.';
         }
         if ($sitemap !== '' && substr_count($sitemap, '<lastmod>') !== substr_count($sitemap, '<loc>')) {
@@ -163,6 +179,25 @@ GRAPHQL;
             }
             if (preg_match('/lorem ipsum/i', $html)) {
                 $issues[] = "{$slug}: contiene Lorem ipsum.";
+            }
+        }
+
+        foreach (self::SERVICE_PAGES as $servicePath) {
+            $relativePath = trim($servicePath, '/') . '/index.html';
+            $serviceHtml = is_file($root . '/' . $relativePath)
+                ? (string) file_get_contents($root . '/' . $relativePath)
+                : '';
+            if ($serviceHtml === '') {
+                $issues[] = "Falta la página estática de servicio {$servicePath}.";
+                continue;
+            }
+            foreach (['<h1', 'name="description"', 'rel="canonical"', 'application/ld+json'] as $marker) {
+                if (!str_contains($serviceHtml, $marker)) {
+                    $issues[] = "{$servicePath}: falta {$marker}.";
+                }
+            }
+            if (preg_match('/lorem ipsum/i', $serviceHtml)) {
+                $issues[] = "{$servicePath}: contiene Lorem ipsum.";
             }
         }
 
@@ -282,7 +317,7 @@ GRAPHQL;
     {
         if (!is_file($path)) throw new RuntimeException('No existe portfolio/index.html.');
         $html = (string) file_get_contents($path);
-        $fallback = '<section class="statify-static-catalog" data-statify-static><h1>Portafolio de Klef Agency</h1><p>Proyectos de estrategia, branding, producto digital y desarrollo.</p><ul>';
+        $fallback = '<section class="statify-static-catalog" data-statify-static><h1>Portafolio de Klef Agency</h1><p>Proyectos de estrategia, branding, producto digital y desarrollo.</p><p><a href="/servicios/">Conoce nuestros servicios de estrategia, branding y desarrollo web en Los Cabos.</a></p><ul>';
         foreach ($cards as $card) {
             $fallback .= '<li><a href="./' . self::html((string) $card['slug']) . '/">' . self::html(implode(' | ', $card['title'])) . '</a><p>' . self::html((string) $card['extract']) . '</p></li>';
         }
