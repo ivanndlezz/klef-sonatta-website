@@ -200,7 +200,7 @@ GRAPHQL;
             . $imageMeta
             . '<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="' . self::html($title) . '"><meta name="twitter:description" content="' . self::html($description) . '">\n'
             . '<script type="application/ld+json">' . $jsonLd . '</script>\n'
-            . '<link rel="stylesheet" href="../../assets/styles/blog.css">\n'
+            . '<link rel="stylesheet" href="../../assets/styles/blog.css?v=2">\n'
             . '</head>\n<body>\n'
             . '<article class="klef-blog-article" data-shell-content data-statify-static><nav class="klef-blog-breadcrumbs" aria-label="Breadcrumb"><a href="/">Klef Agency</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span>' . self::html($category) . '</span></nav><p class="klef-blog-kicker">' . self::html($category) . '</p><h1>' . self::html($title) . '</h1><p class="klef-blog-article-summary">' . self::html($description) . '</p><p class="klef-blog-article-meta"><span>Por ' . self::html($author) . '</span>' . ($published !== '' ? ' · <time datetime="' . self::html($published) . '">' . self::html(self::formatDate($published)) . '</time>' : '') . '</p><div class="klef-blog-prose">' . $content . '</div><p class="klef-blog-back"><a href="/blog/">← Volver al blog</a></p></article>\n'
             . '<script src="../../shared/components/load-basics/load-basics.js?v=4"></script>\n<script src="../../assets/scripts/blog-page-layout.js"></script>\n'
