@@ -312,17 +312,31 @@
     if (!sheet || !backdrop || !content || !buttons.length) return;
     if (sheet.dataset.directContactReady === "true") return;
 
+    const directChrome = [
+      sheet.querySelector(".top-controls-left"),
+      sheet.querySelector(".top-controls-dropdown"),
+      sheet.querySelector(".sheet-bottom-controls"),
+    ].filter(Boolean);
+
+    const setDirectChrome = (hidden) => {
+      directChrome.forEach((element) => {
+        element.hidden = hidden;
+      });
+    };
+
     const close = () => {
       sheet.classList.remove("open", "full");
       backdrop.classList.remove("visible");
       document.body.classList.remove("scroll-locked");
       document.body.style.overflow = "";
+      setDirectChrome(false);
     };
 
     const open = (event) => {
       event.preventDefault();
       event.stopImmediatePropagation();
       content.innerHTML = directContactMarkup();
+      setDirectChrome(true);
       sheet.classList.add("open");
       backdrop.classList.add("visible");
       document.body.classList.add("scroll-locked");
@@ -380,7 +394,7 @@
     try {
       // Fetch the component HTML
       const componentUrl =
-        componentBaseUrl + CONFIG.componentFileName + "?v=11";
+        componentBaseUrl + CONFIG.componentFileName + "?v=12";
       //console.log("[LoadBasics] Fetching:", componentUrl);
 
       const response = await fetch(componentUrl);
