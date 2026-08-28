@@ -16,6 +16,7 @@ query GetPortfolioCards {
       slug
       excerpt
       date
+      modified
       featuredImage { node { sourceUrl altText mediaDetails { width height } } }
       categories { nodes { name slug } }
       tags { nodes { name slug } }
@@ -81,7 +82,10 @@ GRAPHQL;
             'items' => $cards,
         ]);
 
-        $sitemapUrls = [self::SITE_URL . '/', self::SITE_URL . '/portfolio/'];
+        $sitemapUrls = [
+            ['loc' => self::SITE_URL . '/', 'lastmod' => $generatedAt],
+            ['loc' => self::SITE_URL . '/portfolio/', 'lastmod' => $generatedAt],
+        ];
         $slugs = [];
         foreach ($nodes as $node) {
             $slug = self::safeSlug((string) ($node['slug'] ?? ''));
@@ -99,7 +103,13 @@ GRAPHQL;
                 'data' => $post,
             ]);
             self::writeAtomically($root . '/portfolio/' . $slug . '/index.html', self::renderProjectPage($post));
-            $sitemapUrls[] = self::SITE_URL . '/portfolio/' . rawurlencode($slug) . '/';
+            $sitemapUrls[] = [
+                'loc' => self::SITE_URL . '/portfolio/' . rawurlencode($slug) . '/',
+                'lastmod' => self::sitemapLastmod(
+                    (string) ($node['modified'] ?? $node['date'] ?? ''),
+                    $generatedAt,
+                ),
+            ];
         }
 
         foreach (array_diff($previousSlugs, $slugs) as $staleSlug) {
@@ -133,6 +143,9 @@ GRAPHQL;
         $sitemap = is_file($root . '/sitemap.xml') ? (string) file_get_contents($root . '/sitemap.xml') : '';
         if ($sitemap === '' || substr_count($sitemap, '<loc>') !== count($index['items']) + 2) {
             $issues[] = 'El sitemap no coincide con el índice Statify.';
+        }
+        if ($sitemap !== '' && substr_count($sitemap, '<lastmod>') !== substr_count($sitemap, '<loc>')) {
+            $issues[] = 'El sitemap no contiene lastmod para todas sus URLs.';
         }
 
         foreach ($index['items'] as $item) {
@@ -281,10 +294,22 @@ GRAPHQL;
         self::writeAtomically($path, $updated);
     }
 
+    private static function sitemapLastmod(string $value, string $fallback): string
+    {
+        $timestamp = $value !== '' ? strtotime($value) : false;
+        return $timestamp === false ? $fallback : gmdate('c', $timestamp);
+    }
+
     private static function renderSitemap(array $urls): string
     {
         $xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n";
-        foreach ($urls as $url) $xml .= "  <url><loc>" . htmlspecialchars($url, ENT_XML1, 'UTF-8') . "</loc></url>\n";
+        foreach ($urls as $entry) {
+            $url = (string) ($entry['loc'] ?? '');
+            $lastmod = (string) ($entry['lastmod'] ?? '');
+            $xml .= "  <url><loc>" . htmlspecialchars($url, ENT_XML1, 'UTF-8') . "</loc>";
+            if ($lastmod !== '') $xml .= '<lastmod>' . htmlspecialchars($lastmod, ENT_XML1, 'UTF-8') . '</lastmod>';
+            $xml .= "</url>\n";
+        }
         return $xml . "</urlset>\n";
     }
 
