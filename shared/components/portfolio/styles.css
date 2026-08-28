@@ -380,7 +380,7 @@ body[data-loading="true"] .skeleton,
   margin: 0 auto;
   padding: 60px 24px;
   transition: padding 0.5s ease;
-  scroll-margin-top: 120px; /* Offset for sticky header + tabs */
+  scroll-margin-top: 140px; /* Offset for sticky header + tabs */
 }
 
 /* Visual-only mode (hide text elements) */

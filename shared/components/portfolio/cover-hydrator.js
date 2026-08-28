@@ -52,11 +52,17 @@ function renderCoverSection(data) {
 /**
  * Render team section from coAuthors
  */
-function renderTeamSection(data) {
-  if (!data.coAuthors || data.coAuthors.length === 0) return;
+function renderCoverTeamSection(data) {
+  const source = data.coAuthors;
+  const coAuthors = Array.isArray(source)
+    ? source
+    : Array.isArray(source?.nodes)
+      ? source.nodes
+      : [];
+  if (coAuthors.length === 0) return;
 
   // Filter out clients, keep only team members
-  const team = data.coAuthors.filter(
+  const team = coAuthors.filter(
     (author) => !author.rolesList || !author.rolesList.includes("um_client"),
   );
 
@@ -147,7 +153,7 @@ document.addEventListener("portfolio-rendered", (event) => {
   const data = event.detail;
   if (data) {
     renderCoverSection(data);
-    renderTeamSection(data);
+    renderCoverTeamSection(data);
     renderTagsSection(data);
   }
 });

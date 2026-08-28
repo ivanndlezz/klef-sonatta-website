@@ -41,6 +41,7 @@ window.setupTabsNavigation = function () {
     tabs.forEach((tab) => {
       const isTarget = tab.getAttribute("data-target") === activeId;
       tab.setAttribute("data-state", isTarget ? "active" : "idle");
+      tab.setAttribute("aria-selected", isTarget ? "true" : "false");
       if (isTarget) centerTab(tab);
     });
   }
@@ -69,8 +70,9 @@ window.setupTabsNavigation = function () {
       const target = document.getElementById(targetId);
       if (target) {
         const offset = 120; // Account for sticky header + tabs
+        updateTabs(targetId);
         window.scrollTo({
-          top: target.offsetTop - offset,
+          top: window.scrollY + target.getBoundingClientRect().top - offset,
           behavior: "smooth",
         });
       }

@@ -298,8 +298,12 @@ GRAPHQL;
 
     private static function plainText(string $value): string
     {
-        $value = preg_replace('/(^|\s)-#\s*/u', '$1', strip_tags($value)) ?? $value;
+        $value = strip_tags($value);
         $value = html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        // WordPress can concatenate the first section marker with the auto-excerpt.
+        // Remove the marker and its label so cards never expose the editorial syntax.
+        $value = preg_replace('/^\s*-#\s*(?:proyecto|construcción|construccion|resultados|recursos)\b\s*/iu', '', $value) ?? $value;
+        $value = preg_replace('/(^|\s)-#\s*/u', '$1', $value) ?? $value;
         return trim((string) preg_replace('/\s+/u', ' ', $value));
     }
 
@@ -308,6 +312,7 @@ GRAPHQL;
         $html = preg_replace('/<script\b[^>]*>.*?<\/script>/is', '', $html) ?? '';
         $html = preg_replace('/\son\w+\s*=\s*(["\']).*?\1/is', '', $html) ?? $html;
         $html = preg_replace('/\s(?:href|src)\s*=\s*(["\'])\s*(?:javascript:|data:).*?\1/i', '', $html) ?? $html;
+        $html = preg_replace('/(<p\b[^>]*>)\s*-#\s*(?:proyecto|construcción|construccion|resultados|recursos)\b\s*/iu', '$1', $html) ?? $html;
         $html = preg_replace('/(^|>|\s)-#\s*/u', '$1', $html) ?? $html;
         return strip_tags($html, '<p><br><strong><em><h2><h3><h4><ul><ol><li><a><img><figure><figcaption><blockquote><video><source>');
     }

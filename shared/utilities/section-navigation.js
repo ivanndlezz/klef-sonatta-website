@@ -21,6 +21,8 @@
   SectionNavigation.slugify = function (text) {
     return text
       .toString()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
       .toLowerCase()
       .trim()
       .replace(/\s+/g, "-") // Replace spaces with -
@@ -42,7 +44,7 @@
     let imageCounter = 0;
 
     // Regex to find -# markers
-    const markerRegex = /-#\s*([^|\n<]+)(?:\s*\|\s*([^<\n]+))?/g;
+    const markerRegex = /-#\s*([^|\n<]+?)(?:\s*\|\s*([^<\n]+?))?\s*(?=<\/p>|<br\s*\/?\s*>|\n|$)/giu;
 
     const sections = [];
     const matches = [];
@@ -211,8 +213,11 @@ ${cleanContent}
     sections.forEach((section, index) => {
       const button = document.createElement("button");
       button.className = "tab-btn";
+      button.type = "button";
       button.dataset.target = section.id;
       button.dataset.state = index === 0 ? "active" : "idle";
+      button.setAttribute("aria-controls", section.id);
+      button.setAttribute("aria-selected", index === 0 ? "true" : "false");
       button.textContent = section.title;
 
       container.appendChild(button);

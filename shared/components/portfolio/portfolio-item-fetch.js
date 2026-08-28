@@ -272,7 +272,12 @@ function updatePageMetadata(data) {
  * Process coAuthors to separate client from team
  */
 function processCoAuthors(data) {
-  const allAuthors = data.coAuthors || [];
+  const source = data.coAuthors;
+  const allAuthors = Array.isArray(source)
+    ? source
+    : Array.isArray(source?.nodes)
+      ? source.nodes
+      : [];
 
   // Find client (um_client role)
   const client = allAuthors.find(
@@ -582,7 +587,7 @@ function renderSidebar(data) {
 
   // Render team section (only if team members exist)
   if (team.length > 0) {
-    renderTeamSection(team);
+    renderSidebarTeamSection(team);
   } else {
     const teamSections = document.querySelectorAll(
       ".sidebar-section .team-section",
@@ -602,7 +607,7 @@ function renderSidebar(data) {
 /**
  * Render team section
  */
-function renderTeamSection(team) {
+function renderSidebarTeamSection(team) {
   // Update team avatars
   const teamAvatars = document.querySelectorAll(".team-avatars");
   teamAvatars.forEach((avatarsEl) => {
