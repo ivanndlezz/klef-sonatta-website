@@ -289,6 +289,56 @@
       };
     },
 
+    // The global contact sheet intentionally contains direct contact options.
+    // Keep this separate from portfolio sheets so a generic form cannot return.
+    createContactSheetConfig() {
+      const contactHtml = `
+        <div class="contact-sheet-content">
+          <div class="contact-cta-section">
+            <h3>¿Listo para comenzar?</h3>
+            <p>Elige la forma más cómoda de iniciar la conversación.</p>
+            <div class="contact-options">
+              <a href="tel:+526245161037" class="contact-option phone">
+                <span>Atención al cliente</span>
+              </a>
+              <a href="https://wa.me/526245161037" class="contact-option whatsapp" target="_blank" rel="noopener">
+                <span>WhatsApp</span>
+              </a>
+              <a href="mailto:info@klef.agency" class="contact-option email">
+                <span>info@klef.agency</span>
+              </a>
+              <a href="tel:+526241682048" class="contact-option phone">
+                <span>Soporte técnico</span>
+              </a>
+            </div>
+          </div>
+          <div class="social-section">
+            <h4>Síguenos</h4>
+            <div class="social-links">
+              <a href="https://www.instagram.com/klef.agency/" target="_blank" rel="noopener" aria-label="Instagram">Instagram</a>
+              <a href="https://www.facebook.com/klef.agency/" target="_blank" rel="noopener" aria-label="Facebook">Facebook</a>
+              <a href="https://www.youtube.com/channel/UCYFT6kwbsDzbiK6OjuKWM5w" target="_blank" rel="noopener" aria-label="YouTube">YouTube</a>
+            </div>
+          </div>
+        </div>
+      `;
+
+      return {
+        topControls: {
+          actions: [],
+          moreActions: { enabled: false },
+        },
+        content: {
+          type: "html",
+          data: { html: contactHtml },
+        },
+        bottomControls: {
+          primary: null,
+          moreActions: { enabled: false },
+        },
+      };
+    },
+
     // Crear config simple con HTML
     createHtmlConfig(html, actions = {}) {
       return {

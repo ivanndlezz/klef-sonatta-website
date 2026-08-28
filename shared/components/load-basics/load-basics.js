@@ -237,22 +237,26 @@
   /**
    * Execute scripts from the loaded HTML
    */
-  function executeScripts(scripts) {
-    scripts.forEach((script) => {
+  async function executeScripts(scripts) {
+    for (const script of scripts) {
       if (script.src) {
-        // External script - create new script element
-        const newScript = document.createElement("script");
-        newScript.src = script.src;
+        await new Promise((resolve, reject) => {
+          // Load external scripts in document order so dependencies are ready
+          // before the shell announces that it is available.
+          const newScript = document.createElement("script");
+          newScript.src = script.src;
+          newScript.async = false;
+          newScript.onload = resolve;
+          newScript.onerror = reject;
 
-        // Copy attributes
-        Array.from(script.attributes).forEach((attr) => {
-          if (attr.name !== "src") {
-            newScript.setAttribute(attr.name, attr.value);
-          }
+          Array.from(script.attributes).forEach((attr) => {
+            if (attr.name !== "src") {
+              newScript.setAttribute(attr.name, attr.value);
+            }
+          });
+
+          document.body.appendChild(newScript);
         });
-
-        document.body.appendChild(newScript);
-        //console.log("[LoadBasics] Loaded external script:", script.src);
       } else {
         // Inline script - execute code
         try {
@@ -267,7 +271,7 @@
           // Debug: console.error("[LoadBasics] Error executing inline script:", e);
         }
       }
-    });
+    }
   }
 
   /**
@@ -279,7 +283,7 @@
     try {
       // Fetch the component HTML
       const componentUrl =
-        componentBaseUrl + CONFIG.componentFileName + "?v=6";
+        componentBaseUrl + CONFIG.componentFileName + "?v=7";
       //console.log("[LoadBasics] Fetching:", componentUrl);
 
       const response = await fetch(componentUrl);
@@ -312,7 +316,7 @@
       injectHeadElements(headElements);
       injectHTML(body);
       placeShellContent();
-      executeScripts(scripts);
+      await executeScripts(scripts);
 
       // Dispatch custom event
       window.dispatchEvent(

@@ -157,6 +157,21 @@
     }
   }
 
+  function openContactSheet(event) {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    if (
+      typeof loadSheet === "function" &&
+      typeof sheetUtils !== "undefined" &&
+      typeof sheetUtils.createContactSheetConfig === "function"
+    ) {
+      loadSheet(sheetUtils.createContactSheetConfig());
+    } else {
+      console.warn("[Navigation] Contact sheet is not ready");
+    }
+  }
+
   // Inicializar event listeners
   function initNavigationListeners() {
     if (window.navigationInitialized) return;
@@ -195,6 +210,11 @@
         closeMenu();
       });
     });
+
+    // The contact sheet is a direct-contact panel, never a form.
+    document
+      .querySelectorAll('[data-action="open-contact-sheet"]')
+      .forEach((btn) => btn.addEventListener("click", openContactSheet));
 
     // Click en items con mega menú (móvil)
     document.querySelectorAll("[data-mega]").forEach((btn) => {
