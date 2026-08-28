@@ -159,3 +159,4 @@ const ContentRenderer = {
 
 // Inicializar automáticamente
 ContentRenderer.init();
+window.ContentRenderer = ContentRenderer;

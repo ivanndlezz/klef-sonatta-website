@@ -182,3 +182,5 @@ const SheetHandlers = {
     );
   },
 };
+
+window.SheetHandlers = SheetHandlers;

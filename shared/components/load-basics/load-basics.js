@@ -248,14 +248,11 @@
           throw new Error(`Failed to load shell script: ${response.status}`);
         }
 
-        const newScript = document.createElement("script");
-        Array.from(script.attributes).forEach((attr) => {
-          if (!['src', 'async', 'defer'].includes(attr.name)) {
-            newScript.setAttribute(attr.name, attr.value);
-          }
-        });
-        newScript.textContent = await response.text();
-        document.body.appendChild(newScript);
+        const source = await response.text();
+        const executeExternalScript = new Function(
+          `${source}\n//# sourceURL=${script.src}`,
+        );
+        executeExternalScript();
       } else {
         // Inline script - execute code
         try {
@@ -282,7 +279,7 @@
     try {
       // Fetch the component HTML
       const componentUrl =
-        componentBaseUrl + CONFIG.componentFileName + "?v=8";
+        componentBaseUrl + CONFIG.componentFileName + "?v=9";
       //console.log("[LoadBasics] Fetching:", componentUrl);
 
       const response = await fetch(componentUrl);

@@ -63,7 +63,7 @@
       this.render(config);
 
       // Inicializar handlers
-      this.handlers = SheetHandlers.init(this.sheet);
+      this.handlers = window.SheetHandlers.init(this.sheet);
 
       // Escuchar evento de cerrar
       this.sheet.addEventListener("sheet-close", () => this.close());
@@ -87,7 +87,7 @@
 
     // Renderizar sheet completo
     render(config) {
-      const html = SheetTemplates.renderSheet(config);
+      const html = window.SheetTemplates.renderSheet(config);
       this.sheet.innerHTML = html;
       return this;
     }
@@ -96,9 +96,9 @@
     showLoading(message) {
       if (!this.sheet) return this;
 
-      this.sheet.innerHTML = SheetTemplates.renderSheet({
+      this.sheet.innerHTML = window.SheetTemplates.renderSheet({
         topControls: { actions: [], moreActions: { enabled: false } },
-        content: { html: SheetTemplates.renderLoading(message) },
+        content: { html: window.SheetTemplates.renderLoading(message) },
         bottomControls: { primary: null, moreActions: { enabled: false } },
       });
 
@@ -155,7 +155,7 @@
 
       const topControls = this.sheet.querySelector(".sheet-top-controls");
       if (topControls) {
-        topControls.innerHTML = SheetTemplates.renderTopControls(config);
+        topControls.innerHTML = window.SheetTemplates.renderTopControls(config);
       }
 
       // Reinicializar handlers para los nuevos elementos
@@ -173,7 +173,7 @@
 
       const contentZone = this.sheet.querySelector("#sheet-content");
       if (contentZone) {
-        contentZone.innerHTML = ContentRenderer.render(config);
+        contentZone.innerHTML = window.ContentRenderer.render(config);
       }
 
       return this;
@@ -185,7 +185,7 @@
 
       const bottomControls = this.sheet.querySelector(".sheet-bottom-controls");
       if (bottomControls) {
-        bottomControls.innerHTML = SheetTemplates.renderBottomControls(config);
+        bottomControls.innerHTML = window.SheetTemplates.renderBottomControls(config);
       }
 
       // Reinicializar handlers para los nuevos elementos
