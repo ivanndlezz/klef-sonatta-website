@@ -14,6 +14,7 @@ final class PortfolioStatify
      */
     private const SERVICE_PAGES = [
         '/servicios/',
+        '/servicios/marketing-digital-los-cabos/',
         '/servicios/branding-los-cabos/',
         '/servicios/diseno-web-los-cabos/',
         '/servicios/desarrollo-web-los-cabos/',
