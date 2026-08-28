@@ -20,10 +20,10 @@ export const footerHTML = `
     <div class="footer-col" data-column="2">
       <h4 class="footer-heading">Compañía</h4>
       <ul class="footer-links">
-        <li><a href="#">Blog</a></li>
-        <li><a href="#">Contacto</a></li>
+        <li><a href="/blog/">Blog</a></li>
+        <li><a href="mailto:info@klef.agency">Contacto</a></li>
         <li class="new-badge">
-          <a href="#">Portafolio</a>
+          <a href="/portfolio/">Portafolio</a>
           <span style="
                 background: var(--k-blue, #007aff);
                 font-size: 0.7rem;
@@ -45,25 +45,25 @@ export const footerHTML = `
       <h4 class="footer-heading">Explora</h4>
       <ul class="footer-links">
         <li>
-          <a href="#">
+          <a href="/servicios/branding-los-cabos/">
             <span class="discipline-indicator" style="--c1: var(--brands, #ff6b6b)"></span>
             Brands
           </a>
         </li>
         <li>
-          <a href="#">
+          <a href="/servicios/desarrollo-web-los-cabos/">
             <span class="discipline-indicator" style="--c1: var(--dev, #4ecdc4)"></span>
             Devs
           </a>
         </li>
         <li>
-          <a href="#">
+          <a href="/servicios/diseno-web-los-cabos/">
             <span class="discipline-indicator" style="--c1: var(--studio, #a29bfe)"></span>
             Studio
           </a>
         </li>
         <li>
-          <a href="#">
+          <a href="/servicios/marketing-digital-los-cabos/">
             <span class="discipline-indicator" style="--c1: var(--strategy, #fdcb6e)"></span>
             Strategy
           </a>
