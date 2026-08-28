@@ -18,6 +18,7 @@ final class PortfolioStatify
         '/servicios/branding-los-cabos/',
         '/servicios/diseno-web-los-cabos/',
         '/servicios/desarrollo-web-los-cabos/',
+        '/contacto/',
     ];
 
     private const LIST_QUERY = <<<'GRAPHQL'
