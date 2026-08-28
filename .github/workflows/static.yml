@@ -44,10 +44,17 @@ jobs:
           php -l server/portfolio-statify/build.php
           php -l server/portfolio-statify/validate-static.php
           php -l server/wordpress/klef-portfolio-statify.php
+          php -l server/blog-statify/BlogStatify.php
+          php -l server/blog-statify/build.php
+          php -l server/blog-statify/validate-static.php
       - name: Build static portfolio
         run: php server/portfolio-statify/build.php
       - name: Validate static portfolio
         run: php server/portfolio-statify/validate-static.php
+      - name: Build static blog
+        run: php server/blog-statify/build.php
+      - name: Validate static blog
+        run: php server/blog-statify/validate-static.php
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

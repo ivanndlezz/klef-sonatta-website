@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Klef Portfolio Statify Trigger
- * Description: Solicita una compilación de GitHub cuando se publica un proyecto del portafolio y administra la rotación de tokens.
- * Version: 0.2.0
+ * Description: Solicita una compilación de GitHub cuando se publica contenido de Portfolio o Blog y administra la rotación de tokens.
+ * Version: 0.3.0
  */
 
 declare(strict_types=1);
@@ -115,6 +115,11 @@ function klef_statify_validate_token(string $token): bool
     return !is_wp_error($response) && wp_remote_retrieve_response_code($response) === 200;
 }
 
+function klef_statify_is_publishable_content(int $postId): bool
+{
+    return has_category('Portfolio', $postId) || has_category('Blog', $postId);
+}
+
 function klef_statify_dispatch(int $postId, string $slug, bool $update): void
 {
     $token = klef_statify_active_token();
@@ -152,20 +157,20 @@ function klef_statify_dispatch(int $postId, string $slug, bool $update): void
 add_action('save_post_post', static function (int $postId, WP_Post $post, bool $update): void {
     if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) return;
     if (wp_is_post_revision($postId) || $post->post_status !== 'publish') return;
-    if (!has_category('Portfolio', $postId)) return;
+    if (!klef_statify_is_publishable_content($postId)) return;
     klef_statify_dispatch($postId, $post->post_name, $update);
 }, 20, 3);
 
 add_action('transition_post_status', static function (string $newStatus, string $oldStatus, WP_Post $post): void {
     if ($post->post_type !== 'post' || $oldStatus !== 'publish' || $newStatus === 'publish') return;
-    if (!has_category('Portfolio', $post->ID)) return;
+    if (!klef_statify_is_publishable_content((int) $post->ID)) return;
     klef_statify_dispatch((int) $post->ID, $post->post_name, true);
 }, 20, 3);
 
 add_action('before_delete_post', static function (int $postId): void {
     $post = get_post($postId);
     if (!$post instanceof WP_Post || $post->post_type !== 'post') return;
-    if (!has_category('Portfolio', $postId)) return;
+    if (!klef_statify_is_publishable_content($postId)) return;
     klef_statify_dispatch($postId, $post->post_name, true);
 }, 20, 1);
 
