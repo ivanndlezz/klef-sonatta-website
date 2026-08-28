@@ -38,6 +38,22 @@ Los identificadores `data-mega` y los `id` de los paneles deben coincidir. Los
 enlaces secundarios deben apuntar a rutas reales; no se deben dejar enlaces
 `href="#"` dentro del mega menú.
 
+### Intención de los enlaces
+
+El panel `Proyectos` debe llevar a colecciones o a una acción explícita, nunca a
+un caso individual usado como sustituto de una categoría. Actualmente:
+
+- `Todos los proyectos` → `/portfolio/`
+- `Marca y branding` → `/portfolio/?discipline=brands`
+- `Web y producto digital` → `/portfolio/?discipline=dev`
+- `Hablemos de tu proyecto` → `/contacto/`
+
+El índice de portafolio lee `discipline` y activa el filtro correspondiente.
+También conserva el estado cuando el visitante cambia de pestaña, actualizando
+la URL sin recargar la página. Los alias amigables (`branding`, `desarrollo-web`
+y `producto-digital`) se aceptan para enlaces futuros, pero los enlaces del
+mega menú deben usar los valores canónicos `brands` y `dev`.
+
 El controlador activo es
 `shared/components/navigation/navigation-system.js`. El archivo
 `assets/scripts/mega-menu-spa.js` queda como referencia heredada y no debe

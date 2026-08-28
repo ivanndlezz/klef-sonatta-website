@@ -47,6 +47,58 @@
     strategy: "Klef Strategy",
   };
 
+  const disciplineAliases = {
+    all: "all",
+    brands: "brands",
+    branding: "brands",
+    marca: "brands",
+    "marca-y-branding": "brands",
+    dev: "dev",
+    desarrollo: "dev",
+    "desarrollo-web": "dev",
+    "producto-digital": "dev",
+    "web-y-producto-digital": "dev",
+    studio: "studio",
+    strategy: "strategy",
+    estrategia: "strategy",
+    marketing: "strategy",
+  };
+
+  function getInitialFilterState() {
+    const params = new URLSearchParams(window.location.search);
+    const requested = (params.get("discipline") || params.get("categoria") || "")
+      .trim()
+      .toLowerCase();
+    const filter = disciplineAliases[requested] || "all";
+    const category = categories.find((item) => item.filter === filter);
+
+    return {
+      activeId: category ? category.id : 0,
+      currentSub: params.get("sub") || "",
+    };
+  }
+
+  function syncFilterUrl() {
+    if (!window.history || !window.history.replaceState) return;
+
+    const url = new URL(window.location.href);
+    const filter = categories[activeId]?.filter || "all";
+
+    if (filter === "all") {
+      url.searchParams.delete("discipline");
+    } else {
+      url.searchParams.set("discipline", filter);
+    }
+
+    if (currentSub) {
+      url.searchParams.set("sub", currentSub);
+    } else {
+      url.searchParams.delete("sub");
+    }
+
+    window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+  }
+
   // DOM elements
   const tabsList = document.getElementById("tabsList");
   const desktopSubChips = document.getElementById("desktopSubChips");
@@ -57,8 +109,9 @@
   const resultsCount = document.getElementById("results-count");
 
   // Estado
-  let activeId = 0;
-  let currentSub = "";
+  const initialFilterState = getInitialFilterState();
+  let activeId = initialFilterState.activeId;
+  let currentSub = initialFilterState.currentSub;
   let searchTerm = "";
   let allPortfolioItems = [];
 
@@ -307,6 +360,7 @@
       .forEach((c) => c.classList.remove("active"));
     el.classList.add("active");
     currentSub = el.textContent.trim();
+    syncFilterUrl();
     applyFilters();
   };
 
@@ -321,6 +375,7 @@
 
       activeId = parseInt(btn.getAttribute("data-id"));
       currentSub = "";
+      syncFilterUrl();
       renderTabs();
       updateSubMenus();
       applyFilters();
