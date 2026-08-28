@@ -28,10 +28,97 @@
   // Configuracion de busqueda
   const CONFIG = {
     GRAPHQL_ENDPOINT: "https://klef.newfacecards.com/graphql",
+    REST_ENDPOINT: "https://klef.newfacecards.com/wp-json/wp/v2/posts",
     MIN_SEARCH_LENGTH: 2,
     DEBOUNCE_DELAY: 300,
     FILTER_DEBOUNCE_DELAY: 150,
   };
+
+  function decodeRestHtml(value) {
+    var element = document.createElement("div");
+    element.innerHTML = value || "";
+    return element.textContent || element.innerText || "";
+  }
+
+  function mapRestPost(post) {
+    var terms = (post._embedded && post._embedded["wp:term"]) || [];
+    var categoryTerms = terms.find(function (group) {
+      return group.some(function (term) {
+        return term.taxonomy === "category";
+      });
+    }) || [];
+    var tagTerms = terms.find(function (group) {
+      return group.some(function (term) {
+        return term.taxonomy === "post_tag";
+      });
+    }) || [];
+    var author =
+      post._embedded &&
+      post._embedded.author &&
+      post._embedded.author[0];
+    var media =
+      post._embedded &&
+      post._embedded["wp:featuredmedia"] &&
+      post._embedded["wp:featuredmedia"][0];
+    var pathname = post.link || "/blog/" + post.slug + "/";
+
+    try {
+      pathname = new URL(pathname).pathname;
+    } catch (error) {
+      // Keep the REST link as-is when it is already relative.
+    }
+
+    return {
+      id: "rest-post:" + post.id,
+      title: decodeRestHtml(post.title && post.title.rendered),
+      slug: post.slug || "",
+      uri: pathname,
+      date: post.date || post.modified || "",
+      content: (post.content && post.content.rendered) ||
+        (post.excerpt && post.excerpt.rendered) ||
+        "",
+      featuredImage: media
+        ? {
+            node: {
+              sourceUrl: media.source_url || "",
+              altText: media.alt_text || "",
+            },
+          }
+        : null,
+      categories: {
+        nodes: categoryTerms.map(function (term) {
+          return {
+            name: decodeRestHtml(term.name),
+            slug: term.slug || "",
+            uri: term.link || "",
+          };
+        }),
+      },
+      tags: {
+        nodes: tagTerms.map(function (term) {
+          return { name: decodeRestHtml(term.name), slug: term.slug || "" };
+        }),
+      },
+      author: {
+        node: {
+          name: (author && author.name) || "",
+          uri: (author && author.link) || "",
+        },
+      },
+    };
+  }
+
+  async function fetchRestPosts(searchTerm) {
+    var url =
+      CONFIG.REST_ENDPOINT +
+      "?search=" +
+      encodeURIComponent(searchTerm) +
+      "&per_page=20&_embed=1&_fields=id,slug,date,modified,title,link,categories,tags,author,excerpt,content,_embedded";
+    var response = await fetch(url, { headers: { Accept: "application/json" } });
+    if (!response.ok) throw new Error("WordPress REST search failed: " + response.status);
+    var posts = await response.json();
+    return Array.isArray(posts) ? posts.map(mapRestPost) : [];
+  }
 
   // ============================================
   // FILTER SYSTEM INTEGRATION
@@ -636,6 +723,12 @@
 
       var [jsonStd, jsonTag] = await Promise.all([ responseStd.json(), responseTag.json() ]);
       var json = jsonStd; // alias para compatibilidad
+      var restPosts = [];
+      try {
+        restPosts = await fetchRestPosts(searchText);
+      } catch (restError) {
+        console.warn("REST blog search unavailable:", restError);
+      }
       // Recolectar posts de tags
       var tagPosts = [];
       var tagNodes = (jsonTag.data && jsonTag.data.tags && jsonTag.data.tags.nodes) || [];
@@ -646,10 +739,16 @@
       var seenIds = {};
       var mergedPosts = [];
       ((jsonStd.data && jsonStd.data.posts && jsonStd.data.posts.nodes) || []).forEach(function(p) {
-        if (!seenIds[p.id]) { seenIds[p.id] = true; mergedPosts.push(p); }
+        var key = p.slug || p.id;
+        if (!seenIds[key]) { seenIds[key] = true; mergedPosts.push(p); }
       });
       tagPosts.forEach(function(p) {
-        if (!seenIds[p.id]) { seenIds[p.id] = true; mergedPosts.push(p); }
+        var key = p.slug || p.id;
+        if (!seenIds[key]) { seenIds[key] = true; mergedPosts.push(p); }
+      });
+      restPosts.forEach(function(p) {
+        var key = p.slug || p.id;
+        if (!seenIds[key]) { seenIds[key] = true; mergedPosts.push(p); }
       });
       // Reemplazar posts en json con la lista merged
       json.data.posts = { nodes: mergedPosts };
