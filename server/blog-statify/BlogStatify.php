@@ -5,6 +5,7 @@ declare(strict_types=1);
 final class BlogStatify
 {
     public const GRAPHQL_ENDPOINT = 'https://klef.newfacecards.com/graphql';
+    public const REST_ENDPOINT = 'https://klef.newfacecards.com/wp-json/wp/v2';
     public const SITE_URL = 'https://klef.agency';
 
     private const LIST_QUERY = <<<'GRAPHQL'
@@ -49,6 +50,7 @@ GRAPHQL;
         $list = self::graphql($endpoint, self::LIST_QUERY);
         $nodes = $list['data']['posts']['nodes'] ?? [];
         if (!is_array($nodes)) $nodes = [];
+        $nodes = self::mergeRestBlogPosts($nodes);
 
         $generatedAt = gmdate('c');
         $outputDir = $root . '/data/blog';
@@ -247,7 +249,7 @@ GRAPHQL;
     {
         if (!function_exists('curl_init')) throw new RuntimeException('La extensión cURL de PHP es necesaria para Blog Statify.');
         $handle = curl_init($endpoint);
-        curl_setopt_array($handle, [CURLOPT_POST => true, CURLOPT_RETURNTRANSFER => true, CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Accept: application/json'], CURLOPT_POSTFIELDS => json_encode(['query' => $query, 'variables' => $variables], JSON_UNESCAPED_SLASHES), CURLOPT_TIMEOUT => 30]);
+        curl_setopt_array($handle, [CURLOPT_POST => true, CURLOPT_RETURNTRANSFER => true, CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Accept: application/json', 'Cache-Control: no-cache, no-store', 'Pragma: no-cache'], CURLOPT_POSTFIELDS => json_encode(['query' => $query, 'variables' => $variables], JSON_UNESCAPED_SLASHES), CURLOPT_TIMEOUT => 30]);
         $body = curl_exec($handle);
         $status = (int) curl_getinfo($handle, CURLINFO_HTTP_CODE);
         $error = curl_error($handle);
@@ -257,6 +259,62 @@ GRAPHQL;
         $payload = json_decode((string) $body, true);
         if (!is_array($payload)) throw new RuntimeException('GraphQL devolvió JSON inválido.');
         if (!empty($payload['errors'])) throw new RuntimeException((string) ($payload['errors'][0]['message'] ?? 'Error GraphQL.'));
+        return $payload;
+    }
+
+    /**
+     * WPGraphQL exposes individual Blog posts correctly on this installation,
+     * but its public posts connection can omit the Blog category. Use the
+     * native REST index as a discovery bridge, then keep GraphQL as the source
+     * for each article's full content and metadata.
+     */
+    private static function mergeRestBlogPosts(array $graphqlNodes): array
+    {
+        try {
+            $categoryPayload = self::restJson(self::REST_ENDPOINT . '/categories?slug=blog&per_page=1&_fields=id');
+            $category = $categoryPayload[0] ?? null;
+            $categoryId = is_array($category) ? (int) ($category['id'] ?? 0) : 0;
+            if ($categoryId <= 0) return $graphqlNodes;
+
+            $restPayload = self::restJson(
+                self::REST_ENDPOINT . '/posts?categories=' . rawurlencode((string) $categoryId) . '&per_page=100&orderby=date&order=desc&_fields=slug'
+            );
+            if (!is_array($restPayload)) return $graphqlNodes;
+
+            $merged = [];
+            $seen = [];
+            foreach (array_merge($graphqlNodes, $restPayload) as $node) {
+                if (!is_array($node)) continue;
+                $slug = self::safeSlug((string) ($node['slug'] ?? ''));
+                if ($slug === '' || isset($seen[$slug])) continue;
+                $seen[$slug] = true;
+                $merged[] = $node;
+            }
+            return $merged;
+        } catch (Throwable $error) {
+            if ($graphqlNodes !== []) return $graphqlNodes;
+            throw new RuntimeException('No se pudo descubrir el índice de Blog por GraphQL ni REST: ' . $error->getMessage(), 0, $error);
+        }
+    }
+
+    private static function restJson(string $url): array
+    {
+        if (!function_exists('curl_init')) throw new RuntimeException('La extensión cURL de PHP es necesaria para Blog Statify.');
+        $handle = curl_init($url);
+        curl_setopt_array($handle, [
+            CURLOPT_HTTPGET => true,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER => ['Accept: application/json', 'Cache-Control: no-cache, no-store', 'Pragma: no-cache', 'User-Agent: Klef-Blog-Statify'],
+            CURLOPT_TIMEOUT => 30,
+        ]);
+        $body = curl_exec($handle);
+        $status = (int) curl_getinfo($handle, CURLINFO_HTTP_CODE);
+        $error = curl_error($handle);
+        curl_close($handle);
+        if ($body === false || $error !== '') throw new RuntimeException('REST no respondió: ' . $error);
+        if ($status < 200 || $status >= 300) throw new RuntimeException("REST HTTP {$status}.");
+        $payload = json_decode((string) $body, true);
+        if (!is_array($payload)) throw new RuntimeException('REST devolvió JSON inválido.');
         return $payload;
     }
 
