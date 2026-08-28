@@ -47,6 +47,9 @@ jobs:
           php -l server/blog-statify/BlogStatify.php
           php -l server/blog-statify/build.php
           php -l server/blog-statify/validate-static.php
+          php -l server/validate-shell-placement.php
+      - name: Validate shared shell placement
+        run: php server/validate-shell-placement.php
       - name: Build static portfolio
         run: php server/portfolio-statify/build.php
       - name: Validate static portfolio

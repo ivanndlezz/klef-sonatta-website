@@ -218,6 +218,22 @@
   }
 
   /**
+   * Keep authored page content between the shared shell's <main> and <footer>.
+   * load-basics is inserted at the beginning of <body>, so pages must opt in
+   * with data-shell-content instead of relying on source order.
+   */
+  function placeShellContent() {
+    const shellMain = document.querySelector("body > main");
+    if (!shellMain) return;
+
+    Array.from(document.body.children)
+      .filter((child) => child.hasAttribute("data-shell-content"))
+      .forEach((content) => {
+        if (content.parentElement !== shellMain) shellMain.appendChild(content);
+      });
+  }
+
+  /**
    * Execute scripts from the loaded HTML
    */
   function executeScripts(scripts) {
@@ -293,6 +309,7 @@
       injectStyles(styles);
       injectHeadElements(headElements);
       injectHTML(body);
+      placeShellContent();
       executeScripts(scripts);
 
       // Dispatch custom event
