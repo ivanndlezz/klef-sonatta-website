@@ -234,6 +234,69 @@
       });
   }
 
+  function directContactMarkup() {
+    return `
+      <div class="contact-sheet-content">
+        <div class="contact-cta-section">
+          <h3>¿Listo para comenzar?</h3>
+          <p>Elige la forma más cómoda de iniciar la conversación.</p>
+          <div class="contact-options">
+            <a href="tel:+526245161037" class="contact-option phone"><span>Atención al cliente</span></a>
+            <a href="https://wa.me/526245161037" class="contact-option whatsapp" target="_blank" rel="noopener"><span>WhatsApp</span></a>
+            <a href="mailto:info@klef.agency" class="contact-option email"><span>info@klef.agency</span></a>
+            <a href="tel:+526241682048" class="contact-option phone"><span>Soporte técnico</span></a>
+          </div>
+        </div>
+        <div class="social-section">
+          <h4>Síguenos</h4>
+          <div class="social-links">
+            <a href="https://www.instagram.com/klef.agency/" target="_blank" rel="noopener">Instagram</a>
+            <a href="https://www.facebook.com/klef.agency/" target="_blank" rel="noopener">Facebook</a>
+            <a href="https://www.youtube.com/channel/UCYFT6kwbsDzbiK6OjuKWM5w" target="_blank" rel="noopener">YouTube</a>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  /**
+   * Keep direct contact usable even when optional shell scripts are delayed.
+   * This intentionally bypasses the generic sheet renderer and has no form.
+   */
+  function initDirectContactSheet() {
+    const sheet = document.getElementById("bottomsheet");
+    const backdrop = document.getElementById("backdrop");
+    const content = document.getElementById("sheet-content");
+    const buttons = document.querySelectorAll(
+      '[data-action="open-contact-sheet"]',
+    );
+
+    if (!sheet || !backdrop || !content || !buttons.length) return;
+    if (sheet.dataset.directContactReady === "true") return;
+
+    const close = () => {
+      sheet.classList.remove("open", "full");
+      backdrop.classList.remove("visible");
+      document.body.classList.remove("scroll-locked");
+      document.body.style.overflow = "";
+    };
+
+    const open = (event) => {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      content.innerHTML = directContactMarkup();
+      sheet.classList.add("open");
+      backdrop.classList.add("visible");
+      document.body.classList.add("scroll-locked");
+      document.body.style.overflow = "hidden";
+    };
+
+    buttons.forEach((button) => button.addEventListener("click", open));
+    sheet.querySelector("#close-btn")?.addEventListener("click", close);
+    backdrop.addEventListener("click", close);
+    sheet.dataset.directContactReady = "true";
+  }
+
   /**
    * Execute scripts from the loaded HTML
    */
@@ -279,7 +342,7 @@
     try {
       // Fetch the component HTML
       const componentUrl =
-        componentBaseUrl + CONFIG.componentFileName + "?v=9";
+        componentBaseUrl + CONFIG.componentFileName + "?v=10";
       //console.log("[LoadBasics] Fetching:", componentUrl);
 
       const response = await fetch(componentUrl);
@@ -312,6 +375,7 @@
       injectHeadElements(headElements);
       injectHTML(body);
       placeShellContent();
+      initDirectContactSheet();
       await executeScripts(scripts);
 
       // Dispatch custom event
