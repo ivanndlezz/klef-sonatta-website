@@ -14,9 +14,16 @@
     filterChipsContainer;
   let searchTimeout;
   let filterTimeout;
-  let recentSearches = JSON.parse(
-    localStorage.getItem("recentSearches") || "[]",
-  );
+  let recentSearches = [];
+  try {
+    recentSearches = JSON.parse(
+      localStorage.getItem("recentSearches") || "[]",
+    );
+    if (!Array.isArray(recentSearches)) recentSearches = [];
+  } catch (error) {
+    // Search must still initialize when localStorage is unavailable or invalid.
+    recentSearches = [];
+  }
 
   // Estado de filtros activo
   let activeFilters = {
@@ -621,7 +628,11 @@
         }),
       )
       .slice(0, 5);
-    localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
+    try {
+      localStorage.setItem("recentSearches", JSON.stringify(recentSearches));
+    } catch (error) {
+      // Recent searches are optional; do not interrupt the actual search.
+    }
     updateRecentSearches();
   }
 
