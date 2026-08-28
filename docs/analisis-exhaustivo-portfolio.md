@@ -652,7 +652,6 @@ window.closeSheet = function() { ... };
 window.toggleSheet = function(config) { ... };
 window.sheetUtils = {
   createPortfolioConfig(data, actions),
-  createContactConfig(subject, primaryAction),
   createHtmlConfig(html, actions)
 };
 ```

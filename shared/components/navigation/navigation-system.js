@@ -196,23 +196,6 @@
       });
     });
 
-    // Contact Sheet trigger
-    document
-      .querySelectorAll('[data-action="open-contact-sheet"]')
-      .forEach((btn) => {
-        btn.addEventListener("click", (e) => {
-          e.preventDefault();
-          if (
-            typeof loadSheet === "function" &&
-            typeof sheetUtils !== "undefined"
-          ) {
-            loadSheet(sheetUtils.createContactConfig("General Inquiry"));
-          } else {
-            console.warn("[Navigation] loadSheet or sheetUtils not found");
-          }
-        });
-      });
-
     // Click en items con mega menú (móvil)
     document.querySelectorAll("[data-mega]").forEach((btn) => {
       btn.addEventListener("click", (e) => {

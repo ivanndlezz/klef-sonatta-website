@@ -289,24 +289,6 @@
       };
     },
 
-    // Crear config para formulario de contacto
-    createContactConfig(subject, primaryAction) {
-      return {
-        topControls: {
-          actions: [],
-          moreActions: { enabled: false },
-        },
-        content: {
-          type: "contact-form",
-          data: { subject: subject },
-        },
-        bottomControls: {
-          primary: primaryAction || { label: "Enviar", action: "submit-form" },
-          moreActions: { enabled: false },
-        },
-      };
-    },
-
     // Crear config simple con HTML
     createHtmlConfig(html, actions = {}) {
       return {
