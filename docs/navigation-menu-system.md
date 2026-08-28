@@ -46,7 +46,6 @@ un caso individual usado como sustituto de una categoría. Actualmente:
 - `Todos los proyectos` → `/portfolio/`
 - `Marca y branding` → `/portfolio/?discipline=brands`
 - `Web y producto digital` → `/portfolio/?discipline=dev`
-- `Hablemos de tu proyecto` → `/contacto/`
 
 El índice de portafolio lee `discipline` y activa el filtro correspondiente.
 También conserva el estado cuando el visitante cambia de pestaña, actualizando
