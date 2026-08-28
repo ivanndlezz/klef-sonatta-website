@@ -17,19 +17,27 @@ Ecosistema digital para LOME Beauty Clinic & Spa: landing de servicios, hub para
 
 <p>La solución debía comunicar belleza, bienestar y transformación con claridad, pero también ayudar a una persona interesada a pasar rápidamente de conocer un servicio a elegir un horario.</p>
 
+<figure class="wp-block-image size-large"><img src="https://klef.newfacecards.com/wp-content/uploads/2026/05/lome-1-1024x576.gif" alt="Vista del ecosistema digital de LOME Beauty Clinic &amp; Spa" /></figure>
+
 <p>-# Construcción</p>
 
 <h3>Landing de servicios</h3>
 
 <p>Diseñamos y desarrollamos una landing para presentar las principales líneas de atención de LOME: tratamientos faciales, corporales, aparatología, depilación láser, Spa Day y paquetes especiales. La estructura prioriza la lectura rápida y dirige cada intención hacia la reservación.</p>
 
+<figure class="wp-block-image size-large"><img src="https://klef.newfacecards.com/wp-content/uploads/2026/05/Portafolio-Web-Lome-03-1024x576.jpg" alt="Landing de servicios de LOME Beauty Clinic &amp; Spa" /></figure>
+
 <h3>Card links para Instagram</h3>
 
 <p>Construimos una página de enlaces para el perfil de Instagram de LOME. El hub concentra las acciones más importantes —reservar una cita, conocer los servicios, llamar, encontrar la ubicación y visitar Instagram— en una experiencia breve y optimizada para móvil.</p>
 
+<figure class="wp-block-image size-large"><img src="https://klef.newfacecards.com/wp-content/uploads/2026/05/Portafolio-Web-Lome-02-1024x576.jpg" alt="Card links para Instagram de LOME" /></figure>
+
 <h3>Sistema de citas</h3>
 
 <p>Desarrollamos un flujo de reservación por pasos: seleccionar el servicio, elegir fecha y horario, definir la preferencia de operadora y completar los datos de contacto. El sistema organiza el catálogo por categorías y muestra la duración y el precio de cada tratamiento para reducir fricción antes de confirmar.</p>
+
+<figure class="wp-block-image size-large"><img src="https://klef.newfacecards.com/wp-content/uploads/2026/05/Portafolio-Web-Lome-05-1024x576.jpg" alt="Sistema de citas de LOME Beauty Clinic &amp; Spa" /></figure>
 
 <p>-# Resultados</p>
 
