@@ -240,23 +240,22 @@
   async function executeScripts(scripts) {
     for (const script of scripts) {
       if (script.src) {
-        await new Promise((resolve, reject) => {
-          // Load external scripts in document order so dependencies are ready
-          // before the shell announces that it is available.
-          const newScript = document.createElement("script");
-          newScript.src = script.src;
-          newScript.async = false;
-          newScript.onload = resolve;
-          newScript.onerror = reject;
+        // Fetch and execute external shell scripts as inline scripts. This
+        // avoids the browser race where dynamically appended external scripts
+        // appear in the DOM but never initialize their global APIs.
+        const response = await fetch(script.src);
+        if (!response.ok) {
+          throw new Error(`Failed to load shell script: ${response.status}`);
+        }
 
-          Array.from(script.attributes).forEach((attr) => {
-            if (attr.name !== "src") {
-              newScript.setAttribute(attr.name, attr.value);
-            }
-          });
-
-          document.body.appendChild(newScript);
+        const newScript = document.createElement("script");
+        Array.from(script.attributes).forEach((attr) => {
+          if (!['src', 'async', 'defer'].includes(attr.name)) {
+            newScript.setAttribute(attr.name, attr.value);
+          }
         });
+        newScript.textContent = await response.text();
+        document.body.appendChild(newScript);
       } else {
         // Inline script - execute code
         try {
@@ -283,7 +282,7 @@
     try {
       // Fetch the component HTML
       const componentUrl =
-        componentBaseUrl + CONFIG.componentFileName + "?v=7";
+        componentBaseUrl + CONFIG.componentFileName + "?v=8";
       //console.log("[LoadBasics] Fetching:", componentUrl);
 
       const response = await fetch(componentUrl);
