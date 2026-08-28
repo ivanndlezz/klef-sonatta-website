@@ -158,9 +158,11 @@
 }
 
 .klef-blog-article h1 {
-  max-width: 820px;
+  max-width: 1000px;
   margin: 0 0 1.5rem;
-  font-size: clamp(2.7rem, 7vw, 6rem);
+  font-size: clamp(2.7rem, 6vw, 5rem);
+  letter-spacing: -.04em;
+  line-height: 1.05;
 }
 
 .klef-blog-article-summary {
