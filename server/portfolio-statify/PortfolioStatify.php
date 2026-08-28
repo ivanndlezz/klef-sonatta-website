@@ -311,7 +311,7 @@ GRAPHQL;
             . '<style>.statify-static-content{max-width:960px;margin:0 auto;padding:7rem 1.25rem 5rem;font-family:system-ui,sans-serif;line-height:1.7;color:#202124}.statify-static-content h1{font-size:clamp(2.25rem,6vw,5rem);line-height:1.05;margin:.5rem 0 1rem}.statify-static-content .statify-category{color:#64748b;font-weight:700;letter-spacing:.12em;text-transform:uppercase}.statify-static-content .statify-summary{font-size:1.2rem;color:#596579;max-width:700px}.statify-static-content img{max-width:100%;height:auto}.statify-static-content a{color:inherit}</style>\n'
             . '</head>\n<body>\n'
             . '<article class="statify-static-content" data-statify-static><p class="statify-category">' . self::html($category) . '</p><h1>' . self::html($title) . '</h1><p class="statify-summary">' . self::html($description) . '</p><div class="statify-prose">' . $content . '</div></article>\n'
-            . '<script src="../../shared/components/load-basics/load-basics.js?v=15"></script>\n<script src="../../shared/components/portfolio/portfolio-loader.js"></script>\n'
+            . '<script src="../../shared/components/load-basics/load-basics.js?v=16"></script>\n<script src="../../shared/components/portfolio/portfolio-loader.js"></script>\n'
             . '</body>\n</html>\n'));
     }
 
