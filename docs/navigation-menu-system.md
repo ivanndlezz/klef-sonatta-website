@@ -17,14 +17,15 @@ Sus tres entradas representan las secciones actuales del sitio:
 
 ## Menú parche
 
-El menú simplificado/flotante no se elimina, pero permanece deshabilitado. En
-`index.html` se conserva bajo los selectores condicionados por
-`body[data-menu-patch="enabled"]`. El estado normal es `disabled`, definido por
-`shared/components/navigation/navigation-system.js`.
+El menú simplificado/flotante se conserva bajo los selectores condicionados por
+`body[data-menu-patch="enabled"]`. Actualmente está habilitado en `index.html`
+porque el mega menú todavía está en revisión. El controlador
+`shared/components/navigation/navigation-system.js` conserva `disabled` como
+valor de respaldo cuando el atributo no está declarado.
 
-Para una recuperación temporal, se puede cambiar el atributo del elemento
-`body` a `data-menu-patch="enabled"`; cualquier activación debe probarse antes
-de publicarse.
+Para volver al mega menú en el home, se puede cambiar el atributo del elemento
+`body` a `data-menu-patch="disabled"` o eliminarlo; cualquier cambio debe
+probarse antes de publicarse.
 
 ## Regla de mantenimiento
 
