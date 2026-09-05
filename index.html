@@ -371,6 +371,12 @@
         pointer-events: none;
       }
 
+      body[data-menu-patch="enabled"] .navbar .menu-links,
+      body[data-menu-patch="enabled"] .mega-menus-container,
+      body[data-menu-patch="enabled"] .mega-topbar {
+        display: none !important;
+      }
+
       body:not([data-menu-patch="enabled"]) .floating-right-menu {
         display: none;
       }
