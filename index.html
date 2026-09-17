@@ -6,6 +6,14 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Klef Agency - Agencia Consultora de Marketing en Los Cabos</title>
+    <script>
+      (function () {
+        if (new URLSearchParams(window.location.search).get("search_by") === "author") {
+          document.documentElement.classList.add("author-project-search-mode");
+        }
+      })();
+    </script>
+    <link rel="stylesheet" href="./shared/components/search/author-project-search.css?v=2" />
     <!-- Favicons -->
     <link
       rel="icon"
@@ -3388,7 +3396,7 @@
 
       /**/
       main section {
-        margin: 5rem 0;
+        margin: 0 0 5rem;
       }
 
       @media (min-width: 768px) {
@@ -4394,6 +4402,16 @@
 
     <!-- Main Content -->
     <main>
+      <section id="author-project-search" class="author-project-search" hidden aria-live="polite" aria-busy="true">
+        <div class="author-project-search__container" id="author-project-search-content">
+          <div class="author-project-search__loading" role="status">
+            <span class="author-project-search__loading-cover"></span>
+            <span class="author-project-search__loading-line"></span>
+            <span class="author-project-search__loading-line author-project-search__loading-line--short"></span>
+            <span class="sr-only">Cargando proyectos…</span>
+          </div>
+        </div>
+      </section>
       <section class="hero-section hero-container">
         <div class="masonry-block">
           <!-- Half Left: Hero Content -->
@@ -6499,5 +6517,6 @@
     <script src="./shared/components/search/query-parser.js"></script>
     <script src="./shared/components/search/search-system.js?v=6"></script>
     <script src="./shared/components/search/search-tags-filter.js"></script>
+    <script src="./shared/components/search/author-project-search.js?v=3"></script>
   </body>
 </html>
