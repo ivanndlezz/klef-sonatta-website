@@ -28,9 +28,25 @@
 .klef-contact-breadcrumbs a:hover { text-decoration: underline; }
 
 .klef-contact-hero {
-  max-width: 850px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(340px, .92fr);
+  align-items: center;
+  gap: clamp(2.5rem, 6vw, 5rem);
   margin-bottom: 5rem;
 }
+
+.klef-contact-hero-copy { min-width: 0; }
+.klef-contact-hero-visual {
+  display: flex;
+  min-height: 390px;
+  align-items: flex-end;
+  overflow: hidden;
+  margin: 0;
+  border: 1px solid var(--contact-line);
+  border-radius: 2rem;
+  background: radial-gradient(circle at 75% 18%, rgb(0 102 204 / 11%), transparent 35%), var(--contact-soft);
+}
+.klef-contact-hero-visual img { display: block; width: 112%; max-width: none; height: auto; margin-left: -6%; }
 
 .klef-contact-kicker {
   margin: 0 0 1rem;
@@ -186,8 +202,71 @@
 .klef-contact-aside a { text-decoration: none; font-weight: 650; }
 .klef-contact-aside a:hover { text-decoration: underline; }
 
+.klef-contact-location {
+  display: grid;
+  grid-template-columns: minmax(250px, .72fr) minmax(0, 1.28fr);
+  gap: clamp(2rem, 6vw, 5rem);
+  align-items: center;
+  margin-top: 5rem;
+  padding-top: 5rem;
+  border-top: 1px solid var(--contact-line);
+}
+
+.klef-contact-location-copy > p:not(.klef-contact-kicker) {
+  max-width: 460px;
+  margin: 0;
+  color: var(--contact-muted);
+}
+
+.klef-contact-map-link { margin-top: 1.5rem; border-radius: 14px; }
+.klef-contact-map-link svg { width: 18px; height: 18px; margin-left: .5rem; fill: none; stroke: currentColor; stroke-linecap: round; stroke-linejoin: round; stroke-width: 1.8; }
+
+.klef-contact-map {
+  position: relative;
+  min-height: 420px;
+  overflow: hidden;
+  border: 1px solid var(--contact-line);
+  border-radius: 1.5rem;
+  background: #eef1f4;
+  isolation: isolate;
+}
+
+.klef-contact-map-placeholder {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: .2rem;
+  padding: 1.5rem;
+  background-color: #eef1f4;
+  background-image:
+    linear-gradient(to right, rgb(23 25 29 / 8%) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(23 25 29 / 8%) 1px, transparent 1px),
+    linear-gradient(to right, rgb(23 25 29 / 12%) 2px, transparent 2px),
+    linear-gradient(to bottom, rgb(23 25 29 / 12%) 2px, transparent 2px);
+  background-size: 24px 24px, 24px 24px, 120px 120px, 120px 120px;
+  color: var(--contact-ink);
+  transition: opacity .45s ease, visibility .45s ease;
+}
+
+.klef-contact-map-placeholder strong { font-size: 1.05rem; }
+.klef-contact-map-placeholder > span:last-child { color: var(--contact-muted); font-size: .88rem; }
+.klef-contact-map-pin { width: 42px; height: 42px; margin-bottom: .75rem; border: 12px solid var(--contact-ink); border-radius: 50% 50% 50% 0; background: #fff; box-shadow: 0 8px 24px rgb(15 23 42 / 16%); transform: rotate(-45deg); }
+.klef-contact-map[data-state="loading"] .klef-contact-map-placeholder { animation: klef-map-pulse 1.4s ease-in-out infinite; }
+.klef-contact-map[data-state="loaded"] .klef-contact-map-placeholder { visibility: hidden; opacity: 0; }
+.klef-contact-map[data-state="error"] .klef-contact-map-placeholder { background-color: #f3f4f6; }
+.klef-contact-map iframe { display: block; width: 100%; height: 420px; border: 0; opacity: 0; transition: opacity .55s ease; }
+.klef-contact-map[data-state="loaded"] iframe { opacity: 1; }
+
+@keyframes klef-map-pulse {
+  50% { opacity: .68; }
+}
+
 .klef-contact-cta {
-  margin-top: 2.5rem;
+  margin-top: 5rem;
   padding: clamp(1.5rem, 4vw, 3rem);
   border-radius: 1.5rem;
   background: var(--contact-ink);
@@ -200,8 +279,18 @@
 
 @media (max-width: 780px) {
   .klef-contact-page { padding-top: 7rem; }
-  .klef-contact-hero { margin-bottom: 3rem; }
+  .klef-contact-hero { grid-template-columns: 1fr; gap: 2rem; margin-bottom: 3rem; }
+  .klef-contact-hero-visual { min-height: 0; border-radius: 1.5rem; }
+  .klef-contact-hero-visual img { width: 108%; margin-left: -4%; }
   .klef-contact-layout { grid-template-columns: 1fr; }
   .klef-contact-options { grid-template-columns: 1fr; }
   .klef-contact-aside { position: static; }
+  .klef-contact-location { grid-template-columns: 1fr; gap: 2rem; margin-top: 4rem; padding-top: 4rem; }
+  .klef-contact-map, .klef-contact-map iframe { min-height: 320px; height: 320px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .klef-contact-map-placeholder { transition: none; }
+  .klef-contact-map[data-state="loading"] .klef-contact-map-placeholder { animation: none; }
+  .klef-contact-map iframe { transition: none; }
 }

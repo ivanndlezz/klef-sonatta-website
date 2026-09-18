@@ -20,11 +20,12 @@
         "about": {
           "@type": "Organization",
           "name": "Klef Agency",
-          "url": "https://klef.agency/"
+          "url": "https://klef.agency/",
+          "hasMap": "https://www.google.com/maps/search/?api=1&query=Klef%20Agency&query_place_id=ChIJFyfvC6dLr4YRYePvn13n-Ck"
         }
       }
     </script>
-    <link rel="stylesheet" href="../assets/styles/contact-page.css" />
+    <link rel="stylesheet" href="../assets/styles/contact-page.css?v=3" />
   </head>
   <body>
     <article class="klef-contact-page" data-shell-content aria-labelledby="contact-title">
@@ -35,16 +36,21 @@
       </nav>
 
       <header class="klef-contact-hero">
-        <p class="klef-contact-kicker">Contacto · Los Cabos</p>
-        <h1 id="contact-title">Hablemos de lo que tu negocio necesita.</h1>
-        <p class="klef-contact-lede">
-          Cuéntanos qué estás construyendo, qué no está funcionando o qué debería
-          hacer mejor tu próxima experiencia digital.
-        </p>
-        <div class="klef-contact-actions">
-          <a class="klef-contact-button" href="https://wa.me/526245161037?text=Hola%20Klef%2C%20quiero%20hablar%20sobre%20mi%20proyecto%20en%20Los%20Cabos." target="_blank" rel="noopener">Escribir por WhatsApp</a>
-          <a class="klef-contact-button secondary" href="mailto:info@klef.agency">Enviar un correo</a>
+        <div class="klef-contact-hero-copy">
+          <p class="klef-contact-kicker">Contacto · Los Cabos</p>
+          <h1 id="contact-title">Hablemos de lo que tu negocio necesita.</h1>
+          <p class="klef-contact-lede">
+            Cuéntanos qué estás construyendo, qué no está funcionando o qué debería
+            hacer mejor tu próxima experiencia digital.
+          </p>
+          <div class="klef-contact-actions">
+            <a class="klef-contact-button" href="https://wa.me/526245161037?text=Hola%20Klef%2C%20quiero%20hablar%20sobre%20mi%20proyecto%20en%20Los%20Cabos." target="_blank" rel="noopener">Escribir por WhatsApp</a>
+            <a class="klef-contact-button secondary" href="mailto:info@klef.agency">Enviar un correo</a>
+          </div>
         </div>
+        <figure class="klef-contact-hero-visual" aria-label="Una conversación de trabajo cercana y colaborativa">
+          <img src="../assets/images/contact/klef-conversation.webp" alt="Dos personas conversando y tomando notas durante una sesión de trabajo" width="1400" height="993" decoding="async" fetchpriority="high" />
+        </figure>
       </header>
 
       <div class="klef-contact-layout">
@@ -84,12 +90,6 @@
             </ul>
           </section>
 
-          <div class="klef-contact-cta">
-            <p class="klef-contact-kicker">Estrategia antes que ruido</p>
-            <h2>Hagamos visible lo que importa.</h2>
-            <p>Trabajamos con negocios y marcas de Cabo San Lucas, San José del Cabo y Baja California Sur.</p>
-            <a class="klef-contact-button" href="https://wa.me/526245161037?text=Hola%20Klef%2C%20quiero%20agendar%20una%20primera%20conversaci%C3%B3n." target="_blank" rel="noopener">Iniciar conversación</a>
-          </div>
         </main>
 
         <aside class="klef-contact-aside">
@@ -102,7 +102,45 @@
           </ul>
         </aside>
       </div>
+
+      <section class="klef-contact-location" aria-labelledby="klef-location-title">
+        <div class="klef-contact-location-copy">
+          <p class="klef-contact-kicker">Ubicación · Los Cabos</p>
+          <h2 id="klef-location-title">Visítanos en Klef.</h2>
+          <p>Encuéntranos en Cabo San Lucas, Baja California Sur. Abre nuestra ficha para consultar la ruta desde tu ubicación.</p>
+          <a class="klef-contact-button secondary klef-contact-map-link" href="https://www.google.com/maps/search/?api=1&amp;query=Klef%20Agency&amp;query_place_id=ChIJFyfvC6dLr4YRYePvn13n-Ck" target="_blank" rel="noopener noreferrer">
+            <span>Cómo llegar</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10h11M11 6l4 4-4 4"/></svg>
+          </a>
+        </div>
+
+        <div class="klef-contact-map" data-contact-map data-state="idle">
+          <div class="klef-contact-map-placeholder" data-map-placeholder role="status" aria-live="polite">
+            <span class="klef-contact-map-pin" aria-hidden="true"></span>
+            <strong>Klef Agency</strong>
+            <span data-map-status>El mapa cargará al acercarte.</span>
+          </div>
+          <iframe
+            title="Mapa de ubicación de Klef Agency"
+            width="100%"
+            height="420"
+            loading="lazy"
+            allowfullscreen
+            referrerpolicy="strict-origin-when-cross-origin"
+            data-src="https://www.google.com/maps?q=Klef%20Agency%2C%20Cabo%20San%20Lucas%2C%20BCS&amp;output=embed">
+          </iframe>
+          <noscript><a href="https://www.google.com/maps/search/?api=1&amp;query=Klef%20Agency&amp;query_place_id=ChIJFyfvC6dLr4YRYePvn13n-Ck">Abrir Klef Agency en Google Maps</a></noscript>
+        </div>
+      </section>
+
+      <div class="klef-contact-cta">
+        <p class="klef-contact-kicker">Estrategia antes que ruido</p>
+        <h2>Hagamos visible lo que importa.</h2>
+        <p>Trabajamos con negocios y marcas de Cabo San Lucas, San José del Cabo y Baja California Sur.</p>
+        <a class="klef-contact-button" href="https://wa.me/526245161037?text=Hola%20Klef%2C%20quiero%20agendar%20una%20primera%20conversaci%C3%B3n." target="_blank" rel="noopener">Iniciar conversación</a>
+      </div>
     </article>
     <script src="../shared/components/load-basics/load-basics.js?v=16"></script>
+    <script src="../shared/components/contact/contact-map.js?v=1"></script>
   </body>
 </html>
