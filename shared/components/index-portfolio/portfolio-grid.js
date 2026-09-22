@@ -204,7 +204,7 @@
     const label = disciplineLabels[card.discipline] || "Klef";
     const logoSrc = card.logo || card.cover_image;
     const displayTitle = truncateToWords(card.title[0], 2);
-    const projectHref = `./${encodeURIComponent(card.slug)}/`;
+    const projectHref = `/portfolio/${encodeURIComponent(card.slug)}/`;
     return `
       <article class="card dark" data-id="${card.id}" data-discipline="${card.discipline}" data-slug="${card.slug}">
         <span class="category-tag tag-${tagClass}">${label}</span>

@@ -34,7 +34,12 @@ query GetPortfolioCards {
       featuredImage { node { sourceUrl altText mediaDetails { width height } } }
       categories { nodes { name slug } }
       tags { nodes { name slug } }
-      author { node { name } }
+      author { node { id name firstName lastName uri url avatar { url } } }
+      coAuthors {
+        __typename
+        ... on User { id name firstName lastName uri url userId rolesList avatar { url } }
+        ... on GuestAuthor { id name firstName lastName avatar { url } description website }
+      }
     }
   }
 }
@@ -242,6 +247,8 @@ GRAPHQL;
             'category' => array_values(array_map(static fn (array $category): string => (string) ($category['name'] ?? ''), $node['categories']['nodes'] ?? [])),
             'content_type' => 'Portfolio',
             'title' => self::parseTitle((string) ($node['title'] ?? ''), $discipline),
+            'author' => $node['author']['node'] ?? null,
+            'coAuthors' => is_array($node['coAuthors'] ?? null) ? $node['coAuthors'] : [],
             'client_name' => 'Klef Agency',
             'client_industry' => 'Agencia de Marketing Digital',
             'extract' => self::plainText((string) ($node['excerpt'] ?? $node['title'] ?? '')),

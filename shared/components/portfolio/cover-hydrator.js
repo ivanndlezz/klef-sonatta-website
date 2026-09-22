@@ -68,6 +68,24 @@ function renderCoverTeamSection(data) {
 
   if (team.length === 0) return;
 
+  const escapeTeamMarkup = (value) =>
+    String(value || "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    })[char]);
+  const getTeamMemberSlug = (member) => {
+    const uriSlug = String(member.uri || "").replace(/\/+$/, "").split("/").pop();
+    const name = member.name || [member.firstName, member.lastName].filter(Boolean).join(" ");
+    return uriSlug || name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  };
+  const getTeamMemberName = (member) =>
+    member.name || [member.firstName, member.lastName].filter(Boolean).join(" ");
+  const getTeamMemberHref = (member) =>
+    `/?search_by=author&member=${encodeURIComponent(getTeamMemberSlug(member))}`;
+
   // Find or create team section
   let teamSection = document.getElementById("equipo");
   if (!teamSection) {
@@ -82,20 +100,17 @@ function renderCoverTeamSection(data) {
 
   // Build team names
   const teamNames = team
-    .map((member) => {
-      const firstName = member.firstName || member.name.split(" ")[0];
-      const lastName =
-        member.lastName || member.name.split(" ").slice(1).join(" ");
-      return `${firstName} ${lastName}`.trim();
-    })
-    .join(" • ");
+    .map((member) =>
+      `<a class="team-member-link" href="${escapeTeamMarkup(getTeamMemberHref(member))}">${escapeTeamMarkup(getTeamMemberName(member))}</a>`,
+    )
+    .join(' <span class="team-name-separator" aria-hidden="true">•</span> ');
 
   // Build avatars HTML
   const avatarsHTML = team
     .map((member) => {
-      const name = member.name || `${member.firstName} ${member.lastName}`;
+      const name = getTeamMemberName(member);
       const avatarUrl = member.avatar?.url || "";
-      return `<img src="${avatarUrl}" alt="${name}" class="team-avatar">`;
+      return `<a class="team-avatar-link" href="${escapeTeamMarkup(getTeamMemberHref(member))}" aria-label="Ver proyectos de ${escapeTeamMarkup(name)}"><img src="${escapeTeamMarkup(avatarUrl)}" alt="${escapeTeamMarkup(name)}" class="team-avatar"></a>`;
     })
     .join("");
 

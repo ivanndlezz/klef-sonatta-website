@@ -608,6 +608,24 @@ function renderSidebar(data) {
  * Render team section
  */
 function renderSidebarTeamSection(team) {
+  const escapeTeamLinkMarkup = (value) =>
+    String(value || "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    })[char]);
+  const getTeamMemberSlug = (author) => {
+    const uriSlug = String(author.uri || "").replace(/\/+$/, "").split("/").pop();
+    const name = author.name || [author.firstName, author.lastName].filter(Boolean).join(" ");
+    return uriSlug || name.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  };
+  const getTeamMemberName = (author) =>
+    author.name || [author.firstName, author.lastName].filter(Boolean).join(" ");
+  const getTeamMemberHref = (author) =>
+    `/?search_by=author&member=${encodeURIComponent(getTeamMemberSlug(author))}`;
+
   // Update team avatars
   const teamAvatars = document.querySelectorAll(".team-avatars");
   teamAvatars.forEach((avatarsEl) => {
@@ -620,7 +638,8 @@ function renderSidebarTeamSection(team) {
           author.avatar?.url ||
           `data:image/svg+xml,%3Csvg width='32' height='32' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='16' cy='16' r='16' fill='%23${Math.floor(Math.random() * 16777215).toString(16)}'/%3E%3C/svg%3E`;
 
-        return `<img src="${avatarUrl}" alt="${author.name}" class="team-avatar" />`;
+        const name = getTeamMemberName(author);
+        return `<a class="team-avatar-link" href="${escapeTeamLinkMarkup(getTeamMemberHref(author))}" aria-label="Ver proyectos de ${escapeTeamLinkMarkup(name)}"><img src="${escapeTeamLinkMarkup(avatarUrl)}" alt="${escapeTeamLinkMarkup(name)}" class="team-avatar" /></a>`;
       })
       .join("");
   });
@@ -628,16 +647,13 @@ function renderSidebarTeamSection(team) {
   // Update team names
   const teamNames = document.querySelectorAll(".team-names");
   const namesText = team
-    .map((author) => {
-      if (author.firstName && author.lastName) {
-        return `${author.firstName} ${author.lastName}`;
-      }
-      return author.name;
-    })
-    .join(" • ");
+    .map((author) =>
+      `<a class="team-member-link" href="${escapeTeamLinkMarkup(getTeamMemberHref(author))}">${escapeTeamLinkMarkup(getTeamMemberName(author))}</a>`,
+    )
+    .join(' <span class="team-name-separator" aria-hidden="true">•</span> ');
 
   teamNames.forEach((nameEl) => {
-    nameEl.textContent = namesText;
+    nameEl.innerHTML = namesText;
     nameEl.classList.remove("skeleton", "skeleton-text", "medium");
 
     // Update header if finding it purely by proximity

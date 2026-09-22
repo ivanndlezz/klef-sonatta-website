@@ -544,6 +544,18 @@ img.portfolio-img.loaded {
   display: flex;
 }
 
+.team-avatar-link {
+  display: inline-flex;
+  flex: 0 0 auto;
+  border-radius: 50%;
+}
+
+.team-avatar-link:focus-visible,
+.team-member-link:focus-visible {
+  outline: 2px solid var(--klef-blue);
+  outline-offset: 3px;
+}
+
 .team-avatar {
   width: 50px;
   height: 50px;
@@ -552,7 +564,7 @@ img.portfolio-img.loaded {
   box-shadow: 0 0 20px rgba(146, 173, 177, 0.3);
 }
 
-.team-avatars .team-avatar:not(:first-child) {
+.team-avatars .team-avatar-link:not(:first-child) .team-avatar {
   margin-left: -10px;
 }
 
@@ -560,6 +572,22 @@ img.portfolio-img.loaded {
   font-size: 16px;
   color: #333;
   font-weight: 500;
+}
+
+.team-member-link {
+  color: inherit;
+  text-decoration: none;
+  text-underline-offset: 3px;
+}
+
+.team-member-link:hover {
+  color: var(--klef-blue);
+  text-decoration: underline;
+}
+
+.team-name-separator {
+  margin-inline: 0.2em;
+  color: #8a8d91;
 }
 
 /* ============================================
