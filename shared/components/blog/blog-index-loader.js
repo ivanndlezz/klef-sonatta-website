@@ -110,7 +110,8 @@
           const date = formatDate(item.date || item.modified);
           const image = safeImageUrl(item.image);
           const author = authorFor(item);
-          return `<a class="klef-blog-card" data-author-slug="${escapeHtml(author.slug)}" href="/blog/${escapeHtml(item.slug)}/">
+          const cardClass = image ? "klef-blog-card" : "klef-blog-card klef-blog-card--no-media";
+          return `<a class="${cardClass}" data-author-slug="${escapeHtml(author.slug)}" href="/blog/${escapeHtml(item.slug)}/">
             ${image ? `<div class="klef-blog-card-media"><img src="${escapeHtml(image)}" alt="${escapeHtml(item.image_alt || item.title)}" loading="lazy"></div>` : ""}
             <div class="klef-blog-card-body"><div class="klef-blog-card-top"><span class="klef-blog-card-category">${escapeHtml(category)}</span><time class="klef-blog-card-date" datetime="${escapeHtml(item.date || item.modified || "")}">${escapeHtml(date)}</time></div>
             <h2>${escapeHtml(item.title)}</h2>
