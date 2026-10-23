@@ -12,6 +12,13 @@
   const featuredTarget = document.querySelector("[data-blog-featured]");
   if (!grid || !filters || !search) return;
 
+  const fallbackAuthor = {
+    slug: "ivangonzalez",
+    name: "Iván González",
+    avatar: "/assets/images/portfolio/team/ivan-gonzalez-profile-photo-pic.jpg",
+    url: "https://ivanklef.substack.com/",
+  };
+
   const escapeHtml = (value) => String(value ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -24,6 +31,21 @@
     const date = new Date(value);
     if (Number.isNaN(date.getTime())) return "";
     return new Intl.DateTimeFormat("es-MX", { year: "numeric", month: "short", day: "numeric" }).format(date);
+  };
+
+  const authorFor = (item) => {
+    const author = item && item.author && typeof item.author === "object" ? item.author : {};
+    return {
+      slug: item.authorSlug || fallbackAuthor.slug,
+      name: author.name || item.authorName || fallbackAuthor.name,
+      avatar: author.avatar || item.authorAvatar || fallbackAuthor.avatar,
+      url: author.url || item.authorUrl || fallbackAuthor.url,
+    };
+  };
+
+  const renderAuthor = (item) => {
+    const author = authorFor(item);
+    return `<span class="klef-blog-author"><img class="klef-blog-author-avatar" data-author-avatar src="${escapeHtml(author.avatar)}" alt="Foto de ${escapeHtml(author.name)}" width="40" height="40" loading="lazy"><span class="klef-blog-author-copy"><span class="klef-blog-author-label">Escrito por</span><span class="klef-blog-author-name" data-author-name>${escapeHtml(author.name)}</span></span></span>`;
   };
 
   async function loadBlog() {
@@ -62,10 +84,12 @@
         const category = (item.categories || ["Klef"])[0];
         const date = formatDate(item.date || item.modified);
         const image = safeImageUrl(item.image);
+        const author = authorFor(item);
         featuredTarget.href = `/blog/${escapeHtml(item.slug)}/`;
+        featuredTarget.setAttribute("data-author-slug", author.slug);
         featuredTarget.innerHTML = `
           <div class="klef-blog-featured-media">${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(item.image_alt || item.title)}" loading="eager">` : ""}</div>
-          <div class="klef-blog-featured-content"><div class="klef-blog-card-top"><span class="klef-blog-card-category">${escapeHtml(category)}</span><time class="klef-blog-card-date" datetime="${escapeHtml(item.date || item.modified || "")}">${escapeHtml(date)}</time></div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.excerpt)}</p><span class="klef-blog-featured-cta">Leer la nota <span aria-hidden="true">↗</span></span></div>`;
+          <div class="klef-blog-featured-content"><div class="klef-blog-card-top"><span class="klef-blog-card-category">${escapeHtml(category)}</span><time class="klef-blog-card-date" datetime="${escapeHtml(item.date || item.modified || "")}">${escapeHtml(date)}</time></div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.excerpt)}</p>${renderAuthor(item)}<span class="klef-blog-featured-cta">Leer la nota <span aria-hidden="true">↗</span></span></div>`;
       }
 
       renderFeatured(featuredItem);
@@ -85,14 +109,16 @@
           const category = (item.categories || ["Klef"])[0];
           const date = formatDate(item.date || item.modified);
           const image = safeImageUrl(item.image);
-          return `<a class="klef-blog-card" href="/blog/${escapeHtml(item.slug)}/">
+          const author = authorFor(item);
+          return `<a class="klef-blog-card" data-author-slug="${escapeHtml(author.slug)}" href="/blog/${escapeHtml(item.slug)}/">
             ${image ? `<div class="klef-blog-card-media"><img src="${escapeHtml(image)}" alt="${escapeHtml(item.image_alt || item.title)}" loading="lazy"></div>` : ""}
             <div class="klef-blog-card-body"><div class="klef-blog-card-top"><span class="klef-blog-card-category">${escapeHtml(category)}</span><time class="klef-blog-card-date" datetime="${escapeHtml(item.date || item.modified || "")}">${escapeHtml(date)}</time></div>
             <h2>${escapeHtml(item.title)}</h2>
-            <p>${escapeHtml(item.excerpt)}</p>
+            <p>${escapeHtml(item.excerpt)}</p>${renderAuthor(item)}
             <span class="klef-blog-card-arrow" aria-hidden="true">↗</span></div>
           </a>`;
         }).join("");
+        document.dispatchEvent(new CustomEvent("klef:blog-index-rendered"));
       }
 
       filters.addEventListener("click", (event) => {

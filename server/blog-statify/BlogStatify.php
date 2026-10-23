@@ -210,7 +210,9 @@ GRAPHQL;
         $authorSlug = self::authorSlug($authorNode);
         $authorUrl = (string) ($authorNode['url'] ?? '');
         $authorMeta = $authorSlug !== '' ? ' data-author-slug="' . self::html($authorSlug) . '"' : '';
-        $authorLink = '<a data-author-link href="' . self::html($authorUrl !== '' ? $authorUrl : self::SITE_URL . '/') . '" rel="author noopener"><span data-author-name>' . self::html($author) . '</span></a>';
+        $authorAvatar = (string) ($authorNode['avatar']['url'] ?? '');
+        if ($authorAvatar === '' && $authorSlug === 'ivangonzalez') $authorAvatar = '/assets/images/portfolio/team/ivan-gonzalez-profile-photo-pic.jpg';
+        $authorLink = '<a data-author-link href="' . self::html($authorUrl !== '' ? $authorUrl : self::SITE_URL . '/') . '" rel="author noopener"><img class="klef-blog-author-avatar" data-author-avatar src="' . self::html($authorAvatar) . '" alt="Foto de ' . self::html($author) . '" width="40" height="40" loading="lazy"><span data-author-name>' . self::html($author) . '</span></a>';
         $published = (string) ($post['date'] ?? '');
         $modified = (string) ($post['modified'] ?? $published);
         $content = self::sanitizeHtml((string) ($post['content'] ?? '<p>' . self::html($description) . '</p>'));
@@ -258,7 +260,9 @@ GRAPHQL;
             $featuredCategory = (string) (($featuredItem['categories'] ?? [])[0] ?? 'Klef');
             $featuredDate = self::formatDate((string) ($featuredItem['date'] ?? $featuredItem['modified'] ?? ''));
             $featuredImage = (string) ($featuredItem['image'] ?? '');
-            $featuredFallback = '<a class="klef-blog-featured" data-blog-featured data-statify-static href="/blog/' . self::html((string) $featuredItem['slug']) . '/"><div class="klef-blog-featured-media">' . ($featuredImage !== '' ? '<img src="' . self::html($featuredImage) . '" alt="' . self::html((string) ($featuredItem['image_alt'] ?? $featuredItem['title'])) . '" loading="eager">' : '') . '</div><div class="klef-blog-featured-content"><div class="klef-blog-card-top"><span class="klef-blog-card-category">' . self::html($featuredCategory) . '</span><time class="klef-blog-card-date" datetime="' . self::html((string) ($featuredItem['date'] ?? '')) . '">' . self::html($featuredDate) . '</time></div><h3>' . self::html((string) $featuredItem['title']) . '</h3><p>' . self::html((string) $featuredItem['excerpt']) . '</p><span class="klef-blog-featured-cta">Leer la nota <span aria-hidden="true">↗</span></span></div></a>';
+            $featuredAuthor = self::renderAuthorMeta($featuredItem);
+            $featuredAuthorSlug = self::html((string) ($featuredItem['authorSlug'] ?? 'ivangonzalez'));
+            $featuredFallback = '<a class="klef-blog-featured" data-blog-featured data-author-slug="' . $featuredAuthorSlug . '" data-statify-static href="/blog/' . self::html((string) $featuredItem['slug']) . '/"><div class="klef-blog-featured-media">' . ($featuredImage !== '' ? '<img src="' . self::html($featuredImage) . '" alt="' . self::html((string) ($featuredItem['image_alt'] ?? $featuredItem['title'])) . '" loading="eager">' : '') . '</div><div class="klef-blog-featured-content"><div class="klef-blog-card-top"><span class="klef-blog-card-category">' . self::html($featuredCategory) . '</span><time class="klef-blog-card-date" datetime="' . self::html((string) ($featuredItem['date'] ?? '')) . '">' . self::html($featuredDate) . '</time></div><h3>' . self::html((string) $featuredItem['title']) . '</h3><p>' . self::html((string) $featuredItem['excerpt']) . '</p>' . $featuredAuthor . '<span class="klef-blog-featured-cta">Leer la nota <span aria-hidden="true">↗</span></span></div></a>';
         }
         $fallback = '';
         if ($items === []) {
@@ -269,7 +273,8 @@ GRAPHQL;
                 $category = (string) (($item['categories'] ?? [])[0] ?? 'Klef');
                 $date = self::formatDate((string) ($item['date'] ?? $item['modified'] ?? ''));
                 $image = (string) ($item['image'] ?? '');
-                $fallback .= '<a class="klef-blog-card" data-statify-static href="/blog/' . self::html((string) $item['slug']) . '/">' . ($image !== '' ? '<div class="klef-blog-card-media"><img src="' . self::html($image) . '" alt="' . self::html((string) ($item['image_alt'] ?? $item['title'])) . '" loading="lazy"></div>' : '') . '<div class="klef-blog-card-body"><div class="klef-blog-card-top"><span class="klef-blog-card-category">' . self::html($category) . '</span><time class="klef-blog-card-date" datetime="' . self::html((string) ($item['date'] ?? '')) . '">' . self::html($date) . '</time></div><h2>' . self::html((string) $item['title']) . '</h2><p>' . self::html((string) $item['excerpt']) . '</p><span class="klef-blog-card-arrow" aria-hidden="true">↗</span></div></a>';
+                $authorSlug = self::html((string) ($item['authorSlug'] ?? 'ivangonzalez'));
+                $fallback .= '<a class="klef-blog-card" data-author-slug="' . $authorSlug . '" data-statify-static href="/blog/' . self::html((string) $item['slug']) . '/">' . ($image !== '' ? '<div class="klef-blog-card-media"><img src="' . self::html($image) . '" alt="' . self::html((string) ($item['image_alt'] ?? $item['title'])) . '" loading="lazy"></div>' : '') . '<div class="klef-blog-card-body"><div class="klef-blog-card-top"><span class="klef-blog-card-category">' . self::html($category) . '</span><time class="klef-blog-card-date" datetime="' . self::html((string) ($item['date'] ?? '')) . '">' . self::html($date) . '</time></div><h2>' . self::html((string) $item['title']) . '</h2><p>' . self::html((string) $item['excerpt']) . '</p>' . self::renderAuthorMeta($item) . '<span class="klef-blog-card-arrow" aria-hidden="true">↗</span></div></a>';
             }
         }
         $featuredPattern = '/<!-- STATIFY:FEATURED_START -->.*?<!-- STATIFY:FEATURED_END -->/s';
@@ -380,6 +385,19 @@ GRAPHQL;
             if (is_array($item) && !empty($item['featured'])) return $item;
         }
         return is_array($items[0] ?? null) ? $items[0] : null;
+    }
+
+    private static function renderAuthorMeta(array $item): string
+    {
+        $author = is_array($item['author'] ?? null) ? $item['author'] : [];
+        $slug = self::safeSlug((string) ($item['authorSlug'] ?? '')) !== ''
+            ? self::safeSlug((string) $item['authorSlug'])
+            : 'ivangonzalez';
+        $name = self::plainText((string) ($author['name'] ?? $item['authorName'] ?? 'Iván González'));
+        if ($name === '') $name = 'Iván González';
+        $avatar = (string) ($author['avatar'] ?? $item['authorAvatar'] ?? '');
+        if ($avatar === '' && $slug === 'ivangonzalez') $avatar = '/assets/images/portfolio/team/ivan-gonzalez-profile-photo-pic.jpg';
+        return '<span class="klef-blog-author"><img class="klef-blog-author-avatar" data-author-avatar src="' . self::html($avatar) . '" alt="Foto de ' . self::html($name) . '" width="40" height="40" loading="lazy"><span class="klef-blog-author-copy"><span class="klef-blog-author-label">Escrito por</span><span class="klef-blog-author-name" data-author-name>' . self::html($name) . '</span></span></span>';
     }
 
     private static function restJson(string $url): array

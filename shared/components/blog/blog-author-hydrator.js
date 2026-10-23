@@ -1,16 +1,25 @@
 (function () {
   "use strict";
 
-  var article = document.querySelector("[data-author-slug]");
-  if (!article) return;
+  var endpoint = "https://klef.newfacecards.com/graphql";
+  var pending = {};
 
-  var slug = String(article.getAttribute("data-author-slug") || "").trim();
-  if (!slug) return;
+  function getRoots() {
+    return Array.prototype.slice.call(document.querySelectorAll("[data-author-slug]"));
+  }
 
-  var endpoint = article.getAttribute("data-author-endpoint") || "https://klef.newfacecards.com/graphql";
-  var authorNameNodes = article.querySelectorAll("[data-author-name]");
-  var authorLinkNodes = article.querySelectorAll("[data-author-link]");
-  var authorAvatarNodes = article.querySelectorAll("[data-author-avatar]");
+  function getSlug(root) {
+    return String(root.getAttribute("data-author-slug") || "").trim();
+  }
+
+  function getNodes(slug, selector) {
+    var nodes = [];
+    getRoots().forEach(function (root) {
+      if (getSlug(root) !== slug) return;
+      Array.prototype.push.apply(nodes, Array.prototype.slice.call(root.querySelectorAll(selector)));
+    });
+    return nodes;
+  }
 
   var query = `query GetBlogAuthor($slug: ID!) {
     user(id: $slug, idType: SLUG) {
@@ -51,46 +60,62 @@
     });
   }
 
-  fetch(endpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", Accept: "application/json" },
-    body: JSON.stringify({ query: query, variables: { slug: slug } }),
-    cache: "no-store",
-  })
-    .then(function (response) {
-      if (!response.ok) throw new Error("GraphQL author request failed: " + response.status);
-      return response.json();
+  function hydrate(slug) {
+    if (!slug || pending[slug]) return;
+    pending[slug] = true;
+    fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ query: query, variables: { slug: slug } }),
+      cache: "no-store",
     })
-    .then(function (payload) {
-      if (payload.errors && payload.errors.length) throw new Error(payload.errors[0].message || "GraphQL author error");
-      var author = payload.data && payload.data.user;
-      if (!author) return;
+      .then(function (response) {
+        if (!response.ok) throw new Error("GraphQL author request failed: " + response.status);
+        return response.json();
+      })
+      .then(function (payload) {
+        if (payload.errors && payload.errors.length) throw new Error(payload.errors[0].message || "GraphQL author error");
+        var author = payload.data && payload.data.user;
+        if (!author) return;
 
-      var name = getAuthorName(author);
-      var profileUrl = safeUrl(author.url || author.uri);
-      var avatarUrl = safeUrl(author.avatar && author.avatar.url);
-
-      authorNameNodes.forEach(function (node) { node.textContent = name; });
-      authorLinkNodes.forEach(function (node) {
-        if (profileUrl) {
-          node.href = profileUrl;
+        var name = getAuthorName(author);
+        var profileUrl = safeUrl(author.url || author.uri);
+        var avatarUrl = safeUrl(author.avatar && author.avatar.url);
+        getNodes(slug, "[data-author-name]").forEach(function (node) { node.textContent = name; });
+        getNodes(slug, "[data-author-link]").forEach(function (node) {
+          if (profileUrl) {
+            node.href = profileUrl;
+            node.hidden = false;
+          }
+          node.setAttribute("aria-label", "Ver el perfil de " + name);
+        });
+        getNodes(slug, "[data-author-avatar]").forEach(function (node) {
+          if (!avatarUrl) return;
+          node.src = avatarUrl;
+          node.alt = "Foto de " + name;
           node.hidden = false;
-        }
-        node.setAttribute("aria-label", "Ver el perfil de " + name);
-      });
-      authorAvatarNodes.forEach(function (node) {
-        if (!avatarUrl) return;
-        node.src = avatarUrl;
-        node.alt = "Foto de " + name;
-        node.hidden = false;
-      });
+        });
 
-      updateStructuredData(name, profileUrl);
+        updateStructuredData(name, profileUrl);
+        getRoots().filter(function (root) { return getSlug(root) === slug; }).forEach(function (root) {
+          root.setAttribute("data-author-resolved", "true");
+          root.dispatchEvent(new CustomEvent("klef:author-resolved", { detail: author }));
+        });
+      })
+      .catch(function (error) {
+        console.warn("[BlogAuthorHydrator] No se pudo resolver el autor desde WordPress.", error);
+      });
+  }
 
-      article.setAttribute("data-author-resolved", "true");
-      article.dispatchEvent(new CustomEvent("klef:author-resolved", { detail: author }));
-    })
-    .catch(function (error) {
-      console.warn("[BlogAuthorHydrator] No se pudo resolver el autor desde WordPress.", error);
+  function collect() {
+    var slugs = [];
+    getRoots().forEach(function (root) {
+      var slug = getSlug(root);
+      if (slug && slugs.indexOf(slug) === -1) slugs.push(slug);
     });
+    slugs.forEach(hydrate);
+  }
+
+  document.addEventListener("klef:blog-index-rendered", collect);
+  collect();
 })();
