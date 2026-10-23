@@ -259,7 +259,8 @@
 }
 
 .klef-blog-card:hover { background: var(--blog-surface); }
-.klef-blog-card--no-media .klef-blog-card-body { grid-column: 1 / -1; padding-left: 0; }
+.klef-blog-card--no-media .klef-blog-card-body,
+.klef-blog-card > .klef-blog-card-body:first-child { grid-column: 1 / -1; padding-left: 0; }
 
 .klef-blog-card-media { align-self: center; aspect-ratio: 16 / 10; margin: 1rem 0; overflow: hidden; border-radius: .75rem; background: var(--blog-surface); }
 
