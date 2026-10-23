@@ -9,6 +9,7 @@
   const grid = document.getElementById("blog-grid");
   const filters = document.getElementById("blog-filters");
   const search = document.getElementById("blog-search");
+  const featuredTarget = document.querySelector("[data-blog-featured]");
   if (!grid || !filters || !search) return;
 
   const escapeHtml = (value) => String(value ?? "")
@@ -32,6 +33,8 @@
       const payload = await response.json();
       const items = Array.isArray(payload.items) ? payload.items : [];
       if (!items.length) return;
+      const featuredItem = items.find((item) => item.featured) || items[0];
+      const gridItems = items.filter((item) => item.slug !== featuredItem.slug);
 
       const categories = [...new Set(items.flatMap((item) => Array.isArray(item.categories) ? item.categories : []))]
         .filter(Boolean)
@@ -43,13 +46,35 @@
         ...categories.map((category) => `<button class="klef-blog-filter" type="button" data-category="${escapeHtml(category)}" data-state="idle">${escapeHtml(category)}</button>`),
       ].join("");
 
+      const safeImageUrl = (value) => {
+        const image = String(value ?? "").trim();
+        return /^(https?:\/\/|\/)/i.test(image) ? image : "";
+      };
+
+      function matches(item, term, category) {
+        const categoryMatch = category === "all" || (item.categories || []).includes(category);
+        const searchable = [item.title, item.excerpt, ...(item.categories || []), ...(item.tags || [])].join(" ").toLocaleLowerCase("es");
+        return categoryMatch && (!term || searchable.includes(term));
+      }
+
+      function renderFeatured(item) {
+        if (!featuredTarget || !item) return;
+        const category = (item.categories || ["Klef"])[0];
+        const date = formatDate(item.date || item.modified);
+        const image = safeImageUrl(item.image);
+        featuredTarget.href = `/blog/${escapeHtml(item.slug)}/`;
+        featuredTarget.innerHTML = `
+          <div class="klef-blog-featured-media">${image ? `<img src="${escapeHtml(image)}" alt="${escapeHtml(item.image_alt || item.title)}" loading="eager">` : ""}</div>
+          <div class="klef-blog-featured-content"><div class="klef-blog-card-top"><span class="klef-blog-card-category">${escapeHtml(category)}</span><time class="klef-blog-card-date" datetime="${escapeHtml(item.date || item.modified || "")}">${escapeHtml(date)}</time></div><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.excerpt)}</p><span class="klef-blog-featured-cta">Leer la nota <span aria-hidden="true">↗</span></span></div>`;
+      }
+
+      renderFeatured(featuredItem);
+
       function render() {
         const term = search.value.trim().toLocaleLowerCase("es");
-        const visible = items.filter((item) => {
-          const categoryMatch = activeCategory === "all" || (item.categories || []).includes(activeCategory);
-          const searchable = [item.title, item.excerpt, ...(item.categories || []), ...(item.tags || [])].join(" ").toLocaleLowerCase("es");
-          return categoryMatch && (!term || searchable.includes(term));
-        });
+        const featuredVisible = matches(featuredItem, term, activeCategory);
+        if (featuredTarget) featuredTarget.hidden = !featuredVisible;
+        const visible = gridItems.filter((item) => matches(item, term, activeCategory));
 
         if (!visible.length) {
           grid.innerHTML = '<div class="klef-blog-empty">No encontramos artículos con esos criterios.</div>';
@@ -59,11 +84,13 @@
         grid.innerHTML = visible.map((item) => {
           const category = (item.categories || ["Klef"])[0];
           const date = formatDate(item.date || item.modified);
+          const image = safeImageUrl(item.image);
           return `<a class="klef-blog-card" href="/blog/${escapeHtml(item.slug)}/">
-            <div class="klef-blog-card-top"><span class="klef-blog-card-category">${escapeHtml(category)}</span><time class="klef-blog-card-date" datetime="${escapeHtml(item.date || item.modified || "")}">${escapeHtml(date)}</time></div>
+            ${image ? `<div class="klef-blog-card-media"><img src="${escapeHtml(image)}" alt="${escapeHtml(item.image_alt || item.title)}" loading="lazy"></div>` : ""}
+            <div class="klef-blog-card-body"><div class="klef-blog-card-top"><span class="klef-blog-card-category">${escapeHtml(category)}</span><time class="klef-blog-card-date" datetime="${escapeHtml(item.date || item.modified || "")}">${escapeHtml(date)}</time></div>
             <h2>${escapeHtml(item.title)}</h2>
             <p>${escapeHtml(item.excerpt)}</p>
-            <span class="klef-blog-card-arrow" aria-hidden="true">↗</span>
+            <span class="klef-blog-card-arrow" aria-hidden="true">↗</span></div>
           </a>`;
         }).join("");
       }

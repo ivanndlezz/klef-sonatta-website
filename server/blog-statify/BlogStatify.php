@@ -243,7 +243,7 @@ GRAPHQL;
             . '<link rel="stylesheet" href="../../assets/styles/blog.css?v=2">\n'
             . '</head>\n<body>\n'
             . '<article class="klef-blog-article" data-shell-content data-statify-static' . $authorMeta . '><nav class="klef-blog-breadcrumbs" aria-label="Breadcrumb"><a href="/">Klef Agency</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span>' . self::html($category) . '</span></nav><p class="klef-blog-kicker">' . self::html($category) . '</p><h1>' . self::html($title) . '</h1><p class="klef-blog-article-summary">' . self::html($description) . '</p><p class="klef-blog-article-meta">Por ' . $authorLink . ($published !== '' ? ' · <time datetime="' . self::html($published) . '">' . self::html(self::formatDate($published)) . '</time>' : '') . '</p><div class="klef-blog-prose">' . $content . '</div><p class="klef-blog-back"><a href="/blog/">← Volver al blog</a></p></article>\n'
-            . '<script src="../../shared/components/load-basics/load-basics.js?v=16"></script>\n<script src="../../assets/scripts/blog-page-layout.js"></script>\n<script src="../../shared/components/blog/blog-author-hydrator.js"></script>\n'
+            . '<script src="../../shared/components/load-basics/load-basics.js?v=16"></script>\n<script src="../../assets/scripts/blog-page-layout.js"></script>\n<script src="../../shared/components/blog/blog-author-hydrator.js"></script>\n<script src="../../shared/components/blog/blog-article-enhancer.js"></script>\n'
             . '</body>\n</html>\n'
         ));
     }
@@ -252,19 +252,32 @@ GRAPHQL;
     {
         if (!is_file($path)) throw new RuntimeException('No existe blog/index.html.');
         $html = (string) file_get_contents($path);
+        $featuredItem = self::featuredItem($items);
+        $featuredFallback = '';
+        if (is_array($featuredItem)) {
+            $featuredCategory = (string) (($featuredItem['categories'] ?? [])[0] ?? 'Klef');
+            $featuredDate = self::formatDate((string) ($featuredItem['date'] ?? $featuredItem['modified'] ?? ''));
+            $featuredImage = (string) ($featuredItem['image'] ?? '');
+            $featuredFallback = '<a class="klef-blog-featured" data-blog-featured data-statify-static href="/blog/' . self::html((string) $featuredItem['slug']) . '/"><div class="klef-blog-featured-media">' . ($featuredImage !== '' ? '<img src="' . self::html($featuredImage) . '" alt="' . self::html((string) ($featuredItem['image_alt'] ?? $featuredItem['title'])) . '" loading="eager">' : '') . '</div><div class="klef-blog-featured-content"><div class="klef-blog-card-top"><span class="klef-blog-card-category">' . self::html($featuredCategory) . '</span><time class="klef-blog-card-date" datetime="' . self::html((string) ($featuredItem['date'] ?? '')) . '">' . self::html($featuredDate) . '</time></div><h3>' . self::html((string) $featuredItem['title']) . '</h3><p>' . self::html((string) $featuredItem['excerpt']) . '</p><span class="klef-blog-featured-cta">Leer la nota <span aria-hidden="true">↗</span></span></div></a>';
+        }
         $fallback = '';
         if ($items === []) {
             $fallback = '<div class="klef-blog-empty" data-statify-static>No hay artículos publicados todavía.</div>';
         } else {
             foreach ($items as $item) {
+                if (is_array($featuredItem) && (string) ($item['slug'] ?? '') === (string) ($featuredItem['slug'] ?? '')) continue;
                 $category = (string) (($item['categories'] ?? [])[0] ?? 'Klef');
                 $date = self::formatDate((string) ($item['date'] ?? $item['modified'] ?? ''));
-                $fallback .= '<a class="klef-blog-card" data-statify-static href="/blog/' . self::html((string) $item['slug']) . '/"><div class="klef-blog-card-top"><span class="klef-blog-card-category">' . self::html($category) . '</span><time class="klef-blog-card-date" datetime="' . self::html((string) ($item['date'] ?? '')) . '">' . self::html($date) . '</time></div><h2>' . self::html((string) $item['title']) . '</h2><p>' . self::html((string) $item['excerpt']) . '</p><span class="klef-blog-card-arrow" aria-hidden="true">↗</span></a>';
+                $image = (string) ($item['image'] ?? '');
+                $fallback .= '<a class="klef-blog-card" data-statify-static href="/blog/' . self::html((string) $item['slug']) . '/">' . ($image !== '' ? '<div class="klef-blog-card-media"><img src="' . self::html($image) . '" alt="' . self::html((string) ($item['image_alt'] ?? $item['title'])) . '" loading="lazy"></div>' : '') . '<div class="klef-blog-card-body"><div class="klef-blog-card-top"><span class="klef-blog-card-category">' . self::html($category) . '</span><time class="klef-blog-card-date" datetime="' . self::html((string) ($item['date'] ?? '')) . '">' . self::html($date) . '</time></div><h2>' . self::html((string) $item['title']) . '</h2><p>' . self::html((string) $item['excerpt']) . '</p><span class="klef-blog-card-arrow" aria-hidden="true">↗</span></div></a>';
             }
         }
+        $featuredPattern = '/<!-- STATIFY:FEATURED_START -->.*?<!-- STATIFY:FEATURED_END -->/s';
+        $featuredReplacement = '<!-- STATIFY:FEATURED_START -->' . $featuredFallback . '<!-- STATIFY:FEATURED_END -->';
+        $updated = preg_replace($featuredPattern, $featuredReplacement, $html, 1);
         $pattern = '/<!-- STATIFY:BLOG_START -->.*?<!-- STATIFY:BLOG_END -->/s';
         $replacement = '<!-- STATIFY:BLOG_START -->' . $fallback . '<!-- STATIFY:BLOG_END -->';
-        $updated = preg_replace($pattern, $replacement, $html, 1);
+        $updated = is_string($updated) ? preg_replace($pattern, $replacement, $updated, 1) : null;
         if (!is_string($updated)) throw new RuntimeException('No se encontró el bloque Statify del Blog.');
         self::writeAtomically($path, $updated);
     }
@@ -359,6 +372,14 @@ GRAPHQL;
             $normalized[] = $item;
         }
         return $normalized;
+    }
+
+    private static function featuredItem(array $items): ?array
+    {
+        foreach ($items as $item) {
+            if (is_array($item) && !empty($item['featured'])) return $item;
+        }
+        return is_array($items[0] ?? null) ? $items[0] : null;
     }
 
     private static function restJson(string $url): array

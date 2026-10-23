@@ -5,6 +5,7 @@
     {
       "id": "sonatta-ivanklef-001",
       "source": "sonatta",
+      "featured": false,
       "authorSlug": "ivangonzalez",
       "slug": "ayudo-a-otros-a-tener-voz-pero-yo",
       "title": "Ayudo a otros a tener voz, pero yo la pospuse",
@@ -19,6 +20,7 @@
     {
       "id": "sonatta-ivanklef-002",
       "source": "sonatta",
+      "featured": true,
       "authorSlug": "ivangonzalez",
       "slug": "umbral-del-descubrimiento-de-marcas",
       "title": "Umbral del descubrimiento de marcas",
@@ -33,6 +35,7 @@
     {
       "id": "sonatta-ivanklef-003",
       "source": "sonatta",
+      "featured": false,
       "authorSlug": "ivangonzalez",
       "slug": "esta-muriendo-el-seo-en-2026",
       "title": "¿Está muriendo el SEO en 2026?",
