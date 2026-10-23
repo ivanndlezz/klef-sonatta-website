@@ -40,7 +40,7 @@ query GetBlogPost($slug: ID!) {
     featuredImage { node { sourceUrl altText mediaDetails { width height } } }
     categories { nodes { name slug } }
     tags { nodes { name slug } }
-    author { node { name firstName lastName url avatar { url } } }
+    author { node { name firstName lastName uri url avatar { url } } }
   }
 }
 GRAPHQL;
@@ -51,6 +51,8 @@ GRAPHQL;
         $nodes = $list['data']['posts']['nodes'] ?? [];
         if (!is_array($nodes)) $nodes = [];
         $nodes = self::mergeRestBlogPosts($nodes);
+        $localItems = self::readLocalItems($root);
+        $localSlugs = array_values(array_filter(array_map(static fn (array $item): string => self::safeSlug((string) ($item['slug'] ?? '')), $localItems)));
 
         $generatedAt = gmdate('c');
         $outputDir = $root . '/data/blog';
@@ -60,15 +62,23 @@ GRAPHQL;
             ? json_decode((string) file_get_contents($manifestPath), true)
             : [];
         $previousSlugs = is_array($previousManifest['slugs'] ?? null) ? $previousManifest['slugs'] : [];
+        $previousLocalSlugs = is_array($previousManifest['localSlugs'] ?? null) ? $previousManifest['localSlugs'] : [];
+        $previousWordpressSlugs = is_array($previousManifest['wordpressSlugs'] ?? null)
+            ? $previousManifest['wordpressSlugs']
+            : array_values(array_diff($previousSlugs, $previousLocalSlugs));
 
         $items = [];
         $slugs = [];
+        $wordpressSlugs = [];
+        $seenSlugs = [];
         $sitemapEntries = [['loc' => self::SITE_URL . '/blog/', 'lastmod' => $generatedAt]];
 
         foreach ($nodes as $node) {
             if (!is_array($node)) continue;
             $slug = self::safeSlug((string) ($node['slug'] ?? ''));
             if ($slug === '') continue;
+            if (isset($seenSlugs[$slug])) continue;
+            $seenSlugs[$slug] = true;
 
             $detail = self::graphql($endpoint, self::DETAIL_QUERY, ['slug' => $slug]);
             $post = $detail['data']['post'] ?? null;
@@ -77,6 +87,7 @@ GRAPHQL;
             $item = self::normalizeItem($post);
             $items[] = $item;
             $slugs[] = $slug;
+            $wordpressSlugs[] = $slug;
             self::writeJson($outputDir . '/' . $slug . '.json', [
                 'version' => 1,
                 'generatedAt' => $generatedAt,
@@ -90,7 +101,19 @@ GRAPHQL;
             ];
         }
 
-        foreach (array_diff($previousSlugs, $slugs) as $staleSlug) {
+        foreach ($localItems as $item) {
+            $slug = self::safeSlug((string) ($item['slug'] ?? ''));
+            if ($slug === '' || isset($seenSlugs[$slug])) continue;
+            $seenSlugs[$slug] = true;
+            $items[] = $item;
+            $slugs[] = $slug;
+            $sitemapEntries[] = [
+                'loc' => self::SITE_URL . '/blog/' . rawurlencode($slug) . '/',
+                'lastmod' => self::sitemapLastmod((string) ($item['modified'] ?? $item['date'] ?? ''), $generatedAt),
+            ];
+        }
+
+        foreach (array_diff($previousWordpressSlugs, $wordpressSlugs) as $staleSlug) {
             $staleSlug = self::safeSlug((string) $staleSlug);
             if ($staleSlug === '') continue;
             @unlink($root . '/blog/' . $staleSlug . '/index.html');
@@ -100,10 +123,15 @@ GRAPHQL;
         self::writeJson($outputDir . '/index.json', [
             'version' => 1,
             'generatedAt' => $generatedAt,
-            'source' => $endpoint,
+            'source' => 'local+wordpress',
             'items' => $items,
         ]);
-        self::writeJson($manifestPath, ['slugs' => $slugs, 'generatedAt' => $generatedAt]);
+        self::writeJson($manifestPath, [
+            'slugs' => $slugs,
+            'wordpressSlugs' => $wordpressSlugs,
+            'localSlugs' => $localSlugs,
+            'generatedAt' => $generatedAt,
+        ]);
         self::updateIndexFallback($root . '/blog/index.html', $items);
         self::updateSitemap($root . '/sitemap.xml', $sitemapEntries);
 
@@ -147,6 +175,7 @@ GRAPHQL;
     private static function normalizeItem(array $post): array
     {
         $image = $post['featuredImage']['node'] ?? [];
+        $author = $post['author']['node'] ?? [];
         return [
             'id' => (string) ($post['id'] ?? ''),
             'slug' => self::safeSlug((string) ($post['slug'] ?? '')),
@@ -158,6 +187,12 @@ GRAPHQL;
             'tags' => array_values(array_filter(array_map(static fn (array $tag): string => self::plainText((string) ($tag['name'] ?? '')), $post['tags']['nodes'] ?? []))),
             'image' => (string) ($image['sourceUrl'] ?? ''),
             'image_alt' => (string) ($image['altText'] ?? ''),
+            'authorSlug' => self::authorSlug($author),
+            'author' => [
+                'name' => self::plainText((string) ($author['name'] ?? 'Klef Agency')),
+                'url' => (string) ($author['url'] ?? ''),
+                'avatar' => (string) ($author['avatar']['url'] ?? ''),
+            ],
         ];
     }
 
@@ -170,7 +205,12 @@ GRAPHQL;
         $image = (string) ($post['featuredImage']['node']['sourceUrl'] ?? '');
         $categories = $post['categories']['nodes'] ?? [];
         $category = self::plainText((string) ($categories[0]['name'] ?? 'Klef'));
-        $author = self::plainText((string) ($post['author']['node']['name'] ?? 'Klef Agency'));
+        $authorNode = $post['author']['node'] ?? [];
+        $author = self::plainText((string) ($authorNode['name'] ?? 'Klef Agency'));
+        $authorSlug = self::authorSlug($authorNode);
+        $authorUrl = (string) ($authorNode['url'] ?? '');
+        $authorMeta = $authorSlug !== '' ? ' data-author-slug="' . self::html($authorSlug) . '"' : '';
+        $authorLink = '<a data-author-link href="' . self::html($authorUrl !== '' ? $authorUrl : self::SITE_URL . '/') . '" rel="author noopener"><span data-author-name>' . self::html($author) . '</span></a>';
         $published = (string) ($post['date'] ?? '');
         $modified = (string) ($post['modified'] ?? $published);
         $content = self::sanitizeHtml((string) ($post['content'] ?? '<p>' . self::html($description) . '</p>'));
@@ -202,8 +242,8 @@ GRAPHQL;
             . '<script type="application/ld+json">' . $jsonLd . '</script>\n'
             . '<link rel="stylesheet" href="../../assets/styles/blog.css?v=2">\n'
             . '</head>\n<body>\n'
-            . '<article class="klef-blog-article" data-shell-content data-statify-static><nav class="klef-blog-breadcrumbs" aria-label="Breadcrumb"><a href="/">Klef Agency</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span>' . self::html($category) . '</span></nav><p class="klef-blog-kicker">' . self::html($category) . '</p><h1>' . self::html($title) . '</h1><p class="klef-blog-article-summary">' . self::html($description) . '</p><p class="klef-blog-article-meta"><span>Por ' . self::html($author) . '</span>' . ($published !== '' ? ' · <time datetime="' . self::html($published) . '">' . self::html(self::formatDate($published)) . '</time>' : '') . '</p><div class="klef-blog-prose">' . $content . '</div><p class="klef-blog-back"><a href="/blog/">← Volver al blog</a></p></article>\n'
-            . '<script src="../../shared/components/load-basics/load-basics.js?v=16"></script>\n<script src="../../assets/scripts/blog-page-layout.js"></script>\n'
+            . '<article class="klef-blog-article" data-shell-content data-statify-static' . $authorMeta . '><nav class="klef-blog-breadcrumbs" aria-label="Breadcrumb"><a href="/">Klef Agency</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span>' . self::html($category) . '</span></nav><p class="klef-blog-kicker">' . self::html($category) . '</p><h1>' . self::html($title) . '</h1><p class="klef-blog-article-summary">' . self::html($description) . '</p><p class="klef-blog-article-meta">Por ' . $authorLink . ($published !== '' ? ' · <time datetime="' . self::html($published) . '">' . self::html(self::formatDate($published)) . '</time>' : '') . '</p><div class="klef-blog-prose">' . $content . '</div><p class="klef-blog-back"><a href="/blog/">← Volver al blog</a></p></article>\n'
+            . '<script src="../../shared/components/load-basics/load-basics.js?v=16"></script>\n<script src="../../assets/scripts/blog-page-layout.js"></script>\n<script src="../../shared/components/blog/blog-author-hydrator.js"></script>\n'
             . '</body>\n</html>\n'
         ));
     }
@@ -297,6 +337,30 @@ GRAPHQL;
         }
     }
 
+    private static function readLocalItems(string $root): array
+    {
+        $path = $root . '/data/blog/local-index.json';
+        if (!is_file($path)) return [];
+
+        $payload = json_decode((string) file_get_contents($path), true);
+        $items = is_array($payload['items'] ?? null) ? $payload['items'] : [];
+        $normalized = [];
+        $seen = [];
+        foreach ($items as $item) {
+            if (!is_array($item)) continue;
+            $slug = self::safeSlug((string) ($item['slug'] ?? ''));
+            if ($slug === '' || isset($seen[$slug])) continue;
+            $seen[$slug] = true;
+            $item['slug'] = $slug;
+            $item['source'] = (string) ($item['source'] ?? 'sonatta');
+            $item['authorSlug'] = (string) ($item['authorSlug'] ?? '');
+            $item['categories'] = is_array($item['categories'] ?? null) ? array_values($item['categories']) : [];
+            $item['tags'] = is_array($item['tags'] ?? null) ? array_values($item['tags']) : [];
+            $normalized[] = $item;
+        }
+        return $normalized;
+    }
+
     private static function restJson(string $url): array
     {
         if (!function_exists('curl_init')) throw new RuntimeException('La extensión cURL de PHP es necesaria para Blog Statify.');
@@ -366,6 +430,19 @@ GRAPHQL;
     private static function safeSlug(string $slug): string
     {
         return preg_match('/^[a-z0-9][a-z0-9-]{1,120}$/', $slug) === 1 ? $slug : '';
+    }
+
+    private static function authorSlug(array $author): string
+    {
+        foreach ([(string) ($author['uri'] ?? ''), (string) ($author['url'] ?? '')] as $value) {
+            if ($value === '') continue;
+            $path = parse_url($value, PHP_URL_PATH);
+            $parts = array_values(array_filter(explode('/', trim((string) $path, '/'))));
+            $candidate = $parts !== [] ? strtolower(rawurldecode((string) end($parts))) : '';
+            $slug = self::safeSlug($candidate);
+            if ($slug !== '') return $slug;
+        }
+        return '';
     }
 
     private static function ensureDirectory(string $directory): void

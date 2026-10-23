@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "source": "sonatta",
+  "items": [
+    {
+      "id": "sonatta-ivanklef-001",
+      "source": "sonatta",
+      "authorSlug": "ivangonzalez",
+      "slug": "ayudo-a-otros-a-tener-voz-pero-yo",
+      "title": "Ayudo a otros a tener voz, pero yo la pospuse",
+      "excerpt": "Una nota personal sobre autoridad, contenido y la decisión de aparecer después de años detrás de cámara.",
+      "date": "2026-04-03",
+      "modified": "2026-10-23",
+      "categories": ["Perspectiva", "Relación"],
+      "tags": ["marca personal", "autoridad", "contenido"],
+      "image": "/assets/images/blog/ivanklef/ayudo-a-otros-a-tener-voz.webp",
+      "image_alt": "Iván González frente a una cámara, imagen principal del artículo"
+    },
+    {
+      "id": "sonatta-ivanklef-002",
+      "source": "sonatta",
+      "authorSlug": "ivangonzalez",
+      "slug": "umbral-del-descubrimiento-de-marcas",
+      "title": "Umbral del descubrimiento de marcas",
+      "excerpt": "Cómo te encuentran tus clientes en 2026: el nuevo mapa del descubrimiento de marcas y sus cinco capas.",
+      "date": "2026-04-04",
+      "modified": "2026-10-23",
+      "categories": ["Estrategia", "Descubrimiento"],
+      "tags": ["descubrimiento", "social search", "AEO", "SEO"],
+      "image": "/assets/images/blog/ivanklef/descubrimiento-de-marcas-2026.webp",
+      "image_alt": "Ilustración editorial sobre el descubrimiento de marcas en 2026"
+    },
+    {
+      "id": "sonatta-ivanklef-003",
+      "source": "sonatta",
+      "authorSlug": "ivangonzalez",
+      "slug": "esta-muriendo-el-seo-en-2026",
+      "title": "¿Está muriendo el SEO en 2026?",
+      "excerpt": "El SEO no murió: se está fragmentando entre más superficies de descubrimiento y validación.",
+      "date": "2026-04-04",
+      "modified": "2026-10-23",
+      "categories": ["Estrategia", "Descubrimiento"],
+      "tags": ["SEO", "AEO", "marketing digital"],
+      "image": "/assets/images/blog/ivanklef/seo-2026.webp",
+      "image_alt": "Ilustración editorial sobre la fragmentación del SEO en 2026"
+    }
+  ]
+}
