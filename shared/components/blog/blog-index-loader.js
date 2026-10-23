@@ -50,7 +50,7 @@
 
   async function loadBlog() {
     try {
-      const response = await fetch("../data/blog/index.json");
+      const response = await fetch("../data/blog/index.json", { cache: "no-store" });
       if (!response.ok) throw new Error(`Blog index failed: ${response.status}`);
       const payload = await response.json();
       const items = (Array.isArray(payload.items) ? payload.items : []).filter((item) => item && item.listed !== false);
