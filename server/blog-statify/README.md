@@ -15,6 +15,8 @@ Blog Statify convierte los posts publicados en WordPress que tienen la categorí
 
 La categoría `Blog` es el contrato editorial. Las categorías adicionales se convierten en filtros del índice; las etiquetas se usan para búsqueda. Si no hay posts todavía, `/blog/` conserva una página estática válida y el build no falla.
 
+Los artículos locales pueden llevar `"listed": false` en `data/blog/local-index.json` para conservar su URL directa sin mostrarlos en el índice, filtros o búsqueda del blog.
+
 ## Validación
 
 ```bash

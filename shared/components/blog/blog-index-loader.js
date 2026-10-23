@@ -53,7 +53,7 @@
       const response = await fetch("../data/blog/index.json");
       if (!response.ok) throw new Error(`Blog index failed: ${response.status}`);
       const payload = await response.json();
-      const items = Array.isArray(payload.items) ? payload.items : [];
+      const items = (Array.isArray(payload.items) ? payload.items : []).filter((item) => item && item.listed !== false);
       if (!items.length) return;
       const featuredItem = items.find((item) => item.featured) || items[0];
       const gridItems = items.filter((item) => item.slug !== featuredItem.slug);

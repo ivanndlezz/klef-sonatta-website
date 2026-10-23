@@ -103,7 +103,7 @@ GRAPHQL;
 
         foreach ($localItems as $item) {
             $slug = self::safeSlug((string) ($item['slug'] ?? ''));
-            if ($slug === '' || isset($seenSlugs[$slug])) continue;
+            if ($slug === '' || isset($seenSlugs[$slug]) || ($item['listed'] ?? true) === false) continue;
             $seenSlugs[$slug] = true;
             $items[] = $item;
             $slugs[] = $slug;
