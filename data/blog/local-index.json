@@ -67,6 +67,29 @@
       "image": "",
       "image_alt": "",
       "sourceUrl": "https://web.archive.org/web/20210604073942id_/https://ivan.klef.agency/2021/06/03/diferencia-marketing-publicidad/"
+    },
+    {
+      "id": "historical-ivan-klef-logo-2020-2021",
+      "source": "historical",
+      "editorialStatus": "historical",
+      "listed": true,
+      "featured": false,
+      "authorSlug": "ivangonzalez",
+      "slug": "logo-funcional",
+      "title": "Qué es un logo y cómo saber si realmente funciona",
+      "excerpt": "Una guía recuperada de 2020 y 2021 sobre tipos de logo, funcionalidad y los criterios que conviene definir antes de diseñar.",
+      "date": "2020-06-28",
+      "modified": "2026-10-23",
+      "originalDate": "2020-06-28",
+      "updatedDate": "2026-10-23",
+      "categories": ["Branding", "Archivo editorial", "Creatividad con orden"],
+      "tags": ["logo", "branding", "identidad visual", "diseño de marca"],
+      "image": "/assets/images/blog/ivanklef/logo-funcional-historico.png",
+      "image_alt": "Comparación visual entre formas geométricas y símbolos reconocibles",
+      "sourceUrls": [
+        "https://web.archive.org/web/20210604074521id_/https://ivan.klef.agency/2021/06/04/que-es-un-logo-y-que-tipos-hay/",
+        "https://klefagency.blogspot.com/2020/06/blog-post.html"
+      ]
     }
   ]
 }
