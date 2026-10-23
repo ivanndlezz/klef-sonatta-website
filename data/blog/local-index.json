@@ -47,6 +47,26 @@
       "tags": ["SEO", "AEO", "marketing digital"],
       "image": "/assets/images/blog/ivanklef/seo-2026.webp",
       "image_alt": "Ilustración editorial sobre la fragmentación del SEO en 2026"
+    },
+    {
+      "id": "historical-ivan-2021-marketing-publicidad",
+      "source": "historical",
+      "editorialStatus": "historical",
+      "listed": true,
+      "featured": false,
+      "authorSlug": "ivangonzalez",
+      "slug": "marketing-o-publicidad",
+      "title": "Marketing o publicidad: cuál necesita realmente tu negocio",
+      "excerpt": "Una pieza recuperada de 2021, actualizada para distinguir estrategia, marketing y publicidad sin confundir actividad con avance.",
+      "date": "2021-06-03",
+      "modified": "2026-10-23",
+      "originalDate": "2021-06-03",
+      "updatedDate": "2026-10-23",
+      "categories": ["Marketing", "Archivo editorial", "Criterio"],
+      "tags": ["marketing", "publicidad", "estrategia de marketing", "branding"],
+      "image": "",
+      "image_alt": "",
+      "sourceUrl": "https://web.archive.org/web/20210604073942id_/https://ivan.klef.agency/2021/06/03/diferencia-marketing-publicidad/"
     }
   ]
 }
