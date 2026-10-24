@@ -10,7 +10,7 @@
 .seo-essay .klef-blog-prose>h3{margin-top:3.6rem;font-size:clamp(1.6rem,3vw,2.4rem);letter-spacing:-.04em}
 .seo-essay .klef-blog-prose>ul,.seo-essay .klef-blog-prose>ol{padding-left:1.5rem}
 .seo-essay .klef-blog-prose li{margin-bottom:.7rem}
-.seo-essay .klef-blog-prose>img:first-child{display:none}
+.seo-essay .klef-blog-prose>img[src*='/seo-2026.webp']{display:none}
 .seo-editorial-cover{position:relative;isolation:isolate;overflow:hidden;border-radius:28px;min-height:390px;margin:2.8rem 0 5.5rem;background:radial-gradient(circle at 74% 37%,#4d7db9 0,#233b5e 29%,#101b2c 63%,#0b1320 100%);display:grid;grid-template-columns:1fr 1fr;align-items:center;color:white}
 .seo-cover-copy{padding:clamp(1.8rem,5vw,4.8rem);position:relative;z-index:2}
 .seo-cover-kicker,.seo-eyebrow{display:block;text-transform:uppercase;font-size:.72rem;font-weight:800;letter-spacing:.17em}
@@ -61,3 +61,9 @@
 .seo-article-footer a{color:#2167e8;font-weight:750;text-decoration:none}
 @media(max-width:760px){.seo-essay{padding-top:6rem}.seo-editorial-cover{grid-template-columns:1fr;min-height:0}.seo-cover-copy{padding:2rem 1.6rem 0}.seo-cover-art{min-height:230px}.seo-cover-art svg{max-width:290px}.seo-compare-grid,.seo-timeline{grid-template-columns:1fr}.seo-compare-card{min-height:0}.seo-system-grid{grid-template-columns:1fr;gap:1rem}.seo-system-diagram{max-width:270px}.seo-visual{margin:4rem -.5rem;padding:1.3rem;border-radius:22px}.seo-thesis{margin:4rem auto}.seo-article-footer{display:block}.seo-article-footer a{display:inline-block;margin-top:1rem}}
 @media(prefers-reduced-motion:reduce){.seo-cover-orbit{animation:none}.seo-system-control button{transition:none}}
+
+/* Keep visual assets accessible without hiding the source article's prose. */
+.seo-essay .seo-editorial-cover svg{overflow:visible}
+.seo-essay .seo-system-control button:hover{background:#ffffff1a}
+.seo-essay .seo-system-control button[aria-pressed=true]:hover{background:#2b456a}
+@media(max-width:760px){.seo-essay .klef-blog-prose>h2{margin-top:5.5rem}.seo-essay .seo-visual-header h3{font-size:2rem!important}}
