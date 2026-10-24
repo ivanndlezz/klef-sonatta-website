@@ -73,3 +73,44 @@
 .seo-reading-map a{display:flex;align-items:center;gap:1rem;text-decoration:none;color:#18212c;padding:1rem .3rem;border-bottom:1px solid #e1e6ee;font-weight:650;font-size:.96rem}
 .seo-reading-map a:last-child{border:0}.seo-reading-map a span{font-size:.77rem;color:#7a8aa3;font-weight:800}.seo-reading-map a:hover{color:#2167e8}
 .seo-essay .klef-blog-prose>h2[id]{scroll-margin-top:6rem}
+
+
+/* Reference alignment: quiet monochrome editorial layout, display serif and photographic pacing. */
+.seo-essay{--e-ink:#111318;--e-blue:#286de5;--e-soft:#f5f7f9;--e-border:#e4e6e9;max-width:900px;color:#111318}
+.seo-essay>h1,.seo-essay .klef-blog-prose>h2,.seo-essay .seo-thesis strong,.seo-essay .seo-visual-header h3,.seo-essay .seo-pullquote blockquote{font-family:Georgia,"Times New Roman",serif!important;font-weight:700!important;letter-spacing:-.052em!important}
+.seo-essay>h1{max-width:710px;font-size:clamp(3.45rem,8vw,6.5rem);line-height:.98}
+.seo-essay>.klef-blog-article-summary{font-size:1.15rem;line-height:1.6;color:#4f5661}
+.seo-essay .klef-blog-prose{font-size:1.06rem;line-height:1.72}
+.seo-essay .klef-blog-prose>h2{font-size:clamp(2.45rem,5.6vw,4.5rem);line-height:1.02}
+.seo-essay .klef-blog-prose>h2:before{content:attr(data-chapter);display:block;font:700 .7rem/1.5 Inter,system-ui,sans-serif;letter-spacing:.08em;color:#a5aab3;border:1px solid #d9dde3;border-radius:100px;width:max-content;padding:.05rem .5rem;margin-bottom:1.3rem}
+.seo-editorial-cover{background:linear-gradient(155deg,#f7f9fb,#dce4ee);color:#111318;border-radius:22px;min-height:370px}
+.seo-cover-kicker{color:#596575}
+.seo-cover-copy strong{font-family:Georgia,"Times New Roman",serif;font-weight:700;letter-spacing:-.055em;font-size:clamp(2.25rem,4.5vw,4.4rem)}
+.seo-cover-copy p{color:#5c6573}
+.seo-cover-art svg{filter:drop-shadow(0 20px 22px #5c719244)}
+.seo-thesis{text-align:left;max-width:720px;padding:1rem 0;margin:5rem auto 3.5rem}
+.seo-thesis .seo-eyebrow{color:#8c939d}
+.seo-thesis strong{font-size:clamp(2.7rem,6vw,5rem)}
+.seo-thesis strong em{color:#111318}
+.seo-thesis p{margin:1.3rem 0 0;max-width:580px;color:#525b67}
+.seo-reading-map{background:transparent;border:0;border-top:1px solid #e2e4e7;border-radius:0;padding:1.8rem 0;margin:3rem auto 5rem}
+.seo-reading-map a{padding:1rem .3rem;font-weight:500}
+.seo-visual{background:#f5f7f9;border:0;border-radius:18px}
+.seo-visual-header .seo-eyebrow{color:#7c8797}
+.seo-visual-header h3{font-size:clamp(2rem,4vw,3.1rem)!important}
+.seo-compare-grid{grid-template-columns:1fr}
+.seo-compare-card{display:grid;grid-template-columns:60px 1fr;column-gap:1.1rem;align-items:center;min-height:0;padding:1.25rem 1.5rem;border:0;background:linear-gradient(110deg,#fff,#eef3f7)}
+.seo-compare-card .seo-icon{grid-row:span 2;margin:0;background:#e8edf3;border-radius:13px;width:55px;height:55px;display:grid;place-items:center}
+.seo-compare-card strong{align-self:end}
+.seo-compare-card p{align-self:start;margin:.25rem 0 0}
+.seo-system{background:#111820;border-radius:20px}
+.seo-system .seo-visual-header h3{color:#fff}
+.seo-system-grid{gap:1.2rem}
+.seo-system-diagram{max-width:400px}
+.seo-timeline{grid-template-columns:repeat(2,minmax(0,1fr))}
+.seo-timeline>div{border-top:0;background:#fff;border-radius:14px}
+.seo-timeline small{color:#8d949e}
+.seo-pullquote{background:#121a23;color:#fff;text-align:left;border-radius:20px}
+.seo-pullquote span{color:#c1cbd8}
+.seo-pullquote blockquote{font-size:clamp(2rem,4vw,3.6rem)}
+@media(max-width:760px){.seo-essay{padding-inline:1.1rem}.seo-essay>h1{font-size:clamp(3.25rem,12vw,5rem)}.seo-editorial-cover{margin:2.4rem -.3rem 4rem;grid-template-columns:1fr}.seo-cover-copy{padding:1.8rem 1.6rem 0}.seo-cover-art{min-height:230px}.seo-visual{margin:3.5rem -.3rem;padding:1.2rem}.seo-compare-card{grid-template-columns:50px 1fr;padding:1rem;gap:.7rem}.seo-compare-card .seo-icon{width:45px;height:45px}.seo-timeline{grid-template-columns:1fr}.seo-thesis{margin:4rem auto 2rem}.seo-reading-map{margin:2rem auto 4rem}.seo-pullquote{margin:5rem -.3rem;padding:2rem}}
