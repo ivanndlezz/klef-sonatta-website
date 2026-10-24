@@ -173,6 +173,15 @@ const ICONS = {
     <use href="#arrow-up"></use>
   </svg>
   `,
+  arrowRight: `
+  <svg
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  style="--wh:20px; width: var(--wh); height: var(--wh);">
+    <path d="M5 12h14m-6-6 6 6-6 6" stroke-linecap="round" stroke-linejoin="round"></path>
+  </svg>
+  `,
   listMenu: `
   <svg
   viewBox="0 0 24 24"
@@ -284,6 +293,43 @@ class DynamicIsland {
           icon: ICONS.cartBag,
           name: "Carrito",
           function: SafeActions.openCart,
+        },
+      },
+    },
+
+    blog_footer_navigation: {
+      getHtmlStructure(data) {
+        return `
+        <div class="island-content blog-footer-navigation-content">
+          <button class="island-btn secondary" data-action="explore" type="button">
+            <span class="icon">${data.explore.icon}</span>
+            <span>${data.explore.name}</span>
+          </button>
+          <button class="island-btn primary" data-action="top" type="button">
+            <span class="icon">${data.top.icon}</span>
+            <span>${data.top.name}</span>
+          </button>
+          <button class="island-btn accent" data-action="next" type="button">
+            <span class="icon">${data.next.icon}</span>
+            <span>${data.next.name}</span>
+          </button>
+        </div>`;
+      },
+      data: {
+        explore: {
+          icon: ICONS.listMenu,
+          name: "Explorar",
+          function: () => (window.location.href = "/blog/"),
+        },
+        top: {
+          icon: ICONS.totop,
+          name: "Subir",
+          function: SafeActions.totop,
+        },
+        next: {
+          icon: ICONS.arrowRight,
+          name: "Inicio",
+          function: () => (window.location.href = "/"),
         },
       },
     },
@@ -710,6 +756,13 @@ class DynamicIsland {
   setupScrollDetection() {
     window.addEventListener("scroll", () => {
       if (!this.container || !this.island) return;
+
+      if (this.island.classList.contains("blog-footer-navigation")) {
+        this.container.classList.add("visible");
+        this.island.classList.remove("pill");
+        this.island.classList.add("expanded");
+        return;
+      }
 
       // Don't show dynamic island if body is scroll-locked (overlays are open)
       if (typeof ScrollLock !== "undefined" && ScrollLock.isLocked()) {

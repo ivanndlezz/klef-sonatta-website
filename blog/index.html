@@ -11,7 +11,7 @@
     <meta property="og:url" content="https://klef.agency/blog/" />
     <meta name="twitter:card" content="summary" />
     <title>Blog | Klef Agency</title>
-    <link rel="stylesheet" href="../assets/styles/blog.css?v=6" />
+    <link rel="stylesheet" href="../assets/styles/blog.css?v=10" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -59,9 +59,23 @@
 
       <noscript><p>Activa JavaScript para buscar y filtrar los artículos. También puedes explorar el contenido publicado en esta página.</p></noscript>
     </article>
+    <nav class="klef-blog-index-nav" aria-label="Navegación del blog">
+      <a class="klef-blog-index-nav-item" href="/blog/" data-blog-nav="home" data-state="active" aria-current="page">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-home"></use></svg>
+        <span>Inicio</span>
+      </a>
+      <button class="klef-blog-index-nav-item" type="button" data-blog-nav="explore" data-state="idle" aria-controls="blog-search" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#icon-stacked-list"></use></svg>
+        <span>Explorar</span>
+      </button>
+      <button class="klef-blog-index-nav-item" type="button" data-blog-nav="saved" data-state="idle" aria-controls="blog-grid" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.75h12a1.5 1.5 0 0 1 1.5 1.5v15l-7.5-4.5-7.5 4.5v-15a1.5 1.5 0 0 1 1.5-1.5Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+        <span>Guardados</span><span class="klef-blog-index-nav-count" data-blog-saved-count hidden>0</span>
+      </button>
+    </nav>
     <script src="../shared/components/load-basics/load-basics.js?v=16"></script>
     <script src="../assets/scripts/blog-page-layout.js"></script>
     <script src="../shared/components/blog/blog-author-hydrator.js"></script>
-    <script src="../shared/components/blog/blog-index-loader.js?v=2"></script>
+    <script src="../shared/components/blog/blog-index-loader.js?v=4"></script>
   </body>
 </html>
