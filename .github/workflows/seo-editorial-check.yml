@@ -1,0 +1,22 @@
+name: SEO editorial quality checks
+on:
+  pull_request:
+    paths:
+      - 'blog/esta-muriendo-el-seo-en-2026/**'
+      - 'assets/styles/seo-editorial-v2.css'
+      - 'assets/scripts/seo-editorial-v2.js'
+      - 'scripts/check-seo-editorial.mjs'
+      - '.github/workflows/seo-editorial-check.yml'
+  workflow_dispatch:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check assets/scripts/seo-editorial-v2.js
+      - run: node scripts/check-seo-editorial.mjs
