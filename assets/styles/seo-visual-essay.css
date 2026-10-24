@@ -1,0 +1,31 @@
+/* Klef Visual Essay — scoped to SEO 2026 */
+.seo-essay .klef-blog-prose{font-weight:400;line-height:1.7}
+.seo-essay .klef-blog-prose p,.seo-essay .klef-blog-prose li{font-weight:400!important;line-height:1.75}
+.seo-essay .klef-blog-prose h2{margin-top:clamp(5rem,12vw,9rem);margin-bottom:1.5rem;letter-spacing:-.035em;line-height:1.1}
+.seo-essay .klef-blog-prose h3{margin-top:3.5rem}
+.seo-essay .klef-blog-prose>p{margin-block:1.4rem}
+.seo-essay .klef-blog-prose>img:first-child{border-radius:18px}
+.seo-essay .seo-hero-statement{padding:clamp(3rem,10vw,7rem) 0;margin:3rem 0 5rem;border-top:1px solid #ddd;border-bottom:1px solid #ddd}
+.seo-essay .seo-eyebrow{font:600 .72rem/1.4 system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#74777a}
+.seo-essay .seo-hero-statement strong{display:block;font-size:clamp(2.5rem,9vw,5.5rem);line-height:1.04;letter-spacing:-.06em;margin:.8rem 0 1.3rem;font-weight:800}
+.seo-essay .seo-hero-statement p{font-size:clamp(1rem,3vw,1.3rem);max-width:40ch}
+.seo-essay .seo-visual{margin:3rem 0;padding:clamp(1.1rem,4vw,2rem);border-radius:22px;background:#f0f2f3;color:#171a1d;font-family:system-ui,sans-serif}
+.seo-essay .seo-visual h3{margin:.5rem 0 1rem;font-size:clamp(1.3rem,4vw,1.8rem);letter-spacing:-.04em}
+.seo-essay .seo-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.4rem;margin:1.5rem 0}
+.seo-essay .seo-tab{min-width:0;cursor:pointer;border:1px solid transparent;border-radius:13px;background:#e2e5e7;color:#333;padding:1rem .2rem;font:600 clamp(.64rem,2.4vw,.85rem)/1.3 system-ui,sans-serif}
+.seo-essay .seo-tab[aria-selected=true]{background:#171a1d;color:white}
+.seo-essay .seo-tab:focus-visible{outline:3px solid #477bff;outline-offset:2px}
+.seo-essay .seo-panel{background:white;border-radius:16px;padding:1.5rem;min-height:160px}
+.seo-essay .seo-panel h4{font-size:1.4rem;margin:.4rem 0}
+.seo-essay .seo-panel p{font-size:1rem;line-height:1.6;margin:0}
+.seo-essay .seo-dark{background:#171a1d;color:#fff}
+.seo-essay .seo-system{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;margin-top:1.5rem}
+.seo-essay .seo-system div{padding:1.2rem;border:1px solid #53585c;border-radius:14px}
+.seo-essay .seo-system b{display:block;font-size:1rem}
+.seo-essay .seo-system small{color:#b8bec4}
+.seo-essay .seo-pullquote{margin:5rem 0;padding:3rem 0;border-block:1px solid #d3d5d6;font-size:clamp(1.8rem,6vw,3.3rem);font-weight:750;line-height:1.15;letter-spacing:-.045em}
+.seo-essay .seo-step-list{list-style:none;padding:0;counter-reset:seo}
+.seo-essay .seo-step-list li{counter-increment:seo;display:grid;grid-template-columns:2.5rem 1fr;gap:.8rem;align-items:start;padding:1.1rem 0;border-bottom:1px solid #ddd}
+.seo-essay .seo-step-list li:before{content:counter(seo,decimal-leading-zero);font:700 .85rem system-ui,sans-serif;background:#eceeef;border-radius:50%;height:2.5rem;display:grid;place-items:center}
+@media(max-width:600px){.seo-essay .klef-blog-prose{font-size:1.05rem}.seo-essay .klef-blog-prose h2{font-size:clamp(2rem,9vw,2.8rem)}.seo-essay .seo-system{grid-template-columns:1fr 1fr}.seo-essay .seo-visual{margin-inline:-.3rem}}
+@media(prefers-reduced-motion:no-preference){.seo-essay .seo-tab{transition:background .2s,color .2s}}
