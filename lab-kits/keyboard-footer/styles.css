@@ -25,7 +25,7 @@ input:user-invalid{border-color:#f28b94}
 .text-button{margin-top:-10px;min-height:44px;padding:0;border:0;background:none;color:var(--accent);font-size:15px;text-align:left}
 #result{font-size:13px;line-height:1.5;color:#c5ccdb;margin:16px 0 0}
 #result:empty{display:none}
-.action-bar{position:fixed;z-index:10;inset-inline:0;bottom:var(--bottom-offset);padding:16px max(14px,env(safe-area-inset-right)) max(30px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));background:var(--canvas)}
+.action-bar{position:fixed;z-index:10;inset-inline:0;bottom:var(--bottom-offset);padding:16px max(14px,env(safe-area-inset-right)) max(30px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));background:var(--canvas);border-radius:28px 28px 0 0;box-shadow:0 -1px 0 rgb(255 255 255 / 10%),0 -10px 32px rgb(0 0 0 / 24%)}
 :root[data-keyboard-open] .action-bar{padding-bottom:12px}
 .action-inner{max-width:402px;margin-inline:auto}
 .login-button{display:block;width:100%;min-height:50px;padding:14px 24px;border:0;border-radius:999px;background:var(--accent);color:#0b1310;font-size:16px;font-weight:500;line-height:1.3}
