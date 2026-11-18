@@ -1,0 +1,36 @@
+:root{color-scheme:dark;--canvas:#090d14;--ink:#eff1f8;--muted:#8d96ad;--accent:#a5f78b;--bottom-offset:0px;--bar-height:150px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--canvas);font-synthesis:none}
+*{box-sizing:border-box}
+html{scroll-padding-block:20px calc(var(--bar-height) + var(--bottom-offset) + 20px)}
+body{margin:0;min-height:100vh;min-height:100dvh;padding-bottom:calc(var(--bar-height) + var(--bottom-offset) + 24px);background:var(--canvas)}
+button,input{font:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.login-screen{max-width:430px;margin-inline:auto;padding: max(16px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) 0 max(14px,env(safe-area-inset-left))}
+.login-header{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;gap:8px;min-height:44px;margin-bottom:22px}
+.login-header h1{margin:0;font-size:17px;font-weight:650;line-height:1.3;letter-spacing:-.35px;text-align:center;white-space:nowrap}
+.back-button{display:grid;place-items:center;width:42px;height:42px;padding:10px;border:0;border-radius:50%;background:#202737;color:var(--ink)}
+.back-button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.field{display:grid;gap:12px;margin-bottom:26px;scroll-margin-block:20px}
+label{font-size:15px;line-height:1.35}
+input{width:100%;min-height:56px;border:1.5px solid #3a4254;border-radius:12px;padding:15px 16px;background:transparent;color:var(--ink);font-size:16px;line-height:1.4;box-shadow:0 0 0 1px #1a213055}
+input::placeholder{color:var(--muted);opacity:1}
+input:focus{border-color:#b3b9cb;outline:none;box-shadow:0 0 0 1px #b3b9cb33}
+input:user-invalid{border-color:#f28b94}
+.password-field{position:relative}
+.password-field input{padding-right:56px}
+.password-toggle{position:absolute;inset-block:0;right:5px;display:grid;place-items:center;width:48px;padding:12px;background:none;border:0;color:#d1d6e5;border-radius:10px}
+.password-toggle svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.eye-slash{display:none}
+.password-toggle[aria-pressed="true"] .eye-slash{display:initial}
+.text-button{margin-top:-10px;min-height:44px;padding:0;border:0;background:none;color:var(--accent);font-size:15px;text-align:left}
+#result{font-size:13px;line-height:1.5;color:#c5ccdb;margin:16px 0 0}
+#result:empty{display:none}
+.action-bar{position:fixed;z-index:10;inset-inline:0;bottom:var(--bottom-offset);padding:16px max(14px,env(safe-area-inset-right)) max(30px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));background:var(--canvas)}
+:root[data-keyboard-open] .action-bar{padding-bottom:12px}
+.action-inner{max-width:402px;margin-inline:auto}
+.login-button{display:block;width:100%;min-height:50px;padding:14px 24px;border:0;border-radius:999px;background:var(--accent);color:#0b1310;font-size:16px;font-weight:500;line-height:1.3}
+.login-button:hover{background:#b4ffa0}
+.login-button:active{background:#94e87a}
+.legal{max-width:390px;margin:9px auto 0;text-align:center;color:#d4d8e3;font-size:14px;line-height:1.5}
+.legal button{display:inline;padding:0;border:0;background:none;color:var(--accent);font:inherit;line-height:inherit}
+@media(min-width:600px){.login-screen{padding-top:32px}}

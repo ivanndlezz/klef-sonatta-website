@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-visual">
+  <meta name="theme-color" content="#090d14">
+  <title>¡Bienvenido de nuevo!</title>
+  <link rel="stylesheet" href="styles.css?v=2">
+  <script src="app.js?v=2" defer></script>
+</head>
+<body>
+  <main class="login-screen">
+    <header class="login-header">
+      <button class="back-button" id="back-button" type="button" aria-label="Volver"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6M8 12h12"/></svg></button>
+      <h1>¡Bienvenido de nuevo!</h1>
+    </header>
+    <form id="login-form" action="#" method="post" aria-label="Inicio de sesión">
+      <div class="field">
+        <label for="email">Dirección de email</label>
+        <input id="email" name="email" type="email" autocomplete="email" inputmode="email" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="next" required>
+      </div>
+      <div class="field">
+        <label for="password">Contraseña</label>
+        <div class="password-field">
+          <input id="password" name="password" type="password" placeholder="Introducir tu contraseña" autocomplete="current-password" enterkeyhint="go" required>
+          <button class="password-toggle" type="button" id="password-toggle" aria-label="Mostrar contraseña" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="eye-slash" d="m4 3 16 18"/></svg></button>
+        </div>
+      </div>
+      <button class="text-button" type="button" id="forgot-password">¿Contraseña olvidada?</button>
+      <p id="result" role="status"></p>
+    </form>
+  </main>
+  <footer class="action-bar" id="action-bar">
+    <div class="action-inner">
+      <button class="login-button" type="submit" form="login-form">Iniciar sesión</button>
+      <p class="legal">Más información sobre nuestra <button type="button" data-notice="Aviso de Privacidad">Aviso de Privacidad</button> y <button type="button" data-notice="Términos y Condiciones">Términos y Condiciones</button></p>
+    </div>
+  </footer>
+</body>
+</html>
